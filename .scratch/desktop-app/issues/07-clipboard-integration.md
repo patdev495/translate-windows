@@ -1,0 +1,22 @@
+---
+title: Clipboard Integration
+status: ready-for-agent
+author: Antigravity
+created: 2026-07-02
+---
+
+# Issue 07: Clipboard Integration
+
+## What to build
+
+If the `ocrCopyToClipboard` setting is enabled, upon crop selection completion, write the cropped image bytes natively to the Windows system clipboard using Rust backend APIs. This allows users to immediately press `Ctrl + V` to paste the image in other apps (e.g. Paint, Word, Zalo).
+
+## Acceptance criteria
+
+- [ ] Cropped image is copied to the system clipboard upon crop selection mouse release.
+- [ ] Users can successfully paste (`Ctrl + V`) the cropped image in external applications.
+- [ ] Operates natively via Rust backend to guarantee clipboard writing even without window focus.
+
+## Blocked by
+
+- [Issue 03: Crop Box Selection and Image Extraction](file:///d:/Workspace/translation-desktop/.scratch/desktop-app/issues/03-crop-box-selection.md)

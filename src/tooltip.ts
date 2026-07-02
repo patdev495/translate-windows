@@ -37,6 +37,22 @@ function attachNativeDrag(card: HTMLElement): void {
   });
 }
 
+function attachOutsideFocusClose(card: HTMLElement): void {
+  let ignoreBlurUntil = 0;
+
+  card.addEventListener("pointerdown", () => {
+    ignoreBlurUntil = Date.now() + 1200;
+  }, true);
+
+  void getCurrentWindow().onFocusChanged(({ payload: focused }) => {
+    if (focused) return;
+    window.setTimeout(() => {
+      if (Date.now() < ignoreBlurUntil) return;
+      windowApi.close();
+    }, 80);
+  });
+}
+
 window.addEventListener("DOMContentLoaded", async () => {
   const tooltipCard = document.getElementById("tooltip-card") as HTMLElement;
   const sourceEl = document.getElementById("source-text") as HTMLElement;
@@ -48,6 +64,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   if (tooltipCard) {
     attachNativeDrag(tooltipCard);
+    attachOutsideFocusClose(tooltipCard);
   }
 
   let ocrText = "";

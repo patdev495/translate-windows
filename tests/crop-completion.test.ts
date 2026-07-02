@@ -16,7 +16,7 @@ describe('handleCompletedCrop', () => {
       getSettings: vi.fn().mockResolvedValue({ ocrPinImage: true, ocrCopyToClipboard: false }),
     });
 
-    expect(invoke).toHaveBeenCalledWith('process_crop', {
+    expect(invoke).toHaveBeenNthCalledWith(1, 'process_crop', {
       dataUrl: 'data:image/png;base64,AAAA',
       x: 24,
       y: 37,
@@ -27,7 +27,8 @@ describe('handleCompletedCrop', () => {
       ocrPinImage: true,
       ocrCopyToClipboard: false,
     });
-    expect(invoke).toHaveBeenCalledTimes(1);
+    expect(invoke).toHaveBeenNthCalledWith(2, 'close_overlay');
+    expect(invoke).toHaveBeenCalledTimes(2);
     expect(result).toEqual({
       dataUrl: 'data:image/png;base64,AAAA',
       screenRect: { x: 24, y: 37, width: 140, height: 81 },
@@ -42,7 +43,7 @@ describe('handleCompletedCrop', () => {
       getSettings: vi.fn().mockResolvedValue({ ocrPinImage: false, ocrCopyToClipboard: true }),
     });
 
-    expect(invoke).toHaveBeenCalledWith('process_crop_area', {
+    expect(invoke).toHaveBeenNthCalledWith(1, 'process_crop_area', {
       x: 24,
       y: 37,
       width: 140,
@@ -52,7 +53,8 @@ describe('handleCompletedCrop', () => {
       ocrPinImage: false,
       ocrCopyToClipboard: true,
     });
-    expect(invoke).toHaveBeenCalledTimes(1);
+    expect(invoke).toHaveBeenNthCalledWith(2, 'close_overlay');
+    expect(invoke).toHaveBeenCalledTimes(2);
     expect(result.dataUrl).toBe('data:image/png;base64,NATIVE');
   });
 
@@ -70,7 +72,7 @@ describe('handleCompletedCrop', () => {
       }),
     });
 
-    expect(invoke).toHaveBeenCalledWith('process_crop_area', {
+    expect(invoke).toHaveBeenNthCalledWith(1, 'process_crop_area', {
       x: 1944,
       y: 157,
       width: 175,
@@ -80,6 +82,7 @@ describe('handleCompletedCrop', () => {
       ocrPinImage: false,
       ocrCopyToClipboard: false,
     });
+    expect(invoke).toHaveBeenNthCalledWith(2, 'close_overlay');
     expect(result.screenRect).toEqual({ x: 1944, y: 157, width: 175, height: 101 });
   });
 

@@ -5,7 +5,7 @@ export interface Settings {
   secondaryTargetLang: TargetLanguage;
   reverseTargetLang: TargetLanguage;
   autoTranslate: boolean;
-  ocrShortcut: 'disabled' | 'ctrl-space' | 'alt-o' | 'ctrl-shift-o';
+  ocrShortcut: 'disabled' | 'alt-space' | 'ctrl-space' | 'alt-o' | 'ctrl-shift-o';
   ocrModelTier: 'tiny' | 'small' | 'medium';
   ocrLanguage: 'ch' | 'latin';
   ttsEnabled: boolean;
@@ -22,7 +22,7 @@ export class SettingsManager {
     secondaryTargetLang: 'zh',
     reverseTargetLang: 'en',
     autoTranslate: true,
-    ocrShortcut: 'ctrl-space',
+    ocrShortcut: 'alt-space',
     ocrModelTier: 'medium',
     ocrLanguage: 'ch',
     ttsEnabled: true,

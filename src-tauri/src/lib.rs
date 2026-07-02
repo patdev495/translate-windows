@@ -285,9 +285,8 @@ async fn process_crop(
     ocr_pin_image: bool,
     ocr_copy_to_clipboard: bool,
 ) -> Result<(), String> {
-    // Close the overlay immediately
     if let Some(overlay) = app_handle.get_webview_window("overlay") {
-        let _ = overlay.destroy();
+        let _ = overlay.hide();
     }
 
     // Clear the capture state so it is not reused
@@ -346,7 +345,6 @@ async fn process_crop_area(
 ) -> Result<String, String> {
     if let Some(overlay) = app_handle.get_webview_window("overlay") {
         let _ = overlay.hide();
-        let _ = overlay.destroy();
     }
 
     {
@@ -605,7 +603,7 @@ pub fn run() {
         .setup(|app| {
             setup_tray(app)?;
             let shortcut = Shortcut::new(
-                Some(tauri_plugin_global_shortcut::Modifiers::CONTROL),
+                Some(tauri_plugin_global_shortcut::Modifiers::ALT),
                 tauri_plugin_global_shortcut::Code::Space
             );
             app.global_shortcut().on_shortcut(shortcut, move |app_handle, _shortcut, event| {

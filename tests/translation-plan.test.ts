@@ -7,7 +7,7 @@ const baseSettings: Settings = {
   secondaryTargetLang: 'zh',
   reverseTargetLang: 'en',
   autoTranslate: true,
-  ocrShortcut: 'ctrl-space',
+  ocrShortcut: 'alt-space',
   ocrModelTier: 'medium',
   ocrLanguage: 'ch',
   ttsEnabled: true,

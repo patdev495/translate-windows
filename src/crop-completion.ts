@@ -43,6 +43,7 @@ export async function handleCompletedCrop(
       ocrPinImage: settings.ocrPinImage,
       ocrCopyToClipboard: settings.ocrCopyToClipboard,
     });
+    await deps.invoke('close_overlay');
     return { dataUrl, screenRect };
   }
 
@@ -56,6 +57,7 @@ export async function handleCompletedCrop(
     ocrPinImage: settings.ocrPinImage,
     ocrCopyToClipboard: settings.ocrCopyToClipboard,
   }) as string;
+  await deps.invoke('close_overlay');
 
   return { dataUrl: capturedDataUrl, screenRect };
 }

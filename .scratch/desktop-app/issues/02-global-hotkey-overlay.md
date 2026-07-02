@@ -1,6 +1,6 @@
 ---
 title: Global Hotkey and Transparent Screen Freeze Overlay
-status: ready-for-agent
+status: done
 author: Antigravity
 created: 2026-07-02
 ---

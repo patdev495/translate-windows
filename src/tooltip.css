@@ -118,6 +118,13 @@ body {
   min-height: 20px;
 }
 
+.translation-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
 .translation-text {
   font-size: calc(var(--tooltip-font-size, 17px) * 0.94);
   font-weight: 650;

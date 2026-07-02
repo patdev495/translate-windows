@@ -149,6 +149,33 @@ describe('TooltipController', () => {
     delete (global as any).SpeechSynthesisUtterance;
   });
 
+  test('translation speaker button reads translated text with target language', async () => {
+    const mockSpeak = vi.fn();
+    const MockUtterance = vi.fn().mockImplementation((text: string) => ({ text, lang: '' }));
+
+    Object.defineProperty(window, 'speechSynthesis', {
+      value: { speak: mockSpeak },
+      writable: true,
+      configurable: true,
+    });
+    (global as any).SpeechSynthesisUtterance = MockUtterance;
+
+    const controller = new TooltipController(windowApi);
+    await controller.initialize('hello', dom.sourceEl, dom.phoneticEl, dom.translationEl, dom.ttsBtn);
+
+    const firstSpeaker = dom.translationEl.querySelector('.translation-tts-btn') as HTMLButtonElement | null;
+    expect(firstSpeaker).not.toBeNull();
+    firstSpeaker?.click();
+
+    expect(MockUtterance).toHaveBeenCalledWith('Xin chao');
+    expect(mockSpeak).toHaveBeenCalledWith(expect.objectContaining({
+      text: 'Xin chao',
+      lang: 'vi-VN',
+    }));
+
+    delete (global as any).SpeechSynthesisUtterance;
+  });
+
   test('tts button does nothing when speechSynthesis is unavailable', async () => {
     Object.defineProperty(window, 'speechSynthesis', {
       value: undefined,

@@ -54,11 +54,13 @@ export class TooltipController {
     sourceEl.textContent = normalizedSource;
 
     let translatedText = '';
+    let sourceLang = 'auto';
     try {
       const { detectedLang, translations } = await this.translateForTargets(normalizedSource, settings);
+      sourceLang = detectedLang;
       phoneticEl.textContent = this.getPhonetics(normalizedSource, detectedLang);
       translatedText = translations.map((item) => item.text).join('\n');
-      this.renderTranslations(translationEl, translations);
+      this.renderTranslations(translationEl, translations, Boolean(settings.ttsEnabled));
       translationLangEl?.remove();
     } catch (err) {
       translationEl.textContent = '(translation failed)';
@@ -79,14 +81,7 @@ export class TooltipController {
 
     if (settings.ttsEnabled) {
       ttsBtn.addEventListener('click', () => {
-        if (
-          typeof window.speechSynthesis !== 'undefined' &&
-          window.speechSynthesis &&
-          typeof SpeechSynthesisUtterance !== 'undefined'
-        ) {
-          const utterance = new SpeechSynthesisUtterance(normalizedSource);
-          window.speechSynthesis.speak(utterance);
-        }
+        this.speakText(normalizedSource, sourceLang);
       });
     }
   }
@@ -124,7 +119,7 @@ export class TooltipController {
     return { detectedLang, translations };
   }
 
-  private renderTranslations(container: HTMLElement, translations: TooltipTranslation[]): void {
+  private renderTranslations(container: HTMLElement, translations: TooltipTranslation[], ttsEnabled: boolean): void {
     container.textContent = '';
     if (translations.length === 0) {
       container.textContent = '(no translation target enabled)';
@@ -157,11 +152,32 @@ export class TooltipController {
         void navigator.clipboard?.writeText(item.text);
       });
 
+      const speak = document.createElement('button');
+      speak.className = 'icon-btn compact translation-tts-btn';
+      speak.type = 'button';
+      speak.title = 'Read translation';
+      speak.setAttribute('aria-label', `Read ${this.langLabel(item.lang)} translation`);
+      speak.innerHTML = `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M11 5 6 9H3v6h3l5 4V5Z"/>
+          <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+          <path d="M18.5 5.5a9 9 0 0 1 0 13"/>
+        </svg>
+      `;
+      speak.hidden = !ttsEnabled;
+      speak.addEventListener('click', () => {
+        this.speakText(item.text, item.lang);
+      });
+
       const text = document.createElement('div');
       text.className = 'translation-text';
       text.textContent = item.text;
 
-      header.append(lang, copy);
+      const actions = document.createElement('div');
+      actions.className = 'translation-actions';
+      actions.append(speak, copy);
+
+      header.append(lang, actions);
       block.append(header, text);
       if (item.phonetics) {
         const phonetics = document.createElement('div');
@@ -182,6 +198,28 @@ export class TooltipController {
       return PhoneticEngine.getPinyin(text);
     }
     return '';
+  }
+
+  private speakText(text: string, lang: string): void {
+    if (
+      typeof window.speechSynthesis === 'undefined' ||
+      !window.speechSynthesis ||
+      typeof SpeechSynthesisUtterance === 'undefined'
+    ) {
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = this.speechLang(lang);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  private speechLang(lang: string): string {
+    const norm = lang.toLowerCase().split('-')[0];
+    if (norm === 'vi') return 'vi-VN';
+    if (norm === 'zh') return 'zh-CN';
+    if (norm === 'en') return 'en-US';
+    return lang;
   }
 
   private langLabel(lang: string): string {

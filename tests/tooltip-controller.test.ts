@@ -88,6 +88,62 @@ describe('TooltipController', () => {
     expect(dom.phoneticEl.textContent).toContain('/helo/');
   });
 
+  test('initialize shows pinyin for Traditional Chinese detected as zh-Hant', async () => {
+    const { TranslationEngine } = await import('../src/services/translation');
+    const { PhoneticEngine } = await import('../src/services/phonetics');
+    vi.mocked(TranslationEngine.translateWithSettings).mockImplementationOnce(async (_text: string, targetLang: string) => ({
+      translation: targetLang === 'vi' ? 'Xin chao' : 'Ni hao',
+      detectedLang: 'zh-Hant',
+    }));
+
+    const controller = new TooltipController(windowApi);
+    await controller.initialize('我喜歡學習漢語', dom.sourceEl, dom.phoneticEl, dom.translationEl, dom.ttsBtn);
+
+    expect(PhoneticEngine.getPinyin).toHaveBeenCalledWith('我喜歡學習漢語');
+    expect(dom.phoneticEl.textContent).toContain('ni hao');
+  });
+
+  test('initialize prefers pinyin for mixed Traditional Chinese even when detected as English', async () => {
+    const { PhoneticEngine } = await import('../src/services/phonetics');
+    const controller = new TooltipController(windowApi);
+    await controller.initialize('阿tu這個越南買得到嗎', dom.sourceEl, dom.phoneticEl, dom.translationEl, dom.ttsBtn);
+
+    expect(PhoneticEngine.getPinyin).toHaveBeenCalledWith('阿tu這個越南買得到嗎');
+    expect(PhoneticEngine.getEnglishIPA).not.toHaveBeenCalledWith('阿tu這個越南買得到嗎');
+    expect(dom.phoneticEl.textContent).toContain('ni hao');
+  });
+
+  test('initialize keeps English secondary target for Chinese source when reverse target is Chinese', async () => {
+    const { TranslationEngine } = await import('../src/services/translation');
+    const { SettingsManager } = await import('../src/services/settings');
+    vi.mocked(SettingsManager.getSettings).mockResolvedValueOnce({
+      primaryTargetLang: 'vi',
+      secondaryTargetLang: 'en',
+      reverseTargetLang: 'zh',
+      provider: 'google',
+      deeplApiKey: '',
+      ttsEnabled: true,
+      ocrLanguage: 'ch',
+    });
+
+    const controller = new TooltipController(windowApi);
+    await controller.initialize('做視覺辨識', dom.sourceEl, dom.phoneticEl, dom.translationEl, dom.ttsBtn);
+
+    expect(TranslationEngine.translateWithSettings).toHaveBeenCalledWith(
+      '做視覺辨識',
+      'en',
+      expect.objectContaining({ secondaryTargetLang: 'en', reverseTargetLang: 'zh' })
+    );
+    expect(TranslationEngine.translateWithSettings).not.toHaveBeenCalledWith(
+      '做視覺辨識',
+      'zh',
+      expect.anything()
+    );
+    expect(dom.translationEl.textContent).toContain('VIE');
+    expect(dom.translationEl.textContent).toContain('ENG');
+    expect(dom.translationEl.textContent).not.toContain('CHI');
+  });
+
   test('initialize renders enabled translation targets from settings', async () => {
     const { TranslationEngine } = await import('../src/services/translation');
     const controller = new TooltipController(windowApi);

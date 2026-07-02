@@ -94,7 +94,7 @@ export class TooltipController {
     const detectionResult = detectionTarget
       ? await TranslationEngine.translateWithSettings(sourceText, detectionTarget, settings)
       : { translation: sourceText, detectedLang: 'auto' };
-    const detectedLang = detectionResult.detectedLang || 'auto';
+    const detectedLang = this.resolveDetectedLang(sourceText, detectionResult.detectedLang || 'auto');
     const targets = getTranslationTargets(settings, detectedLang);
 
     const translations: TooltipTranslation[] = [];
@@ -190,14 +190,30 @@ export class TooltipController {
   }
 
   private getPhonetics(text: string, lang: string): string {
-    const norm = lang.toLowerCase();
+    const norm = this.normalizeLang(lang);
+    if (this.isChineseLang(norm) || this.containsCjkText(text)) {
+      return PhoneticEngine.getPinyin(text);
+    }
     if (norm === 'en') {
       return PhoneticEngine.getEnglishIPA(text);
     }
-    if (norm === 'zh' || norm === 'zh-cn' || norm === 'zh-tw') {
-      return PhoneticEngine.getPinyin(text);
-    }
     return '';
+  }
+
+  private normalizeLang(lang: string): string {
+    return lang.toLowerCase().replace(/_/g, '-');
+  }
+
+  private isChineseLang(norm: string): boolean {
+    return norm === 'zh' || norm.startsWith('zh-') || norm === 'chinese';
+  }
+
+  private resolveDetectedLang(text: string, detectedLang: string): string {
+    return this.containsCjkText(text) ? 'zh' : detectedLang;
+  }
+
+  private containsCjkText(text: string): boolean {
+    return /[\u3400-\u9FFF\uF900-\uFAFF]/u.test(text);
   }
 
   private speakText(text: string, lang: string): void {

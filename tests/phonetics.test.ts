@@ -13,6 +13,11 @@ describe('PhoneticEngine - Chinese Pinyin', () => {
     // pinyin-pro usually preserves non-Chinese when called with the right options or we can handle it.
     expect(result).toBe('Hello, wǒ xǐ huan xué xí hàn yǔ！');
   });
+
+  test('should convert Traditional Chinese characters to Pinyin', () => {
+    const result = PhoneticEngine.getPinyin('我喜歡學習漢語');
+    expect(result).toBe('wǒ xǐ huān xué xí hàn yǔ');
+  });
 });
 
 describe('PhoneticEngine - English IPA', () => {
@@ -31,4 +36,3 @@ describe('PhoneticEngine - English IPA', () => {
     expect(result).toBe('xyzabc');
   });
 });
-

@@ -92,7 +92,7 @@ async function createService(
   language: 'ch' | 'latin' = 'ch',
   onProgress?: ProgressHandler
 ): Promise<InstanceType<PaddleOcrServiceCtor>> {
-  ort.env.wasm.wasmPaths = chrome.runtime.getURL('onnxruntime-web/');
+  ort.env.wasm.wasmPaths = '/onnxruntime-web/';
 
   const ocrModule = await import('ppu-paddle-ocr/web');
   const PaddleOcrService = ocrModule.PaddleOcrService as PaddleOcrServiceCtor;
@@ -100,28 +100,28 @@ async function createService(
   let modelPreset: ModelUrls;
   if (language === 'latin') {
     modelPreset = {
-      detection: chrome.runtime.getURL('models/PP-OCRv5_latin_det.onnx'),
-      recognition: chrome.runtime.getURL('models/PP-OCRv5_latin_rec.onnx'),
-      charactersDictionary: chrome.runtime.getURL('models/ppocrv5_latin_dict.txt'),
+      detection: '/models/PP-OCRv5_latin_det.onnx',
+      recognition: '/models/PP-OCRv5_latin_rec.onnx',
+      charactersDictionary: '/models/ppocrv5_latin_dict.txt',
     };
   } else {
     if (tier === 'tiny') {
       modelPreset = {
-        detection: chrome.runtime.getURL('models/PP-OCRv6_tiny_det.ort'),
-        recognition: chrome.runtime.getURL('models/PP-OCRv6_tiny_rec.ort'),
-        charactersDictionary: chrome.runtime.getURL('models/ppocrv6_tiny_dict.txt'),
+        detection: '/models/PP-OCRv6_tiny_det.ort',
+        recognition: '/models/PP-OCRv6_tiny_rec.ort',
+        charactersDictionary: '/models/ppocrv6_tiny_dict.txt',
       };
     } else if (tier === 'medium') {
       modelPreset = {
-        detection: chrome.runtime.getURL('models/PP-OCRv6_medium_det.ort'),
-        recognition: chrome.runtime.getURL('models/PP-OCRv6_medium_rec.ort'),
-        charactersDictionary: chrome.runtime.getURL('models/ppocrv6_dict.txt'),
+        detection: '/models/PP-OCRv6_medium_det.ort',
+        recognition: '/models/PP-OCRv6_medium_rec.ort',
+        charactersDictionary: '/models/ppocrv6_dict.txt',
       };
     } else {
       modelPreset = {
-        detection: chrome.runtime.getURL('models/PP-OCRv6_small_det.ort'),
-        recognition: chrome.runtime.getURL('models/PP-OCRv6_small_rec.ort'),
-        charactersDictionary: chrome.runtime.getURL('models/ppocrv6_dict.txt'),
+        detection: '/models/PP-OCRv6_small_det.ort',
+        recognition: '/models/PP-OCRv6_small_rec.ort',
+        charactersDictionary: '/models/ppocrv6_dict.txt',
       };
     }
   }

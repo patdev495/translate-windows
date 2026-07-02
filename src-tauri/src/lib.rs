@@ -1,19 +1,28 @@
 use std::sync::Mutex;
+use std::io::Cursor;
 use tauri::{Manager, WebviewWindowBuilder};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 use screenshots::Screen;
 use base64::{Engine as _, engine::general_purpose};
+use image::{ImageEncoder, codecs::png::PngEncoder};
 
 #[derive(Default)]
 pub struct CaptureState(pub Mutex<Option<String>>);
 
-fn capture_active_screen() -> Result<(Vec<u8>, i32, i32), String> {
+fn capture_active_screen() -> Result<(Vec<u8>, u32, u32), String> {
     let screens = Screen::all().map_err(|e| e.to_string())?;
     // Capture the first monitor (or primary screen)
     let screen = screens.into_iter().next().ok_or("No screens found")?;
     let image = screen.capture().map_err(|e| e.to_string())?;
-    let buffer = image.to_png().map_err(|e| e.to_string())?;
-    Ok((buffer, image.width() as i32, image.height() as i32))
+    let width = image.width();
+    let height = image.height();
+    let raw_pixels = image.into_raw();
+    let mut png_bytes: Vec<u8> = Vec::new();
+    let encoder = PngEncoder::new(Cursor::new(&mut png_bytes));
+    encoder
+        .write_image(&raw_pixels, width, height, image::ExtendedColorType::Rgba8)
+        .map_err(|e| e.to_string())?;
+    Ok((png_bytes, width, height))
 }
 
 fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {

@@ -4,8 +4,9 @@ use std::sync::Mutex;
 use std::time::Duration;
 use arboard::{Clipboard, ImageData};
 use tauri::{Manager, WebviewWindowBuilder};
-use tauri::menu::{Menu, MenuItem};
+use tauri::menu::{CheckMenuItem, Menu, MenuItem};
 use tauri::tray::{MouseButton, TrayIconBuilder, TrayIconEvent};
+use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 use screenshots::Screen;
 use base64::{Engine as _, engine::general_purpose};
@@ -64,6 +65,21 @@ impl Default for SnippetCounter {
     fn default() -> Self {
         SnippetCounter(Mutex::new(0))
     }
+}
+
+#[derive(Clone, Copy)]
+struct TrayMenuSpec {
+    id: &'static str,
+    label: &'static str,
+}
+
+fn tray_menu_specs() -> [TrayMenuSpec; 4] {
+    [
+        TrayMenuSpec { id: "capture_ocr", label: "Capture OCR" },
+        TrayMenuSpec { id: "settings", label: "Settings" },
+        TrayMenuSpec { id: "start_with_windows", label: "Start with Windows" },
+        TrayMenuSpec { id: "exit", label: "Exit" },
+    ]
 }
 
 // ── Screen capture helper ─────────────────────────────────────────────────
@@ -529,6 +545,25 @@ fn open_settings_window(app_handle: tauri::AppHandle) -> Result<(), String> {
     open_settings_window_inner(&app_handle).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+fn get_autostart_enabled(app_handle: tauri::AppHandle) -> Result<bool, String> {
+    app_handle
+        .autolaunch()
+        .is_enabled()
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn set_autostart_enabled(app_handle: tauri::AppHandle, enabled: bool) -> Result<(), String> {
+    let autostart = app_handle.autolaunch();
+    if enabled {
+        autostart.enable()
+    } else {
+        autostart.disable()
+    }
+    .map_err(|e| e.to_string())
+}
+
 fn open_settings_window_inner(app_handle: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     if let Some(existing) = app_handle.get_webview_window("settings") {
         existing.show()?;
@@ -551,19 +586,55 @@ fn open_settings_window_inner(app_handle: &tauri::AppHandle) -> Result<(), Box<d
 }
 
 fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
-    let settings_item = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
-    let exit_item = MenuItem::with_id(app, "exit", "Exit", true, None::<&str>)?;
-    let menu = Menu::with_items(app, &[&settings_item, &exit_item])?;
+    let specs = tray_menu_specs();
+    let capture_item = MenuItem::with_id(app, specs[0].id, specs[0].label, true, None::<&str>)?;
+    let settings_item = MenuItem::with_id(app, specs[1].id, specs[1].label, true, None::<&str>)?;
+    let autostart_enabled = app.handle().autolaunch().is_enabled().unwrap_or(false);
+    let autostart_item = CheckMenuItem::with_id(
+        app,
+        specs[2].id,
+        specs[2].label,
+        true,
+        autostart_enabled,
+        None::<&str>,
+    )?;
+    let exit_item = MenuItem::with_id(app, specs[3].id, specs[3].label, true, None::<&str>)?;
+    let menu = Menu::with_items(app, &[&capture_item, &settings_item, &autostart_item, &exit_item])?;
     let icon = app.default_window_icon().cloned();
 
     let mut builder = TrayIconBuilder::new()
         .menu(&menu)
         .tooltip("PolyTranslate")
         .show_menu_on_left_click(false)
-        .on_menu_event(|app_handle, event| match event.id().as_ref() {
+        .on_menu_event(move |app_handle, event| match event.id().as_ref() {
+            "capture_ocr" => {
+                if let Err(err) = trigger_capture_and_overlay(app_handle) {
+                    eprintln!("Failed to trigger capture overlay: {err}");
+                }
+            }
             "settings" => {
                 if let Err(err) = open_settings_window_inner(app_handle) {
                     eprintln!("Failed to open settings window: {err}");
+                }
+            }
+            "start_with_windows" => {
+                let autostart = app_handle.autolaunch();
+                match autostart.is_enabled() {
+                    Ok(true) => {
+                        if let Err(err) = autostart.disable() {
+                            eprintln!("Failed to disable autostart: {err}");
+                        } else if let Err(err) = autostart_item.set_checked(false) {
+                            eprintln!("Failed to update autostart tray check: {err}");
+                        }
+                    }
+                    Ok(false) => {
+                        if let Err(err) = autostart.enable() {
+                            eprintln!("Failed to enable autostart: {err}");
+                        } else if let Err(err) = autostart_item.set_checked(true) {
+                            eprintln!("Failed to update autostart tray check: {err}");
+                        }
+                    }
+                    Err(err) => eprintln!("Failed to read autostart state: {err}"),
                 }
             }
             "exit" => app_handle.exit(0),
@@ -595,6 +666,10 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_autostart::init(
+            MacosLauncher::LaunchAgent,
+            None,
+        ))
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .manage(CaptureState::default())
         .manage(TooltipState::default())
@@ -629,6 +704,8 @@ pub fn run() {
             get_snippet_data,
             copy_image_to_clipboard,
             open_settings_window,
+            get_autostart_enabled,
+            set_autostart_enabled,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -636,7 +713,7 @@ pub fn run() {
 
 #[cfg(test)]
 mod tests {
-    use super::TooltipData;
+    use super::{tray_menu_specs, TooltipData};
 
     #[test]
     fn tooltip_data_serializes_for_frontend_contract() {
@@ -653,5 +730,13 @@ mod tests {
 
         assert_eq!(json["dataUrl"], "data:image/png;base64,AAAA");
         assert!(json.get("data_url").is_none());
+    }
+
+    #[test]
+    fn tray_menu_exposes_desktop_app_actions() {
+        let specs = tray_menu_specs();
+        let ids: Vec<&str> = specs.iter().map(|item| item.id).collect();
+
+        assert_eq!(ids, vec!["capture_ocr", "settings", "start_with_windows", "exit"]);
     }
 }

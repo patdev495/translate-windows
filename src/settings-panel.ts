@@ -1,4 +1,10 @@
 import { SettingsManager, type Settings } from './services/settings';
+import { NativeAutostartService } from './services/autostart';
+
+export interface AutostartService {
+  isEnabled(): Promise<boolean>;
+  setEnabled(enabled: boolean): Promise<void>;
+}
 
 type FieldName = keyof Pick<
   Settings,
@@ -15,6 +21,7 @@ type FieldName = keyof Pick<
   | 'tooltipFontSize'
   | 'ocrPinImage'
   | 'ocrCopyToClipboard'
+  | 'startWithWindows'
 >;
 
 const FIELD_NAMES: FieldName[] = [
@@ -31,25 +38,33 @@ const FIELD_NAMES: FieldName[] = [
   'tooltipFontSize',
   'ocrPinImage',
   'ocrCopyToClipboard',
+  'startWithWindows',
 ];
 
 export class SettingsPanelController {
   private form: HTMLFormElement;
   private saveState: HTMLElement | null;
+  private autostart: AutostartService;
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(form: HTMLFormElement, saveState: HTMLElement | null = document.getElementById('save-state')) {
+  constructor(
+    form: HTMLFormElement,
+    saveState: HTMLElement | null = document.getElementById('save-state'),
+    autostart: AutostartService = NativeAutostartService
+  ) {
     this.form = form;
     this.saveState = saveState;
+    this.autostart = autostart;
   }
 
   async load(): Promise<void> {
     const settings = await SettingsManager.getSettings();
+    const autostartEnabled = await this.autostart.isEnabled().catch(() => settings.startWithWindows);
     for (const name of FIELD_NAMES) {
       const element = this.form.elements.namedItem(name);
       if (!element) continue;
       if (element instanceof HTMLInputElement && element.type === 'checkbox') {
-        element.checked = Boolean(settings[name]);
+        element.checked = name === 'startWithWindows' ? autostartEnabled : Boolean(settings[name]);
       } else if (element instanceof HTMLInputElement || element instanceof HTMLSelectElement) {
         element.value = String(settings[name]);
       }
@@ -76,7 +91,8 @@ export class SettingsPanelController {
       }
     }
 
-    await SettingsManager.updateSettings(partial);
+    const updated = await SettingsManager.updateSettings(partial);
+    await this.autostart.setEnabled(Boolean(updated.startWithWindows));
     if (this.saveState) {
       this.saveState.textContent = 'Saved';
     }

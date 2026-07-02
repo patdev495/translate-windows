@@ -2,6 +2,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { SettingsPanelController } from '../src/settings-panel';
 import { SettingsManager } from '../src/services/settings';
+import type { AutostartService } from '../src/settings-panel';
 
 function makeForm(): HTMLFormElement {
   document.body.innerHTML = `
@@ -19,6 +20,7 @@ function makeForm(): HTMLFormElement {
       <select name="tooltipFontSize"><option value="16">16</option><option value="24">24</option></select>
       <input type="checkbox" name="ocrPinImage" />
       <input type="checkbox" name="ocrCopyToClipboard" />
+      <input type="checkbox" name="startWithWindows" />
       <p id="save-state"></p>
     </form>
   `;
@@ -26,9 +28,15 @@ function makeForm(): HTMLFormElement {
 }
 
 describe('SettingsPanelController', () => {
+  let autostart: AutostartService;
+
   beforeEach(() => {
     localStorage.clear();
     vi.restoreAllMocks();
+    autostart = {
+      isEnabled: vi.fn().mockResolvedValue(false),
+      setEnabled: vi.fn().mockResolvedValue(undefined),
+    };
   });
 
   test('loads saved settings into the control panel', async () => {
@@ -41,10 +49,11 @@ describe('SettingsPanelController', () => {
       ttsEnabled: false,
       ocrPinImage: true,
       ocrCopyToClipboard: false,
+      startWithWindows: true,
     });
 
     const form = makeForm();
-    await new SettingsPanelController(form).load();
+    await new SettingsPanelController(form, document.getElementById('save-state'), autostart).load();
 
     expect((form.elements.namedItem('primaryTargetLang') as HTMLSelectElement).value).toBe('en');
     expect((form.elements.namedItem('autoTranslate') as HTMLInputElement).checked).toBe(false);
@@ -54,17 +63,20 @@ describe('SettingsPanelController', () => {
     expect((form.elements.namedItem('ttsEnabled') as HTMLInputElement).checked).toBe(false);
     expect((form.elements.namedItem('ocrPinImage') as HTMLInputElement).checked).toBe(true);
     expect((form.elements.namedItem('ocrCopyToClipboard') as HTMLInputElement).checked).toBe(false);
+    expect((form.elements.namedItem('startWithWindows') as HTMLInputElement).checked).toBe(false);
+    expect(autostart.isEnabled).toHaveBeenCalledTimes(1);
     expect(document.getElementById('deepl-key-container')?.hidden).toBe(false);
   });
 
   test('saves changed settings for subsequent captures', async () => {
     const form = makeForm();
-    const controller = new SettingsPanelController(form);
+    const controller = new SettingsPanelController(form, document.getElementById('save-state'), autostart);
     await controller.load();
 
     (form.elements.namedItem('tooltipFontSize') as HTMLSelectElement).value = '24';
     (form.elements.namedItem('autoTranslate') as HTMLInputElement).checked = false;
     (form.elements.namedItem('ocrPinImage') as HTMLInputElement).checked = true;
+    (form.elements.namedItem('startWithWindows') as HTMLInputElement).checked = true;
     form.dispatchEvent(new Event('submit'));
     await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -72,12 +84,14 @@ describe('SettingsPanelController', () => {
     expect(settings.tooltipFontSize).toBe('24');
     expect(settings.autoTranslate).toBe(false);
     expect(settings.ocrPinImage).toBe(true);
+    expect(settings.startWithWindows).toBe(true);
+    expect(autostart.setEnabled).toHaveBeenCalledWith(true);
     expect(document.getElementById('save-state')?.textContent).toBe('Saved');
   });
 
   test('auto-saves provider, DeepL key, and TTS changes', async () => {
     const form = makeForm();
-    const controller = new SettingsPanelController(form);
+    const controller = new SettingsPanelController(form, document.getElementById('save-state'), autostart);
     await controller.load();
 
     (form.elements.namedItem('provider') as HTMLSelectElement).value = 'deepl';

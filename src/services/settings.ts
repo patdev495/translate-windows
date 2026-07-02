@@ -14,6 +14,7 @@ export interface Settings {
   tooltipFontSize: '12' | '14' | '16' | '18' | '20' | '24' | '28' | '32' | '36' | '40';
   ocrPinImage: boolean;
   ocrCopyToClipboard: boolean;
+  startWithWindows: boolean;
 }
 
 export class SettingsManager {
@@ -31,6 +32,7 @@ export class SettingsManager {
     tooltipFontSize: '16',
     ocrPinImage: false,
     ocrCopyToClipboard: true,
+    startWithWindows: false,
   };
 
   static async getSettings(): Promise<Settings> {

@@ -33,6 +33,7 @@ describe('SettingsManager', () => {
       tooltipFontSize: '16',
       ocrPinImage: false,
       ocrCopyToClipboard: true,
+      startWithWindows: false,
     });
   });
 
@@ -41,6 +42,7 @@ describe('SettingsManager', () => {
       primaryTargetLang: 'en',
       autoTranslate: false,
       ocrShortcut: 'alt-o',
+      startWithWindows: true,
     });
     expect(updated.primaryTargetLang).toBe('en');
     expect(updated.autoTranslate).toBe(false);
@@ -52,6 +54,7 @@ describe('SettingsManager', () => {
     expect(retrieved.reverseTargetLang).toBe('en');
     expect(retrieved.autoTranslate).toBe(false);
     expect(retrieved.ocrShortcut).toBe('alt-o');
+    expect(retrieved.startWithWindows).toBe(true);
     expect(retrieved.provider).toBe('google');
     expect(retrieved.deeplApiKey).toBe('');
   });

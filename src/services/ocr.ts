@@ -7,6 +7,18 @@ export interface OcrProgress {
   message: string;
 }
 
+export interface OcrTextBlock {
+  text: string;
+  bbox: { x: number; y: number; width: number; height: number };
+}
+
+export interface ScreenRegion {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 type ProgressHandler = (progress: OcrProgress) => void;
 
 type ModelUrls = {
@@ -25,6 +37,16 @@ const DB_VERSION = 1;
 const STORE_NAME = 'model-files';
 
 const services = new Map<string, Promise<InstanceType<PaddleOcrServiceCtor>>>();
+
+export function getOcrWasmPaths(): { wasm: string } {
+  return {
+    wasm: '/onnxruntime-web/ort-wasm-simd-threaded.jsep.wasm',
+  };
+}
+
+function configureOcrRuntime(): void {
+  ort.env.wasm.wasmPaths = getOcrWasmPaths();
+}
 
 function openModelDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -92,7 +114,7 @@ async function createService(
   language: 'ch' | 'latin' = 'ch',
   onProgress?: ProgressHandler
 ): Promise<InstanceType<PaddleOcrServiceCtor>> {
-  ort.env.wasm.wasmPaths = '/onnxruntime-web/';
+  configureOcrRuntime();
 
   const ocrModule = await import('ppu-paddle-ocr/web');
   const PaddleOcrService = ocrModule.PaddleOcrService as PaddleOcrServiceCtor;
@@ -165,4 +187,74 @@ export async function recognizeImageRegion(
   onProgress?.({ stage: 'recognizing', message: 'Reading text from image...' });
   const result = await service.recognize(canvas, { flatten: false, strategy: 'per-line' });
   return result.text.trim();
+}
+
+/**
+ * Recognizes text in a canvas image and returns both the full combined text
+ * string and individual text blocks with bounding box coordinates.
+ *
+ * Bounding box coordinates are in canvas-space pixels relative to the
+ * top-left of the cropped canvas.
+ */
+export async function recognizeWithBlocks(
+  canvas: HTMLCanvasElement,
+  tier: 'tiny' | 'small' | 'medium' = 'small',
+  language: 'ch' | 'latin' = 'ch',
+  onProgress?: ProgressHandler
+): Promise<{ fullText: string; blocks: OcrTextBlock[] }> {
+  const service = await getService(tier, language, onProgress);
+  onProgress?.({ stage: 'recognizing', message: 'Reading text from image...' });
+
+  // ppu-paddle-ocr may return a `regions` or `boxes` array alongside `text`.
+  // We accept whatever the library provides and normalize it into OcrTextBlock[].
+  const result = await service.recognize(canvas, { flatten: false, strategy: 'per-line' }) as any;
+
+  const fullText = (result.text ?? '').trim();
+
+  // Normalize bounding box data from the paddle OCR result.
+  // Paddle returns regions as arrays of [x, y, w, h] or objects with box coords.
+  const rawRegions: unknown[] = result.regions ?? result.blocks ?? result.boxes ?? [];
+  const blocks: OcrTextBlock[] = rawRegions.map((r: any) => {
+    const text: string = typeof r.text === 'string' ? r.text.trim() : '';
+    // Paddle box format: [[x1,y1],[x2,y1],[x2,y2],[x1,y2]] (4-corner polygon)
+    // or simple {x, y, width, height}
+    let x = 0, y = 0, width = 0, height = 0;
+    if (Array.isArray(r.box) && r.box.length === 4) {
+      const xs = r.box.map((pt: number[]) => pt[0]);
+      const ys = r.box.map((pt: number[]) => pt[1]);
+      x = Math.min(...xs);
+      y = Math.min(...ys);
+      width = Math.max(...xs) - x;
+      height = Math.max(...ys) - y;
+    } else if (r.bbox && typeof r.bbox.x === 'number') {
+      x = r.bbox.x; y = r.bbox.y; width = r.bbox.width; height = r.bbox.height;
+    } else if (typeof r.x === 'number') {
+      x = r.x; y = r.y; width = r.width; height = r.height;
+    }
+    return { text, bbox: { x, y, width, height } };
+  }).filter(b => b.text.length > 0);
+
+  return { fullText, blocks };
+}
+
+export async function recognizeScreenRegion(
+  canvas: HTMLCanvasElement,
+  region: ScreenRegion,
+  tier: 'tiny' | 'small' | 'medium' = 'small',
+  language: 'ch' | 'latin' = 'ch',
+  onProgress?: ProgressHandler
+): Promise<{ fullText: string; blocks: OcrTextBlock[] }> {
+  const result = await recognizeWithBlocks(canvas, tier, language, onProgress);
+  return {
+    fullText: result.fullText,
+    blocks: result.blocks.map((block) => ({
+      text: block.text,
+      bbox: {
+        x: block.bbox.x + region.x,
+        y: block.bbox.y + region.y,
+        width: block.bbox.width,
+        height: block.bbox.height,
+      },
+    })),
+  };
 }

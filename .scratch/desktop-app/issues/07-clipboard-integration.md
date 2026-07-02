@@ -1,6 +1,6 @@
 ---
 title: Clipboard Integration
-status: ready-for-agent
+status: done
 author: Antigravity
 created: 2026-07-02
 ---
@@ -20,3 +20,7 @@ If the `ocrCopyToClipboard` setting is enabled, upon crop selection completion, 
 ## Blocked by
 
 - [Issue 03: Crop Box Selection and Image Extraction](file:///d:/Workspace/translation-desktop/.scratch/desktop-app/issues/03-crop-box-selection.md)
+
+## Comments
+
+- 2026-07-02: Implemented `ocrCopyToClipboard`-gated native clipboard writing from crop completion. The frontend calls `copy_image_to_clipboard`, and Rust decodes the PNG data URL and writes image data through the native clipboard API. Coverage in `tests/crop-completion.test.ts`. Verified with `npm test`, `npm run build`, and `cargo check`.

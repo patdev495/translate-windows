@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PolyTranslate Tooltip</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/tooltip.css" />
+    <script type="module" src="/src/tooltip.ts" defer></script>
+  </head>
+  <body>
+    <div id="tooltip-card" class="tooltip-card">
+      <section class="tooltip-section source-section">
+        <div class="tooltip-row">
+          <div id="source-text" class="source-text"></div>
+          <div class="tooltip-actions">
+            <button id="copy-source-btn" class="icon-btn" title="Copy text" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 8.75A2.75 2.75 0 0 1 10.75 6h6.5A2.75 2.75 0 0 1 20 8.75v8.5A2.75 2.75 0 0 1 17.25 20h-6.5A2.75 2.75 0 0 1 8 17.25v-8.5Z"/>
+                <path d="M5 15.25h-.25A2.75 2.75 0 0 1 2 12.5V5.75A2.75 2.75 0 0 1 4.75 3h7.5A2.75 2.75 0 0 1 15 5.75V6"/>
+              </svg>
+            </button>
+            <button id="tts-btn" class="icon-btn" title="Listen" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 9.25v5.5h3.25L12 19.5v-15L7.25 9.25H4Z"/>
+                <path d="M16 8.25a5.25 5.25 0 0 1 0 7.5"/>
+                <path d="M18.75 5.5a9 9 0 0 1 0 13"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="phonetic" class="phonetic"></div>
+      </section>
+
+      <div class="divider"></div>
+
+      <section class="tooltip-section translation-section">
+        <div id="translation" class="translation-list"></div>
+      </section>
+    </div>
+  </body>
+</html>

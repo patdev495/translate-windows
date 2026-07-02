@@ -1,6 +1,6 @@
 ---
 title: Draggable Pinned Snippet Sub-windows
-status: ready-for-agent
+status: done
 author: Antigravity
 created: 2026-07-02
 ---
@@ -26,3 +26,7 @@ This window must:
 ## Blocked by
 
 - [Issue 03: Crop Box Selection and Image Extraction](file:///d:/Workspace/translation-desktop/.scratch/desktop-app/issues/03-crop-box-selection.md)
+
+## Comments
+
+- 2026-07-02: Implemented pinned snippet windows with unique labels, cropped image loading, close handling, native drag region, always-on-top Tauri windows, and `ocrPinImage`-gated opening from crop completion. Coverage in `tests/snippet-controller.test.ts` and `tests/crop-completion.test.ts`. Verified with `npm test`, `npm run build`, and `cargo check`.

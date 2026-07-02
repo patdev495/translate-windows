@@ -1,6 +1,6 @@
 ---
 title: Offline WASM OCR Execution
-status: ready-for-agent
+status: done
 author: Antigravity
 created: 2026-07-02
 ---
@@ -22,3 +22,7 @@ Perform offline text detection (DBNet) and text recognition (CRNN) to extract re
 ## Blocked by
 
 - [Issue 03: Crop Box Selection and Image Extraction](file:///d:/Workspace/translation-desktop/.scratch/desktop-app/issues/03-crop-box-selection.md)
+
+## Comments
+
+- 2026-07-02: Implemented WASM OCR service integration and screen-coordinate OCR block mapping via `recognizeWithBlocks` and `recognizeScreenRegion`; coverage in `tests/ocr-blocks.test.ts` and `tests/ocr-screen-region.test.ts`. Verified with `npm test`, `npm run build`, and `cargo check`.

@@ -23,3 +23,7 @@ Pressing the `Escape` key inside this window must close/destroy the overlay wind
 ## Blocked by
 
 - None - can start immediately
+
+## Comments
+
+- 2026-07-02: Verified and tightened active-monitor capture by selecting `Screen::from_point` from the current cursor position before opening the overlay. Verified with `cargo check`, `npm test`, and `npm run build`.

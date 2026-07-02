@@ -6,7 +6,7 @@ const baseSettings: Settings = {
   primaryTargetLang: 'vi',
   secondaryTargetLang: 'zh',
   reverseTargetLang: 'en',
-  hotkey: 'none',
+  autoTranslate: true,
   ocrShortcut: 'ctrl-space',
   ocrModelTier: 'medium',
   ocrLanguage: 'ch',

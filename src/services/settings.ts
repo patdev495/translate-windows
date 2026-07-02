@@ -4,7 +4,7 @@ export interface Settings {
   primaryTargetLang: TargetLanguage;
   secondaryTargetLang: TargetLanguage;
   reverseTargetLang: TargetLanguage;
-  hotkey: 'none' | 'ctrl' | 'alt' | 'shift';
+  autoTranslate: boolean;
   ocrShortcut: 'disabled' | 'ctrl-space' | 'alt-o' | 'ctrl-shift-o';
   ocrModelTier: 'tiny' | 'small' | 'medium';
   ocrLanguage: 'ch' | 'latin';
@@ -21,7 +21,7 @@ export class SettingsManager {
     primaryTargetLang: 'vi',
     secondaryTargetLang: 'zh',
     reverseTargetLang: 'en',
-    hotkey: 'none',
+    autoTranslate: true,
     ocrShortcut: 'ctrl-space',
     ocrModelTier: 'medium',
     ocrLanguage: 'ch',

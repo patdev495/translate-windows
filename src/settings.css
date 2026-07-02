@@ -1,0 +1,259 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Outfit, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0f172a;
+  color: #f8fafc;
+  user-select: none;
+}
+
+.settings-shell {
+  width: min(820px, 100%);
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.settings-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.76);
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.16);
+  color: #60a5fa;
+}
+
+.brand-mark svg,
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-copy h1 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #93c5fd;
+}
+
+.brand-copy p {
+  margin: 3px 0 0;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.save-state {
+  min-width: 76px;
+  margin: 0;
+  color: #34d399;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.settings-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+  padding-top: 16px;
+}
+
+.settings-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(51, 65, 85, 0.72);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.72);
+}
+
+.settings-card h2 {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 34px;
+  color: #f8fafc;
+}
+
+.setting-row + .setting-row,
+.deepl-key {
+  padding-top: 10px;
+  border-top: 1px solid rgba(51, 65, 85, 0.46);
+}
+
+.setting-row span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.setting-row strong,
+.deepl-key label {
+  font-size: 13px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.setting-row small {
+  color: #94a3b8;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+select,
+input[type="password"],
+input[type="text"] {
+  width: 132px;
+  min-width: 132px;
+  height: 30px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #1e293b;
+  color: #f8fafc;
+  padding: 0 9px;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+}
+
+select:focus,
+input[type="password"]:focus,
+input[type="text"]:focus {
+  border-color: #3b82f6;
+}
+
+.toggle-row input[type="checkbox"] {
+  appearance: none;
+  position: relative;
+  width: 34px;
+  min-width: 34px;
+  height: 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #334155;
+  cursor: pointer;
+}
+
+.toggle-row input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  transition: transform 0.16s ease;
+}
+
+.toggle-row input[type="checkbox"]:checked {
+  background: #3b82f6;
+}
+
+.toggle-row input[type="checkbox"]:checked::after {
+  transform: translateX(16px);
+}
+
+.deepl-key {
+  display: grid;
+  gap: 7px;
+}
+
+.deepl-key[hidden] {
+  display: none;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 34px;
+}
+
+.icon-btn {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.icon-btn:hover {
+  color: #e2e8f0;
+}
+
+.icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.save-button {
+  grid-column: 1 / -1;
+  justify-self: end;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 18px;
+  background: #2563eb;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 680px) {
+  .settings-form {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-shell {
+    padding: 14px;
+  }
+}

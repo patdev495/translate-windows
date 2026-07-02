@@ -1,6 +1,6 @@
 ---
 title: System Tray and Settings UI
-status: ready-for-agent
+status: done
 author: Antigravity
 created: 2026-07-02
 ---
@@ -29,3 +29,7 @@ Settings must load and save natively via `localStorage` (which we integrated in 
 ## Blocked by
 
 - None - can start immediately
+
+## Comments
+
+- 2026-07-02: Implemented Tauri system tray with Settings/Exit menu, double-click settings opening, native settings window, and localStorage-backed controls for target languages, OCR trigger/model/language, tooltip font size, pin image, and copy-to-clipboard. Coverage in `tests/settings-panel.test.ts`. Verified with `npm test`, `npm run build`, and `cargo check`.

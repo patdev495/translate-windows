@@ -1,6 +1,6 @@
 ---
 title: Crop Box Selection and Image Extraction
-status: ready-for-agent
+status: done
 author: Antigravity
 created: 2026-07-02
 ---
@@ -23,3 +23,7 @@ Upon releasing the mouse click (`mouseup`), extract the selected region pixels i
 ## Blocked by
 
 - [Issue 02: Global Hotkey and Transparent Screen Freeze Overlay](file:///d:/Workspace/translation-desktop/.scratch/desktop-app/issues/02-global-hotkey-overlay.md)
+
+## Comments
+
+- 2026-07-02: Implemented and verified crop selection via `CropSelector` plus `handleCompletedCrop`; coverage in `tests/crop-selector.test.ts` and `tests/crop-completion.test.ts`. Verified with `npm test`, `npm run build`, and `cargo check`.

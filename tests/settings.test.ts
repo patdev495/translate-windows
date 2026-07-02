@@ -23,7 +23,7 @@ describe('SettingsManager', () => {
       primaryTargetLang: 'vi',
       secondaryTargetLang: 'zh',
       reverseTargetLang: 'en',
-      hotkey: 'none',
+      autoTranslate: true,
       ocrShortcut: 'ctrl-space',
       ocrModelTier: 'medium',
       ocrLanguage: 'ch',
@@ -39,18 +39,18 @@ describe('SettingsManager', () => {
   test('should update settings and retrieve updated values', async () => {
     const updated = await SettingsManager.updateSettings({
       primaryTargetLang: 'en',
-      hotkey: 'ctrl',
+      autoTranslate: false,
       ocrShortcut: 'alt-o',
     });
     expect(updated.primaryTargetLang).toBe('en');
-    expect(updated.hotkey).toBe('ctrl');
+    expect(updated.autoTranslate).toBe(false);
     expect(updated.ocrShortcut).toBe('alt-o');
 
     const retrieved = await SettingsManager.getSettings();
     expect(retrieved.primaryTargetLang).toBe('en');
     expect(retrieved.secondaryTargetLang).toBe('zh');
     expect(retrieved.reverseTargetLang).toBe('en');
-    expect(retrieved.hotkey).toBe('ctrl');
+    expect(retrieved.autoTranslate).toBe(false);
     expect(retrieved.ocrShortcut).toBe('alt-o');
     expect(retrieved.provider).toBe('google');
     expect(retrieved.deeplApiKey).toBe('');

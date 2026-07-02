@@ -12,6 +12,31 @@ dist
 dist-ssr
 *.local
 
+# Rust / Tauri
+target/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/Cargo.lock.bak
+*.pdb
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Test and coverage output
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Cache and temporary files
+.cache/
+.vite/
+.scratch/tmp/
+*.tmp
+*.temp
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

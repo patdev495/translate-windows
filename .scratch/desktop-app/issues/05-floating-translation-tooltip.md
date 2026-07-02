@@ -1,6 +1,6 @@
 ---
 title: Floating Translation Tooltip Sub-window
-status: ready-for-agent
+status: done
 author: Antigravity
 created: 2026-07-02
 ---
@@ -28,3 +28,7 @@ Clicking outside the tooltip window (focus loss) must automatically close and de
 ## Blocked by
 
 - [Issue 04: Offline WASM OCR Execution](file:///d:/Workspace/translation-desktop/.scratch/desktop-app/issues/04-offline-wasm-ocr.md)
+
+## Comments
+
+- 2026-07-02: Implemented tooltip sub-window lifecycle and UI controller with source text, phonetics, translation, TTS, focus-loss close, and preserved crop width/height in Rust tooltip state. Coverage in `tests/tooltip-controller.test.ts`. Verified with `npm test`, `npm run build`, and `cargo check`.

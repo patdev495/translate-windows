@@ -133,3 +133,22 @@ body.overlay-mode {
   overflow: hidden;
   background: transparent;
 }
+
+html.overlay-mode {
+  background: transparent !important;
+}
+
+html.overlay-mode body {
+  background: transparent !important;
+}
+
+/* Crop selection canvas — sits above the background screenshot */
+.crop-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  cursor: crosshair;
+  z-index: 10;
+}

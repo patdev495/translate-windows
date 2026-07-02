@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PolyTranslate Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script type="module" src="/src/settings-window.ts" defer></script>
+  </head>
+  <body>
+    <main class="settings-shell">
+      <header class="settings-header">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M10.5 21 15.75 9.75 21 21m-9-3h7.5M3 5.62c1.96-.25 3.96-.37 6-.37m0 0c1.12 0 2.23.04 3.33.11M9 5.25V3m3.33 2.36C11.18 10.66 7.69 15.08 3 17.5m9.33-12.14c.9.06 1.79.15 2.67.26" />
+          </svg>
+        </div>
+        <div class="brand-copy">
+          <h1>PolyTranslate</h1>
+          <p>Multi-language Learning Tool</p>
+        </div>
+        <p id="save-state" class="save-state" aria-live="polite"></p>
+      </header>
+
+      <form id="settings-form" class="settings-form">
+        <section class="settings-card">
+          <h2>Languages</h2>
+
+          <label class="setting-row" for="primaryTargetLang">
+            <span>
+              <strong>Primary Target</strong>
+              <small>Main translation language</small>
+            </span>
+            <select id="primaryTargetLang" name="primaryTargetLang">
+              <option value="vi">Vietnamese</option>
+              <option value="none">Disabled</option>
+              <option value="en">English</option>
+              <option value="zh">Chinese</option>
+            </select>
+          </label>
+
+          <label class="setting-row" for="secondaryTargetLang">
+            <span>
+              <strong>Secondary Target</strong>
+              <small>Optional second translation</small>
+            </span>
+            <select id="secondaryTargetLang" name="secondaryTargetLang">
+              <option value="zh">Chinese</option>
+              <option value="none">Disabled</option>
+              <option value="vi">Vietnamese</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+
+          <label class="setting-row" for="reverseTargetLang">
+            <span>
+              <strong>Reverse Target</strong>
+              <small>Used when source matches a target</small>
+            </span>
+            <select id="reverseTargetLang" name="reverseTargetLang">
+              <option value="en">English</option>
+              <option value="none">Disabled</option>
+              <option value="vi">Vietnamese</option>
+              <option value="zh">Chinese</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="settings-card">
+          <h2>Translation Provider</h2>
+
+          <label class="setting-row" for="provider">
+            <span>
+              <strong>Engine</strong>
+              <small>Select translation engine</small>
+            </span>
+            <select id="provider" name="provider">
+              <option value="google">Google</option>
+              <option value="deepl">DeepL API</option>
+            </select>
+          </label>
+
+          <div id="deepl-key-container" class="deepl-key" hidden>
+            <label for="deeplApiKey">DeepL API Key</label>
+            <div class="password-field">
+              <input id="deeplApiKey" name="deeplApiKey" type="password" placeholder="Enter API key" />
+              <button id="toggle-deepl-key" class="icon-btn" type="button" title="Toggle key visibility" aria-label="Toggle key visibility">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2.04 12.32a1 1 0 0 1 0-.64C3.42 7.51 7.36 4.5 12 4.5s8.57 3.01 9.96 7.18c.07.21.07.43 0 .64C20.58 16.49 16.64 19.5 12 19.5s-8.58-3.01-9.96-7.18Z" />
+                  <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-card">
+          <h2>Behavior & Triggers</h2>
+
+          <label class="setting-row toggle-row" for="autoTranslate">
+            <span>
+              <strong>Auto Translate</strong>
+              <small>Show translation tooltip after crop</small>
+            </span>
+            <input id="autoTranslate" name="autoTranslate" type="checkbox" />
+          </label>
+
+          <label class="setting-row" for="ocrShortcut">
+            <span>
+              <strong>OCR Shortcut</strong>
+              <small>Start screen crop mode</small>
+            </span>
+            <select id="ocrShortcut" name="ocrShortcut">
+              <option value="ctrl-space">Ctrl+Space</option>
+              <option value="alt-o">Alt+O</option>
+              <option value="ctrl-shift-o">Ctrl+Shift+O</option>
+              <option value="disabled">Disabled</option>
+            </select>
+          </label>
+
+          <label class="setting-row" for="ocrModelTier">
+            <span>
+              <strong>OCR Model Size</strong>
+              <small>PP-OCRv6 model size</small>
+            </span>
+            <select id="ocrModelTier" name="ocrModelTier">
+              <option value="tiny">Tiny</option>
+              <option value="small">Small</option>
+              <option value="medium">Medium</option>
+            </select>
+          </label>
+
+          <label class="setting-row" for="ocrLanguage">
+            <span>
+              <strong>OCR Language</strong>
+              <small>Language engine mode</small>
+            </span>
+            <select id="ocrLanguage" name="ocrLanguage">
+              <option value="ch">Chinese / English</option>
+              <option value="latin">Latin / Multilingual</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="settings-card">
+          <h2>Tooltip Settings</h2>
+
+          <label class="setting-row" for="tooltipFontSize">
+            <span>
+              <strong>Font Size</strong>
+              <small>Set tooltip text size</small>
+            </span>
+            <select id="tooltipFontSize" name="tooltipFontSize">
+              <option value="12">Small (12px)</option>
+              <option value="14">Normal (14px)</option>
+              <option value="16">Large (16px)</option>
+              <option value="18">Extra Large (18px)</option>
+              <option value="20">Huge (20px)</option>
+              <option value="24">2XL (24px)</option>
+              <option value="28">3XL (28px)</option>
+              <option value="32">4XL (32px)</option>
+              <option value="36">5XL (36px)</option>
+              <option value="40">6XL (40px)</option>
+            </select>
+          </label>
+
+          <label class="setting-row toggle-row">
+            <span>
+              <strong>TTS Pronounce</strong>
+              <small>Show speaker button</small>
+            </span>
+            <input id="ttsEnabled" name="ttsEnabled" type="checkbox" />
+          </label>
+
+          <label class="setting-row toggle-row">
+            <span>
+              <strong>Pin OCR Image</strong>
+              <small>Keep crop preview on screen</small>
+            </span>
+            <input id="ocrPinImage" name="ocrPinImage" type="checkbox" />
+          </label>
+
+          <label class="setting-row toggle-row">
+            <span>
+              <strong>Copy OCR to Clipboard</strong>
+              <small>Copy crop image automatically</small>
+            </span>
+            <input id="ocrCopyToClipboard" name="ocrCopyToClipboard" type="checkbox" />
+          </label>
+        </section>
+
+        <button class="save-button" type="submit">Save</button>
+      </form>
+    </main>
+  </body>
+</html>

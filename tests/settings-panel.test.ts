@@ -11,7 +11,7 @@ function makeForm(): HTMLFormElement {
       <select name="secondaryTargetLang"><option value="zh">Chinese</option><option value="none">None</option></select>
       <select name="reverseTargetLang"><option value="en">English</option><option value="none">None</option></select>
       <input type="checkbox" name="autoTranslate" />
-      <select name="ocrShortcut"><option value="alt-space">Alt Space</option><option value="ctrl-space">Ctrl Space</option><option value="alt-o">Alt O</option></select>
+      <select name="ocrShortcut"><option value="ctrl-3">Ctrl 3</option><option value="alt-space">Alt Space</option><option value="ctrl-space">Ctrl Space</option><option value="alt-o">Alt O</option></select>
       <select name="ocrModelTier"><option value="tiny">Tiny</option><option value="medium">Medium</option></select>
       <select name="ocrLanguage"><option value="ch">Chinese</option><option value="latin">Latin</option></select>
       <select name="provider"><option value="google">Google</option><option value="deepl">DeepL</option></select>

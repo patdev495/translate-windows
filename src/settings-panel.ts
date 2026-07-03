@@ -68,6 +68,10 @@ export class SettingsPanelController {
     this.bindAutosave();
     this.bindSettingsSync();
 
+    if (settings.provider === 'deepl' && settings.deeplApiKey) {
+      void this.verifyDeepLKey();
+    }
+
     this.form.addEventListener('submit', (event) => {
       event.preventDefault();
       void this.save();
@@ -117,6 +121,10 @@ export class SettingsPanelController {
       field.addEventListener(eventName, () => {
         if (field.name === 'provider') {
           this.updateProviderVisibility();
+          const provider = field as HTMLSelectElement;
+          if (provider.value === 'deepl') {
+            void this.verifyDeepLKey();
+          }
         }
         this.scheduleSave();
       });
@@ -127,6 +135,19 @@ export class SettingsPanelController {
     toggleDeepL?.addEventListener('click', () => {
       if (!deeplKey) return;
       deeplKey.type = deeplKey.type === 'password' ? 'text' : 'password';
+    });
+
+    const verifyBtn = document.getElementById('verify-deepl-key') as HTMLButtonElement | null;
+    verifyBtn?.addEventListener('click', () => {
+      void this.verifyDeepLKey();
+    });
+
+    let verifyDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+    deeplKey?.addEventListener('input', () => {
+      if (verifyDebounceTimer) clearTimeout(verifyDebounceTimer);
+      verifyDebounceTimer = setTimeout(() => {
+        void this.verifyDeepLKey();
+      }, 500);
     });
   }
 
@@ -156,7 +177,62 @@ export class SettingsPanelController {
       const autostartEnabled = await this.autostart.isEnabled().catch(() => event.payload.startWithWindows);
       this.applySettings(event.payload, autostartEnabled);
       this.updateProviderVisibility();
+
+      if (event.payload.provider === 'deepl' && event.payload.deeplApiKey) {
+        void this.verifyDeepLKey();
+      }
     });
+  }
+
+  async verifyDeepLKey(): Promise<void> {
+    const deeplKeyInput = this.form.elements.namedItem('deeplApiKey') as HTMLInputElement | null;
+    const statusText = document.getElementById('deepl-key-status');
+    const verifyBtn = document.getElementById('verify-deepl-key') as HTMLButtonElement | null;
+    if (!deeplKeyInput || !statusText) return;
+
+    const apiKey = deeplKeyInput.value.trim();
+    if (!apiKey) {
+      statusText.textContent = '';
+      statusText.className = 'key-status-text';
+      return;
+    }
+
+    if (verifyBtn) verifyBtn.disabled = true;
+    statusText.textContent = 'Verifying...';
+    statusText.className = 'key-status-text checking';
+
+    try {
+      const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+      let isValid = false;
+      if (isTauri) {
+        const { invoke } = await import('@tauri-apps/api/core');
+        isValid = await invoke<boolean>('verify_deepl_api_key', { apiKey });
+      } else {
+        const isFreeKey = apiKey.endsWith(':fx');
+        const url = isFreeKey
+          ? 'https://api-free.deepl.com/v2/usage'
+          : 'https://api.deepl.com/v2/usage';
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': `DeepL-Auth-Key ${apiKey}`,
+          }
+        });
+        isValid = res.status === 200;
+      }
+
+      if (isValid) {
+        statusText.textContent = '✓ Key is valid';
+        statusText.className = 'key-status-text valid';
+      } else {
+        statusText.textContent = '✗ Invalid or expired key';
+        statusText.className = 'key-status-text invalid';
+      }
+    } catch (err) {
+      statusText.textContent = '✗ Verification failed (Network error)';
+      statusText.className = 'key-status-text invalid';
+    } finally {
+      if (verifyBtn) verifyBtn.disabled = false;
+    }
   }
 
   private isTauriRuntime(): boolean {

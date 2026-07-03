@@ -95,7 +95,7 @@ impl Default for AppSettings {
             secondary_target_lang: "zh".to_string(),
             reverse_target_lang: "en".to_string(),
             auto_translate: true,
-            ocr_shortcut: "alt-space".to_string(),
+            ocr_shortcut: "ctrl-3".to_string(),
             ocr_model_tier: "medium".to_string(),
             ocr_language: "ch".to_string(),
             tts_enabled: true,
@@ -130,9 +130,10 @@ struct GlobalShortcutSpec {
     code: Code,
 }
 
-fn tray_menu_specs() -> [TrayMenuSpec; 6] {
+fn tray_menu_specs() -> [TrayMenuSpec; 7] {
     [
-        TrayMenuSpec { id: "capture_ocr", label: "Capture OCR" },
+        TrayMenuSpec { id: "capture_ocr", label: "Capture OCR (Ctrl+3)" },
+        TrayMenuSpec { id: "copy_full_screen", label: "Capture Full Screen (Alt+B)" },
         TrayMenuSpec { id: "auto_translate", label: "Auto Translate" },
         TrayMenuSpec { id: "ocr_pin_image", label: "Pin OCR Image" },
         TrayMenuSpec { id: "settings", label: "Settings" },
@@ -143,7 +144,7 @@ fn tray_menu_specs() -> [TrayMenuSpec; 6] {
 
 fn global_shortcut_specs() -> [GlobalShortcutSpec; 2] {
     [
-        GlobalShortcutSpec { id: "capture_ocr", code: Code::Space },
+        GlobalShortcutSpec { id: "capture_ocr", code: Code::Digit3 },
         GlobalShortcutSpec { id: "copy_full_screen", code: Code::KeyB },
     ]
 }
@@ -272,10 +273,17 @@ fn show_capture_toast(app_handle: &tauri::AppHandle) -> Result<(), Box<dyn std::
 
     let screen = current_screen()?;
     let info = screen.display_info;
+    let scale_factor = info.scale_factor as f64;
     let toast_width = 230.0;
     let toast_height = 54.0;
-    let toast_x = info.x as f64 + info.width as f64 - toast_width - 24.0;
-    let toast_y = info.y as f64 + info.height as f64 - toast_height - 44.0;
+
+    let logical_x = info.x as f64 / scale_factor;
+    let logical_y = info.y as f64 / scale_factor;
+    let logical_width = info.width as f64 / scale_factor;
+    let logical_height = info.height as f64 / scale_factor;
+
+    let toast_x = logical_x + logical_width - toast_width - 24.0;
+    let toast_y = logical_y + logical_height - toast_height - 44.0;
 
     WebviewWindowBuilder::new(
         app_handle,
@@ -340,6 +348,7 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
 
     let screen = current_screen()?;
     let info = screen.display_info;
+    let scale_factor = info.scale_factor as f64;
     let overlay_url = format!(
         "index.html?overlay=1&screenX={}&screenY={}&screenWidth={}&screenHeight={}",
         info.x,
@@ -348,6 +357,9 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
         info.height
     );
 
+    let logical_x = info.x as f64 / scale_factor;
+    let logical_y = info.y as f64 / scale_factor;
+
     WebviewWindowBuilder::new(
         app_handle,
         "overlay",
@@ -355,7 +367,7 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
     )
     .title("Selection Overlay")
     .fullscreen(true)
-    .position(info.x as f64, info.y as f64)
+    .position(logical_x, logical_y)
     .resizable(false)
     .decorations(false)
     .transparent(true)
@@ -626,23 +638,48 @@ fn open_tooltip_window_inner(
         let _ = existing.destroy();
     }
 
-    // Position tooltip near the crop region (offset slightly below)
-    let tooltip_x = x;
-    let tooltip_y = y + height as i32 + 8;
+    // Default coordinates in case screen detection fails
+    let mut tooltip_x = x as f64;
+    let mut tooltip_y = (y + height as i32 + 8) as f64;
+    let mut use_tauri_center = false;
 
-    let _tooltip_win = WebviewWindowBuilder::new(
+    // Centering tooltip on the screen where crop happened
+    if let Ok(screen) = Screen::from_point(x, y) {
+        let info = screen.display_info;
+        let scale_factor = info.scale_factor as f64;
+        let tooltip_width = 420.0;
+        let tooltip_height = 280.0;
+        
+        let logical_x = info.x as f64 / scale_factor;
+        let logical_y = info.y as f64 / scale_factor;
+        let logical_width = info.width as f64 / scale_factor;
+        let logical_height = info.height as f64 / scale_factor;
+
+        tooltip_x = logical_x + (logical_width - tooltip_width) / 2.0;
+        tooltip_y = logical_y + (logical_height - tooltip_height) / 2.0;
+    } else {
+        use_tauri_center = true;
+    }
+
+    let mut builder = WebviewWindowBuilder::new(
         app_handle,
         "tooltip",
         tauri::WebviewUrl::App("tooltip.html".into()),
     )
     .title("PolyTranslate Tooltip")
     .inner_size(420.0, 280.0)
-    .position(tooltip_x as f64, tooltip_y as f64)
     .decorations(false)
     .transparent(true)
     .always_on_top(true)
-    .resizable(false)
-    .build()?;
+    .resizable(false);
+
+    if use_tauri_center {
+        builder = builder.center();
+    } else {
+        builder = builder.position(tooltip_x, tooltip_y);
+    }
+
+    let _tooltip_win = builder.build()?;
 
     Ok(())
 }
@@ -782,6 +819,111 @@ fn update_app_settings(
 }
 
 #[tauri::command]
+async fn verify_deepl_api_key(api_key: String) -> Result<bool, String> {
+    if api_key.trim().is_empty() {
+        return Ok(false);
+    }
+    let is_free_key = api_key.ends_with(":fx");
+    let url = if is_free_key {
+        "https://api-free.deepl.com/v2/usage"
+    } else {
+        "https://api.deepl.com/v2/usage"
+    };
+
+    let client = reqwest::Client::builder()
+        .user_agent("PolyTranslate-Desktop/1.0")
+        .build()
+        .map_err(|e| format!("Failed to build HTTP client: {e}"))?;
+
+    let res = client
+        .get(url)
+        .header("Authorization", format!("DeepL-Auth-Key {}", api_key))
+        .timeout(Duration::from_secs(5))
+        .send()
+        .await;
+
+    match res {
+        Ok(response) => {
+            Ok(response.status() == 200)
+        }
+        Err(_) => Ok(false),
+    }
+}
+
+#[tauri::command]
+async fn translate_deepl(
+    text: String,
+    target_lang: String,
+    api_key: String,
+) -> Result<serde_json::Value, String> {
+    if api_key.trim().is_empty() {
+        return Err("DeepL API Key is missing. Please configure it in settings.".to_string());
+    }
+
+    let is_free_key = api_key.ends_with(":fx");
+    let url = if is_free_key {
+        "https://api-free.deepl.com/v2/translate"
+    } else {
+        "https://api.deepl.com/v2/translate"
+    };
+
+    let map_lang = |lang: &str| {
+        let l = lang.to_lowercase();
+        let first_part = l.split('-').next().unwrap_or(&l);
+        if first_part == "en" {
+            "EN-US".to_string()
+        } else if first_part == "zh" {
+            "ZH".to_string()
+        } else {
+            first_part.to_uppercase()
+        }
+    };
+
+    let client = reqwest::Client::builder()
+        .user_agent("PolyTranslate-Desktop/1.0")
+        .build()
+        .map_err(|e| format!("Failed to build HTTP client: {e}"))?;
+
+    let body = serde_json::json!({
+        "text": [text],
+        "target_lang": map_lang(&target_lang),
+    });
+
+    let res = client
+        .post(url)
+        .header("Authorization", format!("DeepL-Auth-Key {}", api_key))
+        .header("Content-Type", "application/json")
+        .timeout(Duration::from_secs(8))
+        .json(&body)
+        .send()
+        .await;
+
+    match res {
+        Ok(response) => {
+            if response.status() == 403 {
+                return Err("DeepL API Key is invalid or expired.".to_string());
+            }
+            if !response.status().is_success() {
+                return Err(format!("DeepL translation failed. Status: {}", response.status()));
+            }
+
+            let data: serde_json::Value = response
+                .json()
+                .await
+                .map_err(|e| format!("Failed to parse DeepL response: {e}"))?;
+
+            if let Some(translations) = data.get("translations") {
+                if let Some(first) = translations.get(0) {
+                    return Ok(first.clone());
+                }
+            }
+            Err("DeepL translation returned empty result.".to_string())
+        }
+        Err(err) => Err(format!("DeepL translation request failed: {}", err)),
+    }
+}
+
+#[tauri::command]
 fn open_settings_window(app_handle: tauri::AppHandle) -> Result<(), String> {
     open_settings_window_inner(&app_handle).map_err(|e| e.to_string())
 }
@@ -829,20 +971,21 @@ fn open_settings_window_inner(app_handle: &tauri::AppHandle) -> Result<(), Box<d
 fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let specs = tray_menu_specs();
     let capture_item = MenuItem::with_id(app, specs[0].id, specs[0].label, true, None::<&str>)?;
+    let copy_full_screen_item = MenuItem::with_id(app, specs[1].id, specs[1].label, true, None::<&str>)?;
     let settings_state: tauri::State<AppSettingsState> = app.handle().state();
     let current_settings = settings_state.0.lock().unwrap().clone();
     let auto_translate_item = CheckMenuItem::with_id(
         app,
-        specs[1].id,
-        specs[1].label,
+        specs[2].id,
+        specs[2].label,
         true,
         current_settings.auto_translate,
         None::<&str>,
     )?;
     let pin_image_item = CheckMenuItem::with_id(
         app,
-        specs[2].id,
-        specs[2].label,
+        specs[3].id,
+        specs[3].label,
         true,
         current_settings.ocr_pin_image,
         None::<&str>,
@@ -850,17 +993,25 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let autostart_enabled = app.handle().autolaunch().is_enabled().unwrap_or(false);
     let autostart_item = CheckMenuItem::with_id(
         app,
-        specs[4].id,
-        specs[4].label,
+        specs[5].id,
+        specs[5].label,
         true,
         autostart_enabled,
         None::<&str>,
     )?;
-    let settings_item = MenuItem::with_id(app, specs[3].id, specs[3].label, true, None::<&str>)?;
-    let exit_item = MenuItem::with_id(app, specs[5].id, specs[5].label, true, None::<&str>)?;
+    let settings_item = MenuItem::with_id(app, specs[4].id, specs[4].label, true, None::<&str>)?;
+    let exit_item = MenuItem::with_id(app, specs[6].id, specs[6].label, true, None::<&str>)?;
     let menu = Menu::with_items(
         app,
-        &[&capture_item, &auto_translate_item, &pin_image_item, &settings_item, &autostart_item, &exit_item],
+        &[
+            &capture_item,
+            &copy_full_screen_item,
+            &auto_translate_item,
+            &pin_image_item,
+            &settings_item,
+            &autostart_item,
+            &exit_item,
+        ],
     )?;
     {
         let tray_items: tauri::State<TraySettingsItems> = app.handle().state();
@@ -878,6 +1029,9 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
                 if let Err(err) = trigger_capture_and_overlay(app_handle) {
                     eprintln!("Failed to trigger capture overlay: {err}");
                 }
+            }
+            "copy_full_screen" => {
+                spawn_copy_full_screen_to_clipboard(app_handle.clone());
             }
             "settings" => {
                 if let Err(err) = open_settings_window_inner(app_handle) {
@@ -969,7 +1123,12 @@ pub fn run() {
             }
             setup_tray(app)?;
             for spec in global_shortcut_specs() {
-                let shortcut = Shortcut::new(Some(Modifiers::ALT), spec.code);
+                let modifiers = if spec.id == "capture_ocr" {
+                    Modifiers::CONTROL
+                } else {
+                    Modifiers::ALT
+                };
+                let shortcut = Shortcut::new(Some(modifiers), spec.code);
                 app.global_shortcut().on_shortcut(shortcut, move |app_handle, _shortcut, event| {
                     if event.state() != ShortcutState::Pressed {
                         return;
@@ -1008,6 +1167,8 @@ pub fn run() {
             open_settings_window,
             get_autostart_enabled,
             set_autostart_enabled,
+            translate_deepl,
+            verify_deepl_api_key,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -1042,6 +1203,7 @@ mod tests {
 
         assert_eq!(ids, vec![
             "capture_ocr",
+            "copy_full_screen",
             "auto_translate",
             "ocr_pin_image",
             "settings",
@@ -1057,6 +1219,6 @@ mod tests {
         let codes: Vec<Code> = specs.iter().map(|item| item.code).collect();
 
         assert_eq!(ids, vec!["capture_ocr", "copy_full_screen"]);
-        assert_eq!(codes, vec![Code::Space, Code::KeyB]);
+        assert_eq!(codes, vec![Code::Digit3, Code::KeyB]);
     }
 }

@@ -195,6 +195,54 @@ input[type="text"]:focus {
   display: none;
 }
 
+.deepl-verify-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.verify-btn {
+  height: 28px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 0 14px;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.verify-btn:hover {
+  background: #334155;
+  border-color: #475569;
+}
+
+.verify-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.key-status-text {
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.key-status-text.valid {
+  color: #10b981;
+}
+
+.key-status-text.invalid {
+  color: #f43f5e;
+}
+
+.key-status-text.checking {
+  color: #3b82f6;
+}
+
 .password-field {
   position: relative;
 }

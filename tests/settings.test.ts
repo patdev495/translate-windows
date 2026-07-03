@@ -24,7 +24,7 @@ describe('SettingsManager', () => {
       secondaryTargetLang: 'zh',
       reverseTargetLang: 'en',
       autoTranslate: true,
-      ocrShortcut: 'alt-space',
+      ocrShortcut: 'ctrl-3',
       ocrModelTier: 'medium',
       ocrLanguage: 'ch',
       ttsEnabled: true,

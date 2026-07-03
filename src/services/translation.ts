@@ -79,6 +79,24 @@ export class TranslationEngine {
       throw new Error('DeepL API Key is missing. Please configure it in settings.');
     }
 
+    const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+    if (isTauri) {
+      try {
+        const { invoke } = await import('@tauri-apps/api/core');
+        const item = await invoke<{ text: string; detected_source_language: string }>('translate_deepl', {
+          text,
+          targetLang,
+          apiKey,
+        });
+        return {
+          translation: item.text,
+          detectedLang: item.detected_source_language.toLowerCase(),
+        };
+      } catch (error: any) {
+        throw new Error(error.message || String(error));
+      }
+    }
+
     const isFreeKey = apiKey.endsWith(':fx');
     const baseUrl = isFreeKey
       ? 'https://api-free.deepl.com/v2/translate'

@@ -1,10 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { OverlayController } from "./overlay-controller";
 import { CropSelector, type CropRect } from "./crop-selector";
 import { handleCompletedCrop, handleCropImageActions } from "./crop-completion";
 import { SettingsManager } from "./services/settings";
 import { initializeOcrModelLifecycle } from "./services/ocr-preload";
 import { getScreenRectMapper } from "./screen-rect";
+import { recognizeWithBlocks } from "./services/ocr";
+import { TranslationEngine } from "./services/translation";
+import { getDetectionTarget, getTranslationTargets } from "./services/translation-plan";
 
 const windowApi = {
   close: () => {
@@ -22,6 +26,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   try {
     const imgUrl = await invoke<string | null>("get_capture_image");
     if (isOverlayWindow || imgUrl) {
+      // Preload OCR model in the overlay window
+      void initializeOcrModelLifecycle();
       // Switch DOM to overlay mode
       document.documentElement.classList.add("overlay-mode");
       document.body.classList.add("overlay-mode");
@@ -63,23 +69,71 @@ window.addEventListener("DOMContentLoaded", async () => {
                 return;
               }
 
-              await handleCompletedCrop(dataUrl, rect, {
-                invoke,
-                toScreenRect,
-                getSettings: () => SettingsManager.getSettings(),
-              });
+              if (dataUrl) {
+                await runOverlayTranslation(dataUrl, rect, toScreenRect, cropCanvas);
+              } else {
+                await handleCompletedCrop(dataUrl, rect, {
+                  invoke,
+                  toScreenRect,
+                  getSettings: () => SettingsManager.getSettings(),
+                });
+              }
             } catch (err) {
               console.error("[PolyTranslate] process_crop invoke failed:", err);
             }
           },
         });
         selector.attach();
+        // Show the overlay window now that the canvas is ready.
+        // The backend creates it with visible=false to avoid WebView2's
+        // white-flash during page load. This call makes it appear.
+        void invoke("show_overlay");
       }
 
       // Escape key still closes the overlay
       window.addEventListener("keydown", (e) => {
         overlayController.handleKeyDown(e);
       });
+
+      // Backend emits this when the user presses the capture shortcut while
+      // the overlay is already open. Instead of destroying + recreating the
+      // window (which causes a WebView2 white flash), we reset state here.
+      await listen("reset-overlay", () => {
+        // Remove any in-progress spinner
+        document.querySelectorAll(".overlay-spinner-container").forEach(el => el.remove());
+
+        // Clear translation blocks and hide the container
+        const container = document.getElementById("translation-overlay-container");
+        if (container) {
+          container.innerHTML = "";
+          container.style.display = "none";
+        }
+
+        // Hide the control bar and detach its stale click handlers
+        const oldBar = document.getElementById("translation-control-bar");
+        if (oldBar) {
+          oldBar.style.display = "none";
+          // Clone to remove all event listeners added by runOverlayTranslation
+          const fresh = oldBar.cloneNode(true) as HTMLElement;
+          oldBar.replaceWith(fresh);
+        }
+
+        // Hide background screenshot (if any)
+        const bg = document.getElementById("overlay-bg") as HTMLImageElement | null;
+        if (bg) bg.style.display = "none";
+
+        // Restore the crop-canvas to idle selection mode
+        if (cropCanvas) {
+          cropCanvas.style.display = "block";
+          const ctx2d = cropCanvas.getContext("2d");
+          if (ctx2d) {
+            ctx2d.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+            ctx2d.fillStyle = "rgba(0,0,0,0.18)";
+            ctx2d.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+          }
+        }
+      });
+
       return;
     }
   } catch (err) {
@@ -90,3 +144,245 @@ window.addEventListener("DOMContentLoaded", async () => {
   void initializeOcrModelLifecycle();
   document.getElementById("main-container")?.setAttribute("hidden", "");
 });
+
+function sampleBackgroundColor(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  bbox: { x: number; y: number; width: number; height: number }
+): string {
+  const points = [
+    { x: bbox.x, y: bbox.y }, // Top-left
+    { x: bbox.x + bbox.width / 2, y: bbox.y }, // Top-middle
+    { x: bbox.x + bbox.width, y: bbox.y }, // Top-right
+    { x: bbox.x, y: bbox.y + bbox.height / 2 }, // Middle-left
+    { x: bbox.x + bbox.width, y: bbox.y + bbox.height / 2 }, // Middle-right
+    { x: bbox.x, y: bbox.y + bbox.height }, // Bottom-left
+    { x: bbox.x + bbox.width / 2, y: bbox.y + bbox.height }, // Bottom-middle
+    { x: bbox.x + bbox.width, y: bbox.y + bbox.height }, // Bottom-right
+  ];
+
+  let rSum = 0, gSum = 0, bSum = 0, count = 0;
+  for (const pt of points) {
+    const px = Math.min(Math.max(Math.round(pt.x), 0), width - 1);
+    const py = Math.min(Math.max(Math.round(pt.y), 0), height - 1);
+    try {
+      const data = ctx.getImageData(px, py, 1, 1).data;
+      rSum += data[0];
+      gSum += data[1];
+      bSum += data[2];
+      count++;
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  if (count === 0) {
+    return "rgb(255, 255, 255)";
+  }
+
+  const r = Math.round(rSum / count);
+  const g = Math.round(gSum / count);
+  const b = Math.round(bSum / count);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function getContrastColor(rgbStr: string): string {
+  const match = rgbStr.match(/\d+/g);
+  if (!match || match.length < 3) {
+    return "#000000";
+  }
+  const r = parseInt(match[0], 10);
+  const g = parseInt(match[1], 10);
+  const b = parseInt(match[2], 10);
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq >= 128 ? "#000000" : "#ffffff";
+}
+
+async function runOverlayTranslation(
+  dataUrl: string,
+  rect: CropRect,
+  toScreenRect: (r: CropRect) => CropRect,
+  cropCanvas: HTMLCanvasElement
+) {
+  // Hide the crop canvas
+  cropCanvas.style.display = "none";
+
+  // Show a loading spinner centered on the crop region
+  const spinnerContainer = document.createElement("div");
+  spinnerContainer.className = "overlay-spinner-container";
+  spinnerContainer.style.left = `${rect.x + (rect.width - 120) / 2}px`;
+  spinnerContainer.style.top = `${rect.y + (rect.height - 60) / 2}px`;
+  spinnerContainer.innerHTML = `<div class="overlay-spinner"></div><div>Translating...</div>`;
+  document.body.appendChild(spinnerContainer);
+
+  let ocrTextCombined = "";
+  try {
+    const settings = await SettingsManager.getSettings();
+
+    // 1. Trigger background actions (pin image, copy image)
+    const rounded = {
+      x: Math.round(rect.x),
+      y: Math.round(rect.y),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+    };
+    const screenRect = toScreenRect(rounded);
+    if (settings.ocrPinImage) {
+      void invoke("open_snippet_window", {
+        dataUrl,
+        x: screenRect.x,
+        y: screenRect.y,
+        width: screenRect.width,
+        height: screenRect.height,
+      });
+    }
+    if (settings.ocrCopyToClipboard) {
+      void invoke("copy_image_to_clipboard", { dataUrl });
+    }
+
+    // 2. Decode the crop image into canvas for OCR
+    const img = new Image();
+    img.src = dataUrl;
+    await new Promise<void>((resolve, reject) => {
+      img.onload = () => resolve();
+      img.onerror = () => reject(new Error("Failed to load crop image"));
+    });
+
+    const canvas = document.createElement("canvas");
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext("2d")!;
+    ctx.drawImage(img, 0, 0);
+
+    // 3. Recognize blocks
+    const { fullText, blocks } = await recognizeWithBlocks(
+      canvas,
+      settings.ocrModelTier,
+      settings.ocrLanguage
+    );
+    ocrTextCombined = fullText;
+
+    if (blocks.length === 0) {
+      spinnerContainer.remove();
+      await invoke("close_overlay");
+      return;
+    }
+
+    // 4. Translate blocks
+    const overlayContainer = document.getElementById("translation-overlay-container")!;
+    overlayContainer.innerHTML = "";
+    overlayContainer.style.display = "block";
+
+    for (const block of blocks) {
+      try {
+        const detectionTarget = getDetectionTarget(settings);
+        const detectionResult = detectionTarget
+          ? await TranslationEngine.translateWithSettings(block.text, detectionTarget, settings)
+          : { translation: block.text, detectedLang: "auto" };
+        const detectedLang = detectionResult.detectedLang || "auto";
+        const targets = getTranslationTargets(settings, detectedLang);
+
+        let translatedText = block.text;
+        if (targets.length > 0) {
+          const target = targets[0];
+          if (target.lang === detectionTarget) {
+            translatedText = detectionResult.translation;
+          } else {
+            const res = await TranslationEngine.translateWithSettings(block.text, target.lang, settings);
+            translatedText = res.translation;
+          }
+        }
+
+        const bgColor = sampleBackgroundColor(ctx, canvas.width, canvas.height, block.bbox);
+        const textColor = getContrastColor(bgColor);
+
+        const blockX = rect.x + block.bbox.x;
+        const blockY = rect.y + block.bbox.y;
+
+        const blockDiv = document.createElement("div");
+        blockDiv.className = "translation-block";
+        blockDiv.setAttribute("data-original", block.text);
+        blockDiv.setAttribute("data-translated", translatedText);
+        blockDiv.style.position = "absolute";
+        blockDiv.style.left = `${blockX}px`;
+        blockDiv.style.top = `${blockY}px`;
+        blockDiv.style.width = `${block.bbox.width}px`;
+        blockDiv.style.height = `${block.bbox.height}px`;
+        blockDiv.style.backgroundColor = bgColor;
+        blockDiv.style.color = textColor;
+
+        const calculatedFontSize = Math.max(11, Math.min(24, Math.round(block.bbox.height * 0.75)));
+        blockDiv.style.fontSize = `${calculatedFontSize}px`;
+        blockDiv.textContent = translatedText;
+
+        overlayContainer.appendChild(blockDiv);
+      } catch (err) {
+        console.error("Failed to translate block:", err);
+      }
+    }
+
+    // 5. Position and show the control bar
+    const controlBar = document.getElementById("translation-control-bar")!;
+    controlBar.style.display = "flex";
+
+    let controlY = rect.y + rect.height + 12;
+    if (controlY + 50 > window.innerHeight) {
+      controlY = rect.y - 60;
+    }
+    controlY = Math.max(12, controlY);
+
+    let controlX = rect.x + (rect.width - 320) / 2;
+    controlX = Math.max(12, Math.min(controlX, window.innerWidth - 340));
+
+    controlBar.style.left = `${controlX}px`;
+    controlBar.style.top = `${controlY}px`;
+
+    // 6. Hook up the control bar events
+    const toggleViewBtn = document.getElementById("toggle-view-btn") as HTMLButtonElement;
+    const openDetailsBtn = document.getElementById("open-details-btn") as HTMLButtonElement;
+    const closeOverlayBtn = document.getElementById("close-overlay-btn") as HTMLButtonElement;
+
+    let showingOriginal = false;
+    toggleViewBtn.onclick = () => {
+      showingOriginal = !showingOriginal;
+      const divs = overlayContainer.getElementsByClassName("translation-block");
+      for (let i = 0; i < divs.length; i++) {
+        const div = divs[i] as HTMLElement;
+        const originalText = div.getAttribute("data-original") || "";
+        const translatedText = div.getAttribute("data-translated") || "";
+        div.textContent = showingOriginal ? originalText : translatedText;
+        if (showingOriginal) {
+          div.style.backgroundColor = "rgba(0,0,0,0.7)";
+          div.style.color = "#ffffff";
+        } else {
+          const bgColor = sampleBackgroundColor(ctx, canvas.width, canvas.height, blocks[i].bbox);
+          div.style.backgroundColor = bgColor;
+          div.style.color = getContrastColor(bgColor);
+        }
+      }
+      toggleViewBtn.textContent = showingOriginal ? "👁 Show Translated" : "👁 Show Original";
+    };
+
+    openDetailsBtn.onclick = async () => {
+      await invoke("open_tooltip_window", {
+        text: ocrTextCombined,
+        x: screenRect.x,
+        y: screenRect.y,
+        width: screenRect.width,
+        height: screenRect.height,
+      });
+      await invoke("close_overlay");
+    };
+
+    closeOverlayBtn.onclick = async () => {
+      await invoke("close_overlay");
+    };
+
+  } catch (err) {
+    console.error("Overlay translation failed:", err);
+    await invoke("close_overlay");
+  } finally {
+    spinnerContainer.remove();
+  }
+}

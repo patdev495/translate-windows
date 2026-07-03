@@ -342,8 +342,12 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
         *lock = None;
     }
 
+    // If an overlay window is already open, reset its UI state via a frontend
+    // event instead of destroying + recreating it. Destroying and recreating
+    // causes WebView2 to show a white page while the new window loads.
     if let Some(existing) = app_handle.get_webview_window("overlay") {
-        let _ = existing.destroy();
+        let _ = existing.emit("reset-overlay", ());
+        return Ok(());
     }
 
     let screen = current_screen()?;
@@ -372,6 +376,7 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
     .decorations(false)
     .transparent(true)
     .always_on_top(true)
+    .visible(false)  // Start hidden; frontend calls show_overlay once canvas is ready
     .build()?;
 
     Ok(())
@@ -389,6 +394,17 @@ fn get_capture_image(state: tauri::State<'_, CaptureState>) -> Option<String> {
 fn close_overlay(app_handle: tauri::AppHandle) {
     if let Some(overlay) = app_handle.get_webview_window("overlay") {
         let _ = overlay.destroy();
+    }
+}
+
+/// Called by the overlay frontend once the crop canvas is ready.
+/// Prevents the WebView2 white-flash: the window starts hidden and is
+/// only made visible after the page has fully initialised.
+#[tauri::command]
+fn show_overlay(app_handle: tauri::AppHandle) {
+    if let Some(overlay) = app_handle.get_webview_window("overlay") {
+        let _ = overlay.show();
+        let _ = overlay.set_focus();
     }
 }
 
@@ -1152,6 +1168,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             get_capture_image,
             close_overlay,
+            show_overlay,
             process_crop,
             process_crop_area,
             process_crop_image_actions,

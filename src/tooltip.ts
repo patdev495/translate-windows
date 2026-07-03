@@ -45,12 +45,18 @@ function attachOutsideFocusClose(card: HTMLElement): void {
     ignoreBlurUntil = Date.now() + 1200;
   }, true);
 
-  void getCurrentWindow().onFocusChanged(({ payload: focused }) => {
-    if (focused) return;
+  const closeAfterBlur = () => {
     window.setTimeout(() => {
       if (Date.now() < ignoreBlurUntil) return;
       windowApi.close();
     }, 80);
+  };
+
+  window.addEventListener("blur", closeAfterBlur);
+
+  void getCurrentWindow().onFocusChanged(({ payload: focused }) => {
+    if (focused) return;
+    closeAfterBlur();
   });
 }
 
@@ -65,8 +71,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   void initializeOcrModelLifecycle();
 
   if (tooltipCard) {
+    controller.attachDismissHandlers(tooltipCard);
     attachNativeDrag(tooltipCard);
     attachOutsideFocusClose(tooltipCard);
+  } else {
+    controller.attachEscapeClose();
   }
 
   let ocrText = "";
@@ -121,5 +130,4 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   await controller.initialize(ocrText, sourceEl, phoneticEl, translationEl, ttsBtn);
-  controller.attachEscapeClose();
 });

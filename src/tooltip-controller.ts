@@ -23,6 +23,7 @@ interface TooltipTranslationPlan {
  */
 export class TooltipController {
   private windowApi: WindowAPI;
+  private dismissed = false;
 
   constructor(windowApi: WindowAPI) {
     this.windowApi = windowApi;
@@ -247,10 +248,28 @@ export class TooltipController {
   }
 
   attachEscapeClose(): void {
+    this.attachDismissHandlers();
+  }
+
+  attachDismissHandlers(card?: HTMLElement): void {
     window.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
-        this.windowApi.close();
+        this.dismiss();
       }
-    });
+    }, true);
+
+    if (!card) return;
+
+    document.addEventListener('pointerdown', (event) => {
+      const target = event.target as Node | null;
+      if (target && card.contains(target)) return;
+      this.dismiss();
+    }, true);
+  }
+
+  private dismiss(): void {
+    if (this.dismissed) return;
+    this.dismissed = true;
+    this.windowApi.close();
   }
 }

@@ -172,7 +172,7 @@ describe('TooltipController', () => {
     expect(TranslationEngine.translateWithSettings).not.toHaveBeenCalled();
   });
 
-  test('focus loss does not close the draggable tooltip', () => {
+  test('focus loss does not close the draggable tooltip controller directly', () => {
     const controller = new TooltipController(windowApi);
     controller.attachEscapeClose();
     window.dispatchEvent(new Event('blur'));
@@ -181,8 +181,30 @@ describe('TooltipController', () => {
 
   test('Escape closes the draggable tooltip', () => {
     const controller = new TooltipController(windowApi);
-    controller.attachEscapeClose();
+    controller.attachDismissHandlers(dom.card);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(windowApi.close).toHaveBeenCalledTimes(1);
+  });
+
+  test('pointer down outside the tooltip card closes it', () => {
+    const controller = new TooltipController(windowApi);
+    controller.attachDismissHandlers(dom.card);
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+    expect(windowApi.close).toHaveBeenCalledTimes(1);
+  });
+
+  test('pointer down inside the tooltip card keeps it open', () => {
+    const controller = new TooltipController(windowApi);
+    controller.attachDismissHandlers(dom.card);
+    dom.card.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+    expect(windowApi.close).not.toHaveBeenCalled();
+  });
+
+  test('dismiss handlers only close once', () => {
+    const controller = new TooltipController(windowApi);
+    controller.attachDismissHandlers(dom.card);
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
     expect(windowApi.close).toHaveBeenCalledTimes(1);
   });
 

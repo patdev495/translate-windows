@@ -1,5 +1,6 @@
 import { SettingsManager, type Settings } from './services/settings';
 import { NativeAutostartService } from './services/autostart';
+import { listen } from '@tauri-apps/api/event';
 
 export interface AutostartService {
   isEnabled(): Promise<boolean>;
@@ -46,6 +47,7 @@ export class SettingsPanelController {
   private saveState: HTMLElement | null;
   private autostart: AutostartService;
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
+  private settingsListenerBound = false;
 
   constructor(
     form: HTMLFormElement,
@@ -60,6 +62,19 @@ export class SettingsPanelController {
   async load(): Promise<void> {
     const settings = await SettingsManager.getSettings();
     const autostartEnabled = await this.autostart.isEnabled().catch(() => settings.startWithWindows);
+    this.applySettings(settings, autostartEnabled);
+
+    this.updateProviderVisibility();
+    this.bindAutosave();
+    this.bindSettingsSync();
+
+    this.form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      void this.save();
+    });
+  }
+
+  private applySettings(settings: Settings, autostartEnabled: boolean = settings.startWithWindows): void {
     for (const name of FIELD_NAMES) {
       const element = this.form.elements.namedItem(name);
       if (!element) continue;
@@ -69,14 +84,6 @@ export class SettingsPanelController {
         element.value = String(settings[name]);
       }
     }
-
-    this.updateProviderVisibility();
-    this.bindAutosave();
-
-    this.form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      void this.save();
-    });
   }
 
   async save(): Promise<void> {
@@ -140,5 +147,19 @@ export class SettingsPanelController {
     const container = document.getElementById('deepl-key-container');
     if (!provider || !container) return;
     container.hidden = provider.value !== 'deepl';
+  }
+
+  private bindSettingsSync(): void {
+    if (this.settingsListenerBound || !this.isTauriRuntime()) return;
+    this.settingsListenerBound = true;
+    void listen<Settings>('settings-changed', async (event) => {
+      const autostartEnabled = await this.autostart.isEnabled().catch(() => event.payload.startWithWindows);
+      this.applySettings(event.payload, autostartEnabled);
+      this.updateProviderVisibility();
+    });
+  }
+
+  private isTauriRuntime(): boolean {
+    return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
   }
 }

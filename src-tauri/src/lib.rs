@@ -2,8 +2,9 @@ use std::borrow::Cow;
 use std::io::Cursor;
 use std::sync::Mutex;
 use std::time::Duration;
+use std::{fs, path::PathBuf};
 use arboard::{Clipboard, ImageData};
-use tauri::{Manager, WebviewWindowBuilder};
+use tauri::{Emitter, Manager, WebviewWindowBuilder};
 use tauri::menu::{CheckMenuItem, Menu, MenuItem};
 use tauri::tray::{MouseButton, TrayIconBuilder, TrayIconEvent};
 use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
@@ -67,19 +68,131 @@ impl Default for SnippetCounter {
     }
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AppSettings {
+    pub primary_target_lang: String,
+    pub secondary_target_lang: String,
+    pub reverse_target_lang: String,
+    pub auto_translate: bool,
+    pub ocr_shortcut: String,
+    pub ocr_model_tier: String,
+    pub ocr_language: String,
+    pub tts_enabled: bool,
+    pub provider: String,
+    pub deepl_api_key: String,
+    pub tooltip_font_size: String,
+    pub ocr_pin_image: bool,
+    pub ocr_copy_to_clipboard: bool,
+    pub start_with_windows: bool,
+}
+
+impl Default for AppSettings {
+    fn default() -> Self {
+        Self {
+            primary_target_lang: "vi".to_string(),
+            secondary_target_lang: "zh".to_string(),
+            reverse_target_lang: "en".to_string(),
+            auto_translate: true,
+            ocr_shortcut: "alt-space".to_string(),
+            ocr_model_tier: "medium".to_string(),
+            ocr_language: "ch".to_string(),
+            tts_enabled: true,
+            provider: "google".to_string(),
+            deepl_api_key: String::new(),
+            tooltip_font_size: "16".to_string(),
+            ocr_pin_image: false,
+            ocr_copy_to_clipboard: true,
+            start_with_windows: false,
+        }
+    }
+}
+
+#[derive(Default)]
+pub struct AppSettingsState(pub Mutex<AppSettings>);
+
+#[derive(Default)]
+pub struct TraySettingsItems {
+    pub auto_translate: Mutex<Option<CheckMenuItem<tauri::Wry>>>,
+    pub ocr_pin_image: Mutex<Option<CheckMenuItem<tauri::Wry>>>,
+}
+
 #[derive(Clone, Copy)]
 struct TrayMenuSpec {
     id: &'static str,
     label: &'static str,
 }
 
-fn tray_menu_specs() -> [TrayMenuSpec; 4] {
+fn tray_menu_specs() -> [TrayMenuSpec; 6] {
     [
         TrayMenuSpec { id: "capture_ocr", label: "Capture OCR" },
+        TrayMenuSpec { id: "auto_translate", label: "Auto Translate" },
+        TrayMenuSpec { id: "ocr_pin_image", label: "Pin OCR Image" },
         TrayMenuSpec { id: "settings", label: "Settings" },
         TrayMenuSpec { id: "start_with_windows", label: "Start with Windows" },
         TrayMenuSpec { id: "exit", label: "Exit" },
     ]
+}
+
+fn settings_path(app_handle: &tauri::AppHandle) -> Result<PathBuf, String> {
+    let dir = app_handle
+        .path()
+        .app_data_dir()
+        .map_err(|e| format!("Could not resolve app settings directory: {e}"))?;
+    Ok(dir.join("settings.json"))
+}
+
+fn load_settings_from_disk(app_handle: &tauri::AppHandle) -> AppSettings {
+    let Ok(path) = settings_path(app_handle) else {
+        return AppSettings::default();
+    };
+    let Ok(raw) = fs::read_to_string(path) else {
+        return AppSettings::default();
+    };
+    serde_json::from_str(&raw).unwrap_or_default()
+}
+
+fn save_settings_to_disk(app_handle: &tauri::AppHandle, settings: &AppSettings) -> Result<(), String> {
+    let path = settings_path(app_handle)?;
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).map_err(|e| format!("Could not create app settings directory: {e}"))?;
+    }
+    let raw = serde_json::to_string_pretty(settings)
+        .map_err(|e| format!("Could not serialize app settings: {e}"))?;
+    fs::write(path, raw).map_err(|e| format!("Could not write app settings: {e}"))
+}
+
+fn update_tray_setting_checks(app_handle: &tauri::AppHandle, settings: &AppSettings) {
+    let items: tauri::State<TraySettingsItems> = app_handle.state();
+    let auto_translate_item = items.auto_translate.lock().unwrap().clone();
+    let ocr_pin_image_item = items.ocr_pin_image.lock().unwrap().clone();
+    if let Some(item) = auto_translate_item.as_ref() {
+        if let Err(err) = item.set_checked(settings.auto_translate) {
+            eprintln!("Failed to update auto translate tray check: {err}");
+        }
+    }
+    if let Some(item) = ocr_pin_image_item.as_ref() {
+        if let Err(err) = item.set_checked(settings.ocr_pin_image) {
+            eprintln!("Failed to update pin image tray check: {err}");
+        }
+    }
+}
+
+fn persist_and_broadcast_settings(
+    app_handle: &tauri::AppHandle,
+    settings: AppSettings,
+) -> Result<AppSettings, String> {
+    save_settings_to_disk(app_handle, &settings)?;
+    {
+        let state: tauri::State<AppSettingsState> = app_handle.state();
+        let mut lock = state.0.lock().unwrap();
+        *lock = settings.clone();
+    }
+    update_tray_setting_checks(app_handle, &settings);
+    if let Err(err) = app_handle.emit("settings-changed", settings.clone()) {
+        eprintln!("Failed to emit settings changed event: {err}");
+    }
+    Ok(settings)
 }
 
 // ── Screen capture helper ─────────────────────────────────────────────────
@@ -541,6 +654,34 @@ fn get_snippet_data(state: tauri::State<'_, SnippetStore>, label: String) -> ser
 }
 
 #[tauri::command]
+fn get_app_settings(state: tauri::State<'_, AppSettingsState>) -> AppSettings {
+    state.0.lock().unwrap().clone()
+}
+
+#[tauri::command]
+fn update_app_settings(
+    app_handle: tauri::AppHandle,
+    state: tauri::State<'_, AppSettingsState>,
+    patch: serde_json::Value,
+) -> Result<AppSettings, String> {
+    let mut settings = state.0.lock().unwrap().clone();
+    let mut value = serde_json::to_value(&settings)
+        .map_err(|e| format!("Could not serialize current settings: {e}"))?;
+    let Some(target) = value.as_object_mut() else {
+        return Err("Current settings did not serialize to an object.".to_string());
+    };
+    let Some(source) = patch.as_object() else {
+        return Err("Settings patch must be an object.".to_string());
+    };
+    for (key, value) in source {
+        target.insert(key.clone(), value.clone());
+    }
+    settings = serde_json::from_value(value)
+        .map_err(|e| format!("Could not apply settings patch: {e}"))?;
+    persist_and_broadcast_settings(&app_handle, settings)
+}
+
+#[tauri::command]
 fn open_settings_window(app_handle: tauri::AppHandle) -> Result<(), String> {
     open_settings_window_inner(&app_handle).map_err(|e| e.to_string())
 }
@@ -588,18 +729,44 @@ fn open_settings_window_inner(app_handle: &tauri::AppHandle) -> Result<(), Box<d
 fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let specs = tray_menu_specs();
     let capture_item = MenuItem::with_id(app, specs[0].id, specs[0].label, true, None::<&str>)?;
-    let settings_item = MenuItem::with_id(app, specs[1].id, specs[1].label, true, None::<&str>)?;
-    let autostart_enabled = app.handle().autolaunch().is_enabled().unwrap_or(false);
-    let autostart_item = CheckMenuItem::with_id(
+    let settings_state: tauri::State<AppSettingsState> = app.handle().state();
+    let current_settings = settings_state.0.lock().unwrap().clone();
+    let auto_translate_item = CheckMenuItem::with_id(
+        app,
+        specs[1].id,
+        specs[1].label,
+        true,
+        current_settings.auto_translate,
+        None::<&str>,
+    )?;
+    let pin_image_item = CheckMenuItem::with_id(
         app,
         specs[2].id,
         specs[2].label,
         true,
+        current_settings.ocr_pin_image,
+        None::<&str>,
+    )?;
+    let autostart_enabled = app.handle().autolaunch().is_enabled().unwrap_or(false);
+    let autostart_item = CheckMenuItem::with_id(
+        app,
+        specs[4].id,
+        specs[4].label,
+        true,
         autostart_enabled,
         None::<&str>,
     )?;
-    let exit_item = MenuItem::with_id(app, specs[3].id, specs[3].label, true, None::<&str>)?;
-    let menu = Menu::with_items(app, &[&capture_item, &settings_item, &autostart_item, &exit_item])?;
+    let settings_item = MenuItem::with_id(app, specs[3].id, specs[3].label, true, None::<&str>)?;
+    let exit_item = MenuItem::with_id(app, specs[5].id, specs[5].label, true, None::<&str>)?;
+    let menu = Menu::with_items(
+        app,
+        &[&capture_item, &auto_translate_item, &pin_image_item, &settings_item, &autostart_item, &exit_item],
+    )?;
+    {
+        let tray_items: tauri::State<TraySettingsItems> = app.handle().state();
+        *tray_items.auto_translate.lock().unwrap() = Some(auto_translate_item.clone());
+        *tray_items.ocr_pin_image.lock().unwrap() = Some(pin_image_item.clone());
+    }
     let icon = app.default_window_icon().cloned();
 
     let mut builder = TrayIconBuilder::new()
@@ -615,6 +782,22 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
             "settings" => {
                 if let Err(err) = open_settings_window_inner(app_handle) {
                     eprintln!("Failed to open settings window: {err}");
+                }
+            }
+            "auto_translate" => {
+                let state: tauri::State<AppSettingsState> = app_handle.state();
+                let mut settings = state.0.lock().unwrap().clone();
+                settings.auto_translate = !settings.auto_translate;
+                if let Err(err) = persist_and_broadcast_settings(app_handle, settings) {
+                    eprintln!("Failed to toggle auto translate: {err}");
+                }
+            }
+            "ocr_pin_image" => {
+                let state: tauri::State<AppSettingsState> = app_handle.state();
+                let mut settings = state.0.lock().unwrap().clone();
+                settings.ocr_pin_image = !settings.ocr_pin_image;
+                if let Err(err) = persist_and_broadcast_settings(app_handle, settings) {
+                    eprintln!("Failed to toggle pin image: {err}");
                 }
             }
             "start_with_windows" => {
@@ -675,7 +858,15 @@ pub fn run() {
         .manage(TooltipState::default())
         .manage(SnippetCounter::default())
         .manage(SnippetStore::default())
+        .manage(AppSettingsState::default())
+        .manage(TraySettingsItems::default())
         .setup(|app| {
+            let settings = load_settings_from_disk(app.handle());
+            {
+                let state: tauri::State<AppSettingsState> = app.handle().state();
+                let mut lock = state.0.lock().unwrap();
+                *lock = settings;
+            }
             setup_tray(app)?;
             let shortcut = Shortcut::new(
                 Some(tauri_plugin_global_shortcut::Modifiers::ALT),
@@ -703,6 +894,8 @@ pub fn run() {
             close_snippet_window,
             get_snippet_data,
             copy_image_to_clipboard,
+            get_app_settings,
+            update_app_settings,
             open_settings_window,
             get_autostart_enabled,
             set_autostart_enabled,
@@ -737,6 +930,13 @@ mod tests {
         let specs = tray_menu_specs();
         let ids: Vec<&str> = specs.iter().map(|item| item.id).collect();
 
-        assert_eq!(ids, vec!["capture_ocr", "settings", "start_with_windows", "exit"]);
+        assert_eq!(ids, vec![
+            "capture_ocr",
+            "auto_translate",
+            "ocr_pin_image",
+            "settings",
+            "start_with_windows",
+            "exit",
+        ]);
     }
 }

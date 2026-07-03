@@ -32,5 +32,8 @@ The frameless, borderless, transparent, always-on-top window created by Tauri to
 **Draggable Pinned Snippet**:
 The floating transparent card showing the cropped image that stays on top of all windows until dismissed.
 
+**Tray Quick Toggle**:
+A checked system tray action that turns a capture behavior preference on or off using the same saved preference shown in the settings window.
+
 **Local OCR Engine**:
 The offline model runner using ONNX Runtime (WASM or native bindings) to read text coordinates and values from cropped images.

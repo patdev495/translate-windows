@@ -9,6 +9,7 @@ use tauri::menu::{CheckMenuItem, Menu, MenuItem};
 use tauri::tray::{MouseButton, TrayIconBuilder, TrayIconEvent};
 use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
+use tauri_plugin_global_shortcut::{Code, Modifiers};
 use screenshots::Screen;
 use base64::{Engine as _, engine::general_purpose};
 use image::{
@@ -123,6 +124,12 @@ struct TrayMenuSpec {
     label: &'static str,
 }
 
+#[derive(Clone, Copy)]
+struct GlobalShortcutSpec {
+    id: &'static str,
+    code: Code,
+}
+
 fn tray_menu_specs() -> [TrayMenuSpec; 6] {
     [
         TrayMenuSpec { id: "capture_ocr", label: "Capture OCR" },
@@ -131,6 +138,13 @@ fn tray_menu_specs() -> [TrayMenuSpec; 6] {
         TrayMenuSpec { id: "settings", label: "Settings" },
         TrayMenuSpec { id: "start_with_windows", label: "Start with Windows" },
         TrayMenuSpec { id: "exit", label: "Exit" },
+    ]
+}
+
+fn global_shortcut_specs() -> [GlobalShortcutSpec; 2] {
+    [
+        GlobalShortcutSpec { id: "capture_ocr", code: Code::Space },
+        GlobalShortcutSpec { id: "copy_full_screen", code: Code::KeyB },
     ]
 }
 
@@ -225,6 +239,82 @@ fn capture_area_data_url(x: i32, y: i32, width: u32, height: u32) -> Result<Stri
     Ok(format!("data:image/png;base64,{}", general_purpose::STANDARD.encode(&png_bytes)))
 }
 
+fn current_screen() -> Result<Screen, Box<dyn std::error::Error>> {
+    let (cursor_x, cursor_y) = cursor_position().unwrap_or((0, 0));
+    match Screen::from_point(cursor_x, cursor_y) {
+        Ok(screen) => Ok(screen),
+        Err(_) => Screen::all()?
+            .into_iter()
+            .next()
+            .ok_or_else(|| "No screens found".into()),
+    }
+}
+
+fn capture_screen_data_url(screen: Screen) -> Result<String, String> {
+    let image = screen.capture().map_err(|e| e.to_string())?;
+    let image_width = image.width();
+    let image_height = image.height();
+    let raw_pixels = image.into_raw();
+    let png_bytes = encode_rgba_png(&raw_pixels, image_width, image_height)?;
+    Ok(format!("data:image/png;base64,{}", general_purpose::STANDARD.encode(&png_bytes)))
+}
+
+fn copy_full_screen_to_clipboard() -> Result<(), String> {
+    let screen = current_screen().map_err(|e| e.to_string())?;
+    let data_url = capture_screen_data_url(screen)?;
+    copy_image_to_clipboard(data_url)
+}
+
+fn show_capture_toast(app_handle: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(existing) = app_handle.get_webview_window("capture-toast") {
+        let _ = existing.destroy();
+    }
+
+    let screen = current_screen()?;
+    let info = screen.display_info;
+    let toast_width = 230.0;
+    let toast_height = 54.0;
+    let toast_x = info.x as f64 + info.width as f64 - toast_width - 24.0;
+    let toast_y = info.y as f64 + info.height as f64 - toast_height - 44.0;
+
+    WebviewWindowBuilder::new(
+        app_handle,
+        "capture-toast",
+        tauri::WebviewUrl::App("capture-toast.html".into()),
+    )
+    .title("Screenshot copied")
+    .inner_size(toast_width, toast_height)
+    .position(toast_x, toast_y)
+    .decorations(false)
+    .transparent(true)
+    .always_on_top(true)
+    .resizable(false)
+    .build()?;
+
+    let handle = app_handle.clone();
+    std::thread::spawn(move || {
+        std::thread::sleep(Duration::from_millis(1200));
+        if let Some(win) = handle.get_webview_window("capture-toast") {
+            let _ = win.destroy();
+        }
+    });
+
+    Ok(())
+}
+
+fn spawn_copy_full_screen_to_clipboard(app_handle: tauri::AppHandle) {
+    tauri::async_runtime::spawn_blocking(move || {
+        if let Err(e) = copy_full_screen_to_clipboard() {
+            eprintln!("Failed to copy full-screen capture to clipboard: {}", e);
+            return;
+        }
+
+        if let Err(e) = show_capture_toast(&app_handle) {
+            eprintln!("Failed to show full-screen capture toast: {}", e);
+        }
+    });
+}
+
 #[cfg(target_os = "windows")]
 fn cursor_position() -> Option<(i32, i32)> {
     let mut point = windows_sys::Win32::Foundation::POINT { x: 0, y: 0 };
@@ -248,14 +338,7 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
         let _ = existing.destroy();
     }
 
-    let (cursor_x, cursor_y) = cursor_position().unwrap_or((0, 0));
-    let screen = match Screen::from_point(cursor_x, cursor_y) {
-        Ok(screen) => screen,
-        Err(_) => Screen::all()?
-            .into_iter()
-            .next()
-            .ok_or("No screens found")?,
-    };
+    let screen = current_screen()?;
     let info = screen.display_info;
     let overlay_url = format!(
         "index.html?overlay=1&screenX={}&screenY={}&screenWidth={}&screenHeight={}",
@@ -301,20 +384,37 @@ fn close_overlay(app_handle: tauri::AppHandle) {
 fn copy_image_to_clipboard(data_url: String) -> Result<(), String> {
     let png_bytes = decode_png_data_url(&data_url)?;
     let image = image::load_from_memory(&png_bytes)
-        .map_err(|e| format!("Could not decode cropped image for clipboard: {e}"))?
+        .map_err(|e| format!("Could not decode image for clipboard: {e}"))?
         .to_rgba8();
     let (width, height) = image.dimensions();
+    let raw_pixels = image.into_raw();
 
-    let clipboard_image = ImageData {
-        width: width as usize,
-        height: height as usize,
-        bytes: Cow::Owned(image.into_raw()),
-    };
+    let mut last_error = None;
+    for attempt in 0..8 {
+        let clipboard_image = ImageData {
+            width: width as usize,
+            height: height as usize,
+            bytes: Cow::Owned(raw_pixels.clone()),
+        };
 
-    Clipboard::new()
-        .map_err(|e| format!("Could not open system clipboard: {e}"))?
-        .set_image(clipboard_image)
-        .map_err(|e| format!("Could not write cropped image to clipboard: {e}"))
+        match Clipboard::new()
+            .map_err(|e| format!("Could not open system clipboard: {e}"))
+            .and_then(|mut clipboard| {
+                clipboard
+                    .set_image(clipboard_image)
+                    .map_err(|e| format!("Could not write image to clipboard: {e}"))
+            }) {
+            Ok(()) => return Ok(()),
+            Err(err) => {
+                last_error = Some(err);
+                if attempt < 7 {
+                    std::thread::sleep(Duration::from_millis(25));
+                }
+            }
+        }
+    }
+
+    Err(last_error.unwrap_or_else(|| "Could not write image to clipboard".to_string()))
 }
 
 fn decode_png_data_url(data_url: &str) -> Result<Vec<u8>, String> {
@@ -868,17 +968,26 @@ pub fn run() {
                 *lock = settings;
             }
             setup_tray(app)?;
-            let shortcut = Shortcut::new(
-                Some(tauri_plugin_global_shortcut::Modifiers::ALT),
-                tauri_plugin_global_shortcut::Code::Space
-            );
-            app.global_shortcut().on_shortcut(shortcut, move |app_handle, _shortcut, event| {
-                if event.state() == ShortcutState::Pressed {
-                    if let Err(e) = trigger_capture_and_overlay(app_handle) {
-                        eprintln!("Failed to trigger capture overlay: {}", e);
+            for spec in global_shortcut_specs() {
+                let shortcut = Shortcut::new(Some(Modifiers::ALT), spec.code);
+                app.global_shortcut().on_shortcut(shortcut, move |app_handle, _shortcut, event| {
+                    if event.state() != ShortcutState::Pressed {
+                        return;
                     }
-                }
-            })?;
+
+                    match spec.id {
+                        "capture_ocr" => {
+                            if let Err(e) = trigger_capture_and_overlay(app_handle) {
+                                eprintln!("Failed to trigger capture overlay: {}", e);
+                            }
+                        }
+                        "copy_full_screen" => {
+                            spawn_copy_full_screen_to_clipboard(app_handle.clone());
+                        }
+                        _ => {}
+                    }
+                })?;
+            }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -906,7 +1015,8 @@ pub fn run() {
 
 #[cfg(test)]
 mod tests {
-    use super::{tray_menu_specs, TooltipData};
+    use super::{global_shortcut_specs, tray_menu_specs, TooltipData};
+    use tauri_plugin_global_shortcut::Code;
 
     #[test]
     fn tooltip_data_serializes_for_frontend_contract() {
@@ -938,5 +1048,15 @@ mod tests {
             "start_with_windows",
             "exit",
         ]);
+    }
+
+    #[test]
+    fn global_shortcuts_expose_ocr_and_clipboard_capture() {
+        let specs = global_shortcut_specs();
+        let ids: Vec<&str> = specs.iter().map(|item| item.id).collect();
+        let codes: Vec<Code> = specs.iter().map(|item| item.code).collect();
+
+        assert_eq!(ids, vec!["capture_ocr", "copy_full_screen"]);
+        assert_eq!(codes, vec![Code::Space, Code::KeyB]);
     }
 }

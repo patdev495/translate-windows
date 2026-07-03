@@ -36,6 +36,7 @@ export default defineConfig(async () => ({
         tooltip: resolve(__dirname, "tooltip.html"),
         snippet: resolve(__dirname, "snippet.html"),
         settings: resolve(__dirname, "settings.html"),
+        captureToast: resolve(__dirname, "capture-toast.html"),
       },
     },
   },

@@ -2,7 +2,7 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main", "overlay", "tooltip", "snippet-*", "settings"],
+  "windows": ["main", "overlay", "tooltip", "snippet-*", "settings", "capture-toast"],
   "permissions": [
     "core:default",
     "core:window:allow-start-dragging",

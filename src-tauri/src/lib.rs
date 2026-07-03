@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 use std::io::Cursor;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 use std::time::Duration;
 use std::{fs, path::PathBuf};
@@ -117,6 +118,9 @@ pub struct TraySettingsItems {
     pub auto_translate: Mutex<Option<CheckMenuItem<tauri::Wry>>>,
     pub ocr_pin_image: Mutex<Option<CheckMenuItem<tauri::Wry>>>,
 }
+
+#[derive(Default)]
+pub struct CaptureRequestState(pub AtomicBool);
 
 #[derive(Clone, Copy)]
 struct TrayMenuSpec {
@@ -388,6 +392,22 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
 }
 
 // ── Tauri commands ────────────────────────────────────────────────────────
+
+fn request_capture_and_overlay(app_handle: &tauri::AppHandle) {
+    let request_state: tauri::State<CaptureRequestState> = app_handle.state();
+    if request_state.0.swap(true, Ordering::SeqCst) {
+        return;
+    }
+
+    let handle = app_handle.clone();
+    std::thread::spawn(move || {
+        if let Err(err) = trigger_capture_and_overlay(&handle) {
+            eprintln!("Failed to trigger capture overlay: {err}");
+        }
+        let request_state: tauri::State<CaptureRequestState> = handle.state();
+        request_state.0.store(false, Ordering::SeqCst);
+    });
+}
 
 #[tauri::command]
 fn get_capture_image(state: tauri::State<'_, CaptureState>) -> Option<String> {
@@ -1047,9 +1067,7 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         .show_menu_on_left_click(false)
         .on_menu_event(move |app_handle, event| match event.id().as_ref() {
             "capture_ocr" => {
-                if let Err(err) = trigger_capture_and_overlay(app_handle) {
-                    eprintln!("Failed to trigger capture overlay: {err}");
-                }
+                request_capture_and_overlay(app_handle);
             }
             "copy_full_screen" => {
                 spawn_copy_full_screen_to_clipboard(app_handle.clone());
@@ -1135,6 +1153,7 @@ pub fn run() {
         .manage(SnippetStore::default())
         .manage(AppSettingsState::default())
         .manage(TraySettingsItems::default())
+        .manage(CaptureRequestState::default())
         .setup(|app| {
             let settings = load_settings_from_disk(app.handle());
             {
@@ -1157,9 +1176,7 @@ pub fn run() {
 
                     match spec.id {
                         "capture_ocr" => {
-                            if let Err(e) = trigger_capture_and_overlay(app_handle) {
-                                eprintln!("Failed to trigger capture overlay: {}", e);
-                            }
+                            request_capture_and_overlay(app_handle);
                         }
                         "copy_full_screen" => {
                             spawn_copy_full_screen_to_clipboard(app_handle.clone());

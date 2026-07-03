@@ -3,6 +3,7 @@ import { OverlayController } from "./overlay-controller";
 import { CropSelector, type CropRect } from "./crop-selector";
 import { handleCompletedCrop, handleCropImageActions } from "./crop-completion";
 import { SettingsManager } from "./services/settings";
+import { initializeOcrModelLifecycle } from "./services/ocr-preload";
 import { getScreenRectMapper } from "./screen-rect";
 
 const windowApi = {
@@ -86,5 +87,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── Standard main window (settings / greet placeholder) ─────────────────
+  void initializeOcrModelLifecycle();
   document.getElementById("main-container")?.setAttribute("hidden", "");
 });

@@ -4,6 +4,7 @@ import { TooltipController } from "./tooltip-controller";
 import { recognizeWithBlocks } from "./services/ocr";
 import type { OcrProgress } from "./services/ocr";
 import { SettingsManager } from "./services/settings";
+import { initializeOcrModelLifecycle } from "./services/ocr-preload";
 
 const windowApi = {
   close: () => {
@@ -61,6 +62,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const ttsBtn = document.getElementById("tts-btn") as HTMLButtonElement;
   const translationLangEl = document.getElementById("translation-lang") as HTMLElement | null;
   const settings = await SettingsManager.getSettings();
+  void initializeOcrModelLifecycle();
 
   if (tooltipCard) {
     attachNativeDrag(tooltipCard);

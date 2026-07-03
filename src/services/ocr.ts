@@ -30,13 +30,23 @@ type ModelUrls = {
 type PaddleOcrServiceCtor = new (options?: unknown) => {
   initialize(): Promise<void>;
   recognize(image: HTMLCanvasElement, options?: { flatten?: false; strategy?: 'per-box' | 'per-line' | 'cross-line' }): Promise<{ text: string }>;
+  destroy?(): Promise<void>;
 };
 
 const DB_NAME = 'polytranslate-ocr-cache';
 const DB_VERSION = 1;
 const STORE_NAME = 'model-files';
 
-const services = new Map<string, Promise<InstanceType<PaddleOcrServiceCtor>>>();
+type OcrTier = 'tiny' | 'small' | 'medium';
+type OcrLanguage = 'ch' | 'latin';
+type OcrService = InstanceType<PaddleOcrServiceCtor>;
+
+let activeServiceKey: string | null = null;
+let activeServicePromise: Promise<OcrService> | null = null;
+let activeServiceInstance: OcrService | null = null;
+let activeLoadGeneration = 0;
+let activeRecognitionCount = 0;
+let deferredDestroyServices: OcrService[] = [];
 
 export function getOcrWasmPaths(): { wasm: string } {
   return {
@@ -110,8 +120,8 @@ async function loadCachedModel(urls: ModelUrls, onProgress?: ProgressHandler): P
 }
 
 async function createService(
-  tier: 'tiny' | 'small' | 'medium',
-  language: 'ch' | 'latin' = 'ch',
+  tier: OcrTier,
+  language: OcrLanguage = 'ch',
   onProgress?: ProgressHandler
 ): Promise<InstanceType<PaddleOcrServiceCtor>> {
   configureOcrRuntime();
@@ -160,21 +170,97 @@ async function createService(
   return service;
 }
 
-async function getService(
-  tier: 'tiny' | 'small' | 'medium',
-  language: 'ch' | 'latin' = 'ch',
+async function destroyService(service: OcrService): Promise<void> {
+  try {
+    await service.destroy?.();
+  } catch (err) {
+    console.warn('Failed to destroy OCR service:', err);
+  }
+}
+
+function ocrModelKey(tier: OcrTier, language: OcrLanguage): string {
+  return `${tier}-${language}`;
+}
+
+export function getActiveOcrModelKey(): string | null {
+  return activeServiceKey;
+}
+
+export async function unloadOcrModel(): Promise<void> {
+  activeLoadGeneration += 1;
+  activeServiceKey = null;
+  activeServicePromise = null;
+
+  if (activeRecognitionCount > 0) {
+    if (activeServiceInstance) {
+      deferredDestroyServices.push(activeServiceInstance);
+      activeServiceInstance = null;
+    }
+    return;
+  }
+
+  const service = activeServiceInstance;
+  activeServiceInstance = null;
+  if (service) {
+    await destroyService(service);
+  }
+}
+
+export async function preloadOcrModel(
+  tier: OcrTier,
+  language: OcrLanguage = 'ch',
   onProgress?: ProgressHandler
-): Promise<InstanceType<PaddleOcrServiceCtor>> {
-  const key = `${tier}-${language}`;
-  let servicePromise = services.get(key);
-  if (!servicePromise) {
-    servicePromise = createService(tier, language, onProgress).catch((err) => {
-      services.delete(key);
+): Promise<OcrService> {
+  const key = ocrModelKey(tier, language);
+  if (activeServiceKey === key && activeServicePromise) {
+    return activeServicePromise;
+  }
+
+  await unloadOcrModel();
+
+  const generation = activeLoadGeneration;
+  activeServiceKey = key;
+  activeServicePromise = createService(tier, language, onProgress)
+    .then(async (service) => {
+      if (generation !== activeLoadGeneration || activeServiceKey !== key) {
+        await destroyService(service);
+        throw new Error('OCR model load was superseded.');
+      }
+      activeServiceInstance = service;
+      return service;
+    })
+    .catch((err) => {
+      if (generation === activeLoadGeneration && activeServiceKey === key) {
+        activeServiceKey = null;
+        activeServicePromise = null;
+        activeServiceInstance = null;
+      }
       throw err;
     });
-    services.set(key, servicePromise);
+
+  return activeServicePromise;
+}
+
+async function getService(
+  tier: OcrTier,
+  language: OcrLanguage = 'ch',
+  onProgress?: ProgressHandler
+): Promise<OcrService> {
+  return preloadOcrModel(tier, language, onProgress);
+}
+
+async function withRecognition<T>(run: (service: OcrService) => Promise<T>, service: OcrService): Promise<T> {
+  activeRecognitionCount += 1;
+  try {
+    return await run(service);
+  } finally {
+    activeRecognitionCount -= 1;
+    if (activeRecognitionCount === 0 && deferredDestroyServices.length > 0) {
+      const servicesToDestroy = deferredDestroyServices;
+      deferredDestroyServices = [];
+      await Promise.all(servicesToDestroy.map((serviceToDestroy) => destroyService(serviceToDestroy)));
+    }
   }
-  return servicePromise;
 }
 
 export async function recognizeImageRegion(
@@ -185,7 +271,10 @@ export async function recognizeImageRegion(
 ): Promise<string> {
   const service = await getService(tier, language, onProgress);
   onProgress?.({ stage: 'recognizing', message: 'Reading text from image...' });
-  const result = await service.recognize(canvas, { flatten: false, strategy: 'per-line' });
+  const result = await withRecognition(
+    (ocrService) => ocrService.recognize(canvas, { flatten: false, strategy: 'per-line' }),
+    service
+  );
   return result.text.trim();
 }
 
@@ -207,7 +296,10 @@ export async function recognizeWithBlocks(
 
   // ppu-paddle-ocr may return a `regions` or `boxes` array alongside `text`.
   // We accept whatever the library provides and normalize it into OcrTextBlock[].
-  const result = await service.recognize(canvas, { flatten: false, strategy: 'per-line' }) as any;
+  const result = await withRecognition(
+    (ocrService) => ocrService.recognize(canvas, { flatten: false, strategy: 'per-line' }) as Promise<any>,
+    service
+  );
 
   const fullText = (result.text ?? '').trim();
 

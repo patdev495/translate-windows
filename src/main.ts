@@ -21,7 +21,19 @@ const overlayController = new OverlayController(windowApi);
 window.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const isOverlayWindow = params.get("overlay") === "1";
-  const toScreenRect = getScreenRectMapper(params, window.innerWidth, window.innerHeight);
+
+  // Compute logical (CSS-pixel) viewport dimensions from the physical screen
+  // dimensions embedded in the URL params. window.innerWidth/Height can be 0
+  // during DOMContentLoaded on a window created with visible=false because the
+  // browser has not finished layout yet. Dividing by devicePixelRatio converts
+  // physical pixels → CSS pixels and works synchronously without requestAnimationFrame.
+  const physW = Number(params.get("screenWidth"));
+  const physH = Number(params.get("screenHeight"));
+  const dpr = window.devicePixelRatio || 1;
+  const logicalW = physW > 0 ? Math.round(physW / dpr) : window.innerWidth;
+  const logicalH = physH > 0 ? Math.round(physH / dpr) : window.innerHeight;
+
+  const toScreenRect = getScreenRectMapper(params, logicalW, logicalH);
   // ── Overlay mode ─────────────────────────────────────────────────────────
   try {
     const imgUrl = await invoke<string | null>("get_capture_image");
@@ -48,6 +60,11 @@ window.addEventListener("DOMContentLoaded", async () => {
       const cropCanvas = document.getElementById("crop-canvas") as HTMLCanvasElement | null;
       if (cropCanvas) {
         cropCanvas.style.display = "block";
+        // Use logicalW/H derived from URL params (not window.innerWidth which can be
+        // 0 on hidden windows). Canvas must be sized before selector.attach() draws
+        // the idle mask, and before show_overlay is called.
+        cropCanvas.width = logicalW;
+        cropCanvas.height = logicalH;
 
         const selector = new CropSelector(cropCanvas, {
           onCrop: async (dataUrl: string | null, rect: CropRect) => {
@@ -81,20 +98,10 @@ window.addEventListener("DOMContentLoaded", async () => {
             }
           },
         });
-
-        // Defer canvas sizing to the next animation frame so that the browser
-        // has computed the layout even if the window started hidden (visible=false).
-        // window.innerWidth can be 0 during DOMContentLoaded on a hidden window,
-        // which would produce an invisible 0×0 canvas that blocks all mouse input.
-        requestAnimationFrame(() => {
-          cropCanvas.width = window.innerWidth || screen.availWidth;
-          cropCanvas.height = window.innerHeight || screen.availHeight;
-          selector.attach(); // draws dark idle mask
-          // Show the overlay window now that canvas is correctly sized.
-          // The backend created it with visible=false to avoid WebView2's
-          // white-flash during page load.
-          void invoke("show_overlay");
-        });
+        selector.attach(); // draws dark idle mask on the canvas
+        // Reveal the overlay window now that canvas is correctly sized and drawn.
+        // The backend created it with visible=false to prevent WebView2's white flash.
+        void invoke("show_overlay");
       }
 
       // Escape key still closes the overlay

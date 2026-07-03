@@ -89,6 +89,23 @@ describe('SettingsPanelController', () => {
     expect(document.getElementById('save-state')?.textContent).toBe('Saved');
   });
 
+  test('rolls back start with Windows when native autostart rejects it', async () => {
+    autostart.setEnabled = vi.fn().mockRejectedValue(new Error('release builds only'));
+    autostart.isEnabled = vi.fn().mockResolvedValue(false);
+    const form = makeForm();
+    const controller = new SettingsPanelController(form, document.getElementById('save-state'), autostart);
+    await controller.load();
+
+    (form.elements.namedItem('startWithWindows') as HTMLInputElement).checked = true;
+    form.dispatchEvent(new Event('submit'));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const settings = await SettingsManager.getSettings();
+    expect(settings.startWithWindows).toBe(false);
+    expect((form.elements.namedItem('startWithWindows') as HTMLInputElement).checked).toBe(false);
+    expect(document.getElementById('save-state')?.textContent).toBe('Saved');
+  });
+
   test('auto-saves provider, DeepL key, and TTS changes', async () => {
     const form = makeForm();
     const controller = new SettingsPanelController(form, document.getElementById('save-state'), autostart);

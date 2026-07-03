@@ -197,6 +197,23 @@ fn update_tray_setting_checks(app_handle: &tauri::AppHandle, settings: &AppSetti
     }
 }
 
+fn autostart_available_in_current_build() -> bool {
+    !cfg!(debug_assertions)
+}
+
+fn cleanup_unsupported_autostart(app_handle: &tauri::AppHandle) {
+    if autostart_available_in_current_build() {
+        return;
+    }
+
+    let autostart = app_handle.autolaunch();
+    if autostart.is_enabled().unwrap_or(false) {
+        if let Err(err) = autostart.disable() {
+            eprintln!("Failed to disable debug autostart entry: {err}");
+        }
+    }
+}
+
 fn persist_and_broadcast_settings(
     app_handle: &tauri::AppHandle,
     settings: AppSettings,
@@ -346,11 +363,12 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
         *lock = None;
     }
 
-    // If an overlay handle is still around from the previous capture, destroy
-    // it before creating a fresh selection window. A hidden/stale overlay can
-    // keep focus inside this app without ever reaching selection-ready state.
+    // If selection is already active, bring the existing overlay forward
+    // instead of racing Tauri's unique window labels by creating another one.
     if let Some(existing) = app_handle.get_webview_window("overlay") {
-        let _ = existing.destroy();
+        let _ = existing.show();
+        let _ = existing.set_focus();
+        return Ok(());
     }
 
     let screen = current_screen()?;
@@ -965,6 +983,10 @@ fn open_settings_window(app_handle: tauri::AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 fn get_autostart_enabled(app_handle: tauri::AppHandle) -> Result<bool, String> {
+    if !autostart_available_in_current_build() {
+        return Ok(false);
+    }
+
     app_handle
         .autolaunch()
         .is_enabled()
@@ -973,6 +995,10 @@ fn get_autostart_enabled(app_handle: tauri::AppHandle) -> Result<bool, String> {
 
 #[tauri::command]
 fn set_autostart_enabled(app_handle: tauri::AppHandle, enabled: bool) -> Result<(), String> {
+    if enabled && !autostart_available_in_current_build() {
+        return Err("Start with Windows is only available in packaged release builds.".to_string());
+    }
+
     let autostart = app_handle.autolaunch();
     if enabled {
         autostart.enable()
@@ -1025,12 +1051,16 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         current_settings.ocr_pin_image,
         None::<&str>,
     )?;
-    let autostart_enabled = app.handle().autolaunch().is_enabled().unwrap_or(false);
+    let autostart_enabled = if autostart_available_in_current_build() {
+        app.handle().autolaunch().is_enabled().unwrap_or(false)
+    } else {
+        false
+    };
     let autostart_item = CheckMenuItem::with_id(
         app,
         specs[5].id,
         specs[5].label,
-        true,
+        autostart_available_in_current_build(),
         autostart_enabled,
         None::<&str>,
     )?;
@@ -1088,6 +1118,12 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
             "start_with_windows" => {
+                if !autostart_available_in_current_build() {
+                    let _ = autostart_item.set_checked(false);
+                    eprintln!("Start with Windows is only available in packaged release builds.");
+                    return;
+                }
+
                 let autostart = app_handle.autolaunch();
                 match autostart.is_enabled() {
                     Ok(true) => {
@@ -1149,6 +1185,7 @@ pub fn run() {
         .manage(TraySettingsItems::default())
         .manage(CaptureRequestState::default())
         .setup(|app| {
+            cleanup_unsupported_autostart(app.handle());
             let settings = load_settings_from_disk(app.handle());
             {
                 let state: tauri::State<AppSettingsState> = app.handle().state();
@@ -1209,7 +1246,9 @@ pub fn run() {
 
 #[cfg(test)]
 mod tests {
-    use super::{global_shortcut_specs, tray_menu_specs, TooltipData};
+    use super::{
+        autostart_available_in_current_build, global_shortcut_specs, tray_menu_specs, TooltipData,
+    };
     use tauri_plugin_global_shortcut::Code;
 
     #[test]
@@ -1253,5 +1292,13 @@ mod tests {
 
         assert_eq!(ids, vec!["capture_ocr", "copy_full_screen"]);
         assert_eq!(codes, vec![Code::Digit3, Code::KeyB]);
+    }
+
+    #[test]
+    fn autostart_availability_tracks_build_profile() {
+        assert_eq!(
+            autostart_available_in_current_build(),
+            !cfg!(debug_assertions)
+        );
     }
 }

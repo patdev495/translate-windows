@@ -102,8 +102,16 @@ export class SettingsPanelController {
       }
     }
 
+    let autostartEnabled = Boolean(partial.startWithWindows);
+    try {
+      await this.autostart.setEnabled(autostartEnabled);
+    } catch {
+      autostartEnabled = await this.autostart.isEnabled().catch(() => false);
+      partial.startWithWindows = autostartEnabled;
+    }
+
     const updated = await SettingsManager.updateSettings(partial);
-    await this.autostart.setEnabled(Boolean(updated.startWithWindows));
+    this.applySettings(updated, autostartEnabled);
     if (this.saveState) {
       this.saveState.textContent = 'Saved';
     }

@@ -346,12 +346,6 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
         *lock = None;
     }
 
-    // Close the tooltip window if it's open — the user is starting a new
-    // capture, so the previous translation result is no longer relevant.
-    if let Some(tooltip) = app_handle.get_webview_window("tooltip") {
-        let _ = tooltip.destroy();
-    }
-
     // If an overlay handle is still around from the previous capture, destroy
     // it before creating a fresh selection window. A hidden/stale overlay can
     // keep focus inside this app without ever reaching selection-ready state.

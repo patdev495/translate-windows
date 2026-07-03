@@ -348,12 +348,11 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
         let _ = tooltip.destroy();
     }
 
-    // If an overlay window is already open, reset its UI state via a frontend
-    // event instead of destroying + recreating it. Destroying and recreating
-    // causes WebView2 to show a white page while the new window loads.
+    // If an overlay handle is still around from the previous capture, destroy
+    // it before creating a fresh selection window. A hidden/stale overlay can
+    // keep focus inside this app without ever reaching selection-ready state.
     if let Some(existing) = app_handle.get_webview_window("overlay") {
-        let _ = existing.emit("reset-overlay", ());
-        return Ok(());
+        let _ = existing.destroy();
     }
 
     let screen = current_screen()?;

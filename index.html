@@ -5,6 +5,15 @@
     <link rel="stylesheet" href="/src/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tauri App</title>
+    <script>
+      // Apply overlay-mode synchronously before the first browser paint so the
+      // window never renders with the default #f6f6f6 background. CSS rules for
+      // html.overlay-mode set background: transparent, eliminating any white flash
+      // when the overlay window is opened.
+      if (new URLSearchParams(location.search).get('overlay') === '1') {
+        document.documentElement.classList.add('overlay-mode');
+      }
+    </script>
     <script type="module" src="/src/main.ts" defer></script>
   </head>
 

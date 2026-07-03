@@ -1,5 +1,4 @@
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
 import { OverlayController } from "./overlay-controller";
 import { CropSelector, type CropRect } from "./crop-selector";
 import { handleCompletedCrop, handleCropImageActions } from "./crop-completion";
@@ -33,7 +32,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const logicalW = physW > 0 ? Math.round(physW / dpr) : window.innerWidth;
   const logicalH = physH > 0 ? Math.round(physH / dpr) : window.innerHeight;
 
-  const toScreenRect = getScreenRectMapper(params, logicalW, logicalH);
+  const toScreenRect = getScreenRectMapper(params, logicalW, logicalH) ?? ((rect: CropRect) => rect);
   // ── Overlay mode ─────────────────────────────────────────────────────────
   try {
     const imgUrl = await invoke<string | null>("get_capture_image");
@@ -61,8 +60,8 @@ window.addEventListener("DOMContentLoaded", async () => {
       if (cropCanvas) {
         cropCanvas.style.display = "block";
         // Use logicalW/H derived from URL params (not window.innerWidth which can be
-        // 0 on hidden windows). Canvas must be sized before selector.attach() draws
-        // the idle mask, and before show_overlay is called.
+        // 0 before layout is computed). Correct canvas size ensures the idle mask fills
+        // the whole screen and the crop-selector maps coordinates correctly.
         cropCanvas.width = logicalW;
         cropCanvas.height = logicalH;
 
@@ -107,45 +106,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       // Escape key still closes the overlay
       window.addEventListener("keydown", (e) => {
         overlayController.handleKeyDown(e);
-      });
-
-      // Backend emits this when the user presses the capture shortcut while
-      // the overlay is already open. Instead of destroying + recreating the
-      // window (which causes a WebView2 white flash), we reset state here.
-      await listen("reset-overlay", () => {
-        // Remove any in-progress spinner
-        document.querySelectorAll(".overlay-spinner-container").forEach(el => el.remove());
-
-        // Clear translation blocks and hide the container
-        const container = document.getElementById("translation-overlay-container");
-        if (container) {
-          container.innerHTML = "";
-          container.style.display = "none";
-        }
-
-        // Hide the control bar and detach its stale click handlers
-        const oldBar = document.getElementById("translation-control-bar");
-        if (oldBar) {
-          oldBar.style.display = "none";
-          // Clone to remove all event listeners added by runOverlayTranslation
-          const fresh = oldBar.cloneNode(true) as HTMLElement;
-          oldBar.replaceWith(fresh);
-        }
-
-        // Hide background screenshot (if any)
-        const bg = document.getElementById("overlay-bg") as HTMLImageElement | null;
-        if (bg) bg.style.display = "none";
-
-        // Restore the crop-canvas to idle selection mode
-        if (cropCanvas) {
-          cropCanvas.style.display = "block";
-          const ctx2d = cropCanvas.getContext("2d");
-          if (ctx2d) {
-            ctx2d.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
-            ctx2d.fillStyle = "rgba(0,0,0,0.18)";
-            ctx2d.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
-          }
-        }
       });
 
       return;

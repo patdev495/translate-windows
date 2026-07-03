@@ -342,6 +342,12 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
         *lock = None;
     }
 
+    // Close the tooltip window if it's open — the user is starting a new
+    // capture, so the previous translation result is no longer relevant.
+    if let Some(tooltip) = app_handle.get_webview_window("tooltip") {
+        let _ = tooltip.destroy();
+    }
+
     // If an overlay window is already open, reset its UI state via a frontend
     // event instead of destroying + recreating it. Destroying and recreating
     // causes WebView2 to show a white page while the new window loads.

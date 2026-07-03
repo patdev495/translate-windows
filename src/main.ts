@@ -48,8 +48,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       const cropCanvas = document.getElementById("crop-canvas") as HTMLCanvasElement | null;
       if (cropCanvas) {
         cropCanvas.style.display = "block";
-        cropCanvas.width = window.innerWidth;
-        cropCanvas.height = window.innerHeight;
 
         const selector = new CropSelector(cropCanvas, {
           onCrop: async (dataUrl: string | null, rect: CropRect) => {
@@ -83,11 +81,20 @@ window.addEventListener("DOMContentLoaded", async () => {
             }
           },
         });
-        selector.attach();
-        // Show the overlay window now that the canvas is ready.
-        // The backend creates it with visible=false to avoid WebView2's
-        // white-flash during page load. This call makes it appear.
-        void invoke("show_overlay");
+
+        // Defer canvas sizing to the next animation frame so that the browser
+        // has computed the layout even if the window started hidden (visible=false).
+        // window.innerWidth can be 0 during DOMContentLoaded on a hidden window,
+        // which would produce an invisible 0×0 canvas that blocks all mouse input.
+        requestAnimationFrame(() => {
+          cropCanvas.width = window.innerWidth || screen.availWidth;
+          cropCanvas.height = window.innerHeight || screen.availHeight;
+          selector.attach(); // draws dark idle mask
+          // Show the overlay window now that canvas is correctly sized.
+          // The backend created it with visible=false to avoid WebView2's
+          // white-flash during page load.
+          void invoke("show_overlay");
+        });
       }
 
       // Escape key still closes the overlay

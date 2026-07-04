@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { listen } from "@tauri-apps/api/event";
+import { currentMonitor, getCurrentWindow, LogicalPosition, LogicalSize } from "@tauri-apps/api/window";
 import { TooltipController } from "./tooltip-controller";
 import { recognizeWithBlocks } from "./services/ocr";
 import type { OcrProgress } from "./services/ocr";
@@ -14,17 +15,71 @@ const windowApi = {
 
 const controller = new TooltipController(windowApi);
 
-type TooltipPayload = { text: string; dataUrl?: string; x?: number; y?: number } | null;
+type TooltipData = {
+  text: string;
+  dataUrl?: string;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+} | null;
 
-async function waitForTooltipData(maxAttempts = 40, intervalMs = 50): Promise<TooltipPayload> {
+const MIN_TOOLTIP_WIDTH = 320;
+const DEFAULT_TOOLTIP_WIDTH = 420;
+const TOOLTIP_WIDTH_SCREEN_RATIO = 0.9;
+const TOOLTIP_HEIGHT_SCREEN_RATIO = 0.8;
+const TOOLTIP_WINDOW_PADDING = 32;
+const MIN_TOOLTIP_HEIGHT = 120;
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(value, max));
+}
+
+function nextFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
+async function waitForTooltipData(maxAttempts = 40, intervalMs = 50): Promise<TooltipData> {
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-    const data = await invoke<TooltipPayload>("get_tooltip_data");
+    const data = await invoke<TooltipData>("get_tooltip_data");
     if (data?.text || data?.dataUrl) {
       return data;
     }
     await new Promise((resolve) => setTimeout(resolve, intervalMs));
   }
-  return invoke<TooltipPayload>("get_tooltip_data");
+  return invoke<TooltipData>("get_tooltip_data");
+}
+
+async function resizeAndCenterTooltip(card: HTMLElement, payload: TooltipData): Promise<void> {
+  const appWindow = getCurrentWindow();
+  const monitor = await currentMonitor();
+  const monitorSize = monitor?.size.toLogical(monitor.scaleFactor);
+  const monitorPosition = monitor?.position.toLogical(monitor.scaleFactor);
+  const screenWidth = monitorSize?.width ?? window.screen.availWidth ?? DEFAULT_TOOLTIP_WIDTH;
+  const screenHeight = monitorSize?.height ?? window.screen.availHeight ?? 600;
+  const screenX = monitorPosition?.x ?? 0;
+  const screenY = monitorPosition?.y ?? 0;
+  const maxWidth = Math.max(MIN_TOOLTIP_WIDTH, Math.floor(screenWidth * TOOLTIP_WIDTH_SCREEN_RATIO));
+  const maxHeight = Math.max(MIN_TOOLTIP_HEIGHT, Math.floor(screenHeight * TOOLTIP_HEIGHT_SCREEN_RATIO));
+  const preferredWidth = payload?.width
+    ? Math.ceil(payload.width + TOOLTIP_WINDOW_PADDING)
+    : DEFAULT_TOOLTIP_WIDTH;
+  const width = clamp(preferredWidth, MIN_TOOLTIP_WIDTH, maxWidth);
+
+  card.style.width = `${width}px`;
+  card.style.height = "auto";
+  card.style.maxHeight = `${maxHeight}px`;
+  await nextFrame();
+
+  const naturalHeight = Math.ceil(card.scrollHeight);
+  const height = clamp(naturalHeight, MIN_TOOLTIP_HEIGHT, maxHeight);
+  card.style.height = `${height}px`;
+
+  await appWindow.setSize(new LogicalSize(width, height));
+  await appWindow.setPosition(new LogicalPosition(
+    screenX + (screenWidth - width) / 2,
+    screenY + (screenHeight - height) / 2
+  ));
 }
 
 function attachNativeDrag(card: HTMLElement): void {
@@ -78,15 +133,16 @@ window.addEventListener("DOMContentLoaded", async () => {
     controller.attachEscapeClose();
   }
 
+  let tooltipPayload: TooltipData = null;
   let ocrText = "";
   let dataUrl = "";
 
   try {
-    const data = await waitForTooltipData();
-    if (data?.text) {
-      ocrText = data.text;
-    } else if (data?.dataUrl) {
-      dataUrl = data.dataUrl;
+    tooltipPayload = await waitForTooltipData();
+    if (tooltipPayload?.text) {
+      ocrText = tooltipPayload.text;
+    } else if (tooltipPayload?.dataUrl) {
+      dataUrl = tooltipPayload.dataUrl;
     }
   } catch (err) {
     console.error("[Tooltip] Failed to load tooltip data:", err);
@@ -130,4 +186,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   await controller.initialize(ocrText, sourceEl, phoneticEl, translationEl, ttsBtn);
+  if (tooltipCard) {
+    await resizeAndCenterTooltip(tooltipCard, tooltipPayload);
+    if ("__TAURI_INTERNALS__" in window) {
+      void listen<Awaited<ReturnType<typeof SettingsManager.getSettings>>>("settings-changed", (event) => {
+        controller.applyPhoneticsVisibility(event.payload.phoneticsVisible !== false);
+        void resizeAndCenterTooltip(tooltipCard, tooltipPayload);
+      });
+    }
+  }
 });

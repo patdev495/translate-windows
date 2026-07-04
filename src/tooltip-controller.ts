@@ -43,6 +43,7 @@ export class TooltipController {
     const copySourceBtn = document.getElementById('copy-source-btn') as HTMLButtonElement | null;
     const copyTranslationBtn = document.getElementById('copy-translation-btn') as HTMLButtonElement | null;
     const translationLangEl = document.getElementById('translation-lang') as HTMLElement | null;
+    const phoneticsToggleBtn = document.getElementById('phonetics-toggle-btn') as HTMLButtonElement | null;
 
     const normalizedSource = sourceText.trim();
     if (!normalizedSource) {
@@ -62,6 +63,7 @@ export class TooltipController {
       phoneticEl.textContent = this.getPhonetics(normalizedSource, detectedLang);
       translatedText = translations.map((item) => item.text).join('\n');
       this.renderTranslations(translationEl, translations, Boolean(settings.ttsEnabled));
+      this.applyPhoneticsVisibility(settings.phoneticsVisible !== false);
       translationLangEl?.remove();
     } catch (err) {
       translationEl.textContent = '(translation failed)';
@@ -80,11 +82,30 @@ export class TooltipController {
       }
     });
 
+    phoneticsToggleBtn?.addEventListener('click', () => {
+      const nextVisible = phoneticsToggleBtn.getAttribute('aria-pressed') !== 'true';
+      this.applyPhoneticsVisibility(nextVisible);
+      void SettingsManager.updateSettings({ phoneticsVisible: nextVisible });
+    });
+
     if (settings.ttsEnabled) {
       ttsBtn.addEventListener('click', () => {
         this.speakText(normalizedSource, sourceLang);
       });
     }
+  }
+
+  applyPhoneticsVisibility(visible: boolean): void {
+    const phoneticElements = document.querySelectorAll<HTMLElement>('.phonetic, .translation-phonetic');
+    for (const element of phoneticElements) {
+      element.hidden = !visible;
+    }
+
+    const toggle = document.getElementById('phonetics-toggle-btn') as HTMLButtonElement | null;
+    if (!toggle) return;
+    toggle.setAttribute('aria-pressed', String(visible));
+    toggle.title = visible ? 'Hide Pinyin / IPA' : 'Show Pinyin / IPA';
+    toggle.setAttribute('aria-label', toggle.title);
   }
 
   private async translateForTargets(

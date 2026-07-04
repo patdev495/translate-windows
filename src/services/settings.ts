@@ -13,6 +13,7 @@ export interface Settings {
   provider: 'google' | 'deepl';
   deeplApiKey: string;
   tooltipFontSize: '12' | '14' | '16' | '18' | '20' | '24' | '28' | '32' | '36' | '40';
+  phoneticsVisible: boolean;
   ocrPinImage: boolean;
   ocrCopyToClipboard: boolean;
   startWithWindows: boolean;
@@ -34,6 +35,7 @@ export class SettingsManager {
     provider: 'google',
     deeplApiKey: '',
     tooltipFontSize: '16',
+    phoneticsVisible: true,
     ocrPinImage: false,
     ocrCopyToClipboard: true,
     startWithWindows: false,

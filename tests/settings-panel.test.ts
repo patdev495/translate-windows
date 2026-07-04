@@ -18,6 +18,7 @@ function makeForm(): HTMLFormElement {
       <div id="deepl-key-container"><input type="password" name="deeplApiKey" /></div>
       <input type="checkbox" name="ttsEnabled" />
       <select name="tooltipFontSize"><option value="16">16</option><option value="24">24</option></select>
+      <input type="checkbox" name="phoneticsVisible" />
       <input type="checkbox" name="ocrPinImage" />
       <input type="checkbox" name="ocrCopyToClipboard" />
       <input type="checkbox" name="startWithWindows" />
@@ -47,6 +48,7 @@ describe('SettingsPanelController', () => {
       provider: 'deepl',
       deeplApiKey: 'test-key',
       ttsEnabled: false,
+      phoneticsVisible: false,
       ocrPinImage: true,
       ocrCopyToClipboard: false,
       startWithWindows: true,
@@ -61,6 +63,7 @@ describe('SettingsPanelController', () => {
     expect((form.elements.namedItem('provider') as HTMLSelectElement).value).toBe('deepl');
     expect((form.elements.namedItem('deeplApiKey') as HTMLInputElement).value).toBe('test-key');
     expect((form.elements.namedItem('ttsEnabled') as HTMLInputElement).checked).toBe(false);
+    expect((form.elements.namedItem('phoneticsVisible') as HTMLInputElement).checked).toBe(false);
     expect((form.elements.namedItem('ocrPinImage') as HTMLInputElement).checked).toBe(true);
     expect((form.elements.namedItem('ocrCopyToClipboard') as HTMLInputElement).checked).toBe(false);
     expect((form.elements.namedItem('startWithWindows') as HTMLInputElement).checked).toBe(false);
@@ -75,6 +78,7 @@ describe('SettingsPanelController', () => {
 
     (form.elements.namedItem('tooltipFontSize') as HTMLSelectElement).value = '24';
     (form.elements.namedItem('autoTranslate') as HTMLInputElement).checked = false;
+    (form.elements.namedItem('phoneticsVisible') as HTMLInputElement).checked = false;
     (form.elements.namedItem('ocrPinImage') as HTMLInputElement).checked = true;
     (form.elements.namedItem('startWithWindows') as HTMLInputElement).checked = true;
     form.dispatchEvent(new Event('submit'));
@@ -83,6 +87,7 @@ describe('SettingsPanelController', () => {
     const settings = await SettingsManager.getSettings();
     expect(settings.tooltipFontSize).toBe('24');
     expect(settings.autoTranslate).toBe(false);
+    expect(settings.phoneticsVisible).toBe(false);
     expect(settings.ocrPinImage).toBe(true);
     expect(settings.startWithWindows).toBe(true);
     expect(autostart.setEnabled).toHaveBeenCalledWith(true);
@@ -117,6 +122,8 @@ describe('SettingsPanelController', () => {
     form.elements.namedItem('deeplApiKey')?.dispatchEvent(new Event('input'));
     (form.elements.namedItem('ttsEnabled') as HTMLInputElement).checked = false;
     form.elements.namedItem('ttsEnabled')?.dispatchEvent(new Event('change'));
+    (form.elements.namedItem('phoneticsVisible') as HTMLInputElement).checked = false;
+    form.elements.namedItem('phoneticsVisible')?.dispatchEvent(new Event('change'));
 
     await new Promise((resolve) => setTimeout(resolve, 160));
 
@@ -124,6 +131,7 @@ describe('SettingsPanelController', () => {
     expect(settings.provider).toBe('deepl');
     expect(settings.deeplApiKey).toBe('abc:fx');
     expect(settings.ttsEnabled).toBe(false);
+    expect(settings.phoneticsVisible).toBe(false);
     expect(document.getElementById('deepl-key-container')?.hidden).toBe(false);
   });
 });

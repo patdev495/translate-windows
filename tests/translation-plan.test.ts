@@ -14,8 +14,10 @@ const baseSettings: Settings = {
   provider: 'google',
   deeplApiKey: '',
   tooltipFontSize: '16',
+  phoneticsVisible: true,
   ocrPinImage: false,
   ocrCopyToClipboard: true,
+  startWithWindows: false,
 };
 
 describe('translation target planning', () => {

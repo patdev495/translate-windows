@@ -24,6 +24,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Default)]
 pub struct CaptureState(pub Mutex<Option<String>>);
 
+fn default_true() -> bool {
+    true
+}
+
 /// Data passed from the crop overlay to the tooltip window.
 #[derive(Default, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -84,6 +88,8 @@ pub struct AppSettings {
     pub provider: String,
     pub deepl_api_key: String,
     pub tooltip_font_size: String,
+    #[serde(default = "default_true")]
+    pub phonetics_visible: bool,
     pub ocr_pin_image: bool,
     pub ocr_copy_to_clipboard: bool,
     pub start_with_windows: bool,
@@ -103,6 +109,7 @@ impl Default for AppSettings {
             provider: "google".to_string(),
             deepl_api_key: String::new(),
             tooltip_font_size: "16".to_string(),
+            phonetics_visible: true,
             ocr_pin_image: false,
             ocr_copy_to_clipboard: true,
             start_with_windows: false,

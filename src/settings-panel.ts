@@ -20,6 +20,7 @@ type FieldName = keyof Pick<
   | 'provider'
   | 'deeplApiKey'
   | 'tooltipFontSize'
+  | 'phoneticsVisible'
   | 'ocrPinImage'
   | 'ocrCopyToClipboard'
   | 'startWithWindows'
@@ -37,6 +38,7 @@ const FIELD_NAMES: FieldName[] = [
   'provider',
   'deeplApiKey',
   'tooltipFontSize',
+  'phoneticsVisible',
   'ocrPinImage',
   'ocrCopyToClipboard',
   'startWithWindows',

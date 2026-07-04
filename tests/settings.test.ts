@@ -31,6 +31,7 @@ describe('SettingsManager', () => {
       provider: 'google',
       deeplApiKey: '',
       tooltipFontSize: '16',
+      phoneticsVisible: true,
       ocrPinImage: false,
       ocrCopyToClipboard: true,
       startWithWindows: false,
@@ -42,6 +43,7 @@ describe('SettingsManager', () => {
       primaryTargetLang: 'en',
       autoTranslate: false,
       ocrShortcut: 'alt-o',
+      phoneticsVisible: false,
       startWithWindows: true,
     });
     expect(updated.primaryTargetLang).toBe('en');
@@ -54,6 +56,7 @@ describe('SettingsManager', () => {
     expect(retrieved.reverseTargetLang).toBe('en');
     expect(retrieved.autoTranslate).toBe(false);
     expect(retrieved.ocrShortcut).toBe('alt-o');
+    expect(retrieved.phoneticsVisible).toBe(false);
     expect(retrieved.startWithWindows).toBe(true);
     expect(retrieved.provider).toBe('google');
     expect(retrieved.deeplApiKey).toBe('');

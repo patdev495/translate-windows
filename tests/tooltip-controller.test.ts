@@ -31,7 +31,9 @@ vi.mock('../src/services/settings', () => ({
       deeplApiKey: '',
       ttsEnabled: true,
       ocrLanguage: 'ch',
+      phoneticsVisible: true,
     }),
+    updateSettings: vi.fn().mockResolvedValue({ phoneticsVisible: false }),
   },
 }));
 
@@ -47,20 +49,24 @@ function makeDOM(): {
   phoneticEl: HTMLElement;
   translationEl: HTMLElement;
   ttsBtn: HTMLButtonElement;
+  phoneticsToggleBtn: HTMLButtonElement;
   card: HTMLElement;
 } {
   const sourceEl = document.createElement('div');
   sourceEl.id = 'source-text';
   const phoneticEl = document.createElement('div');
   phoneticEl.id = 'phonetic';
+  phoneticEl.className = 'phonetic';
   const translationEl = document.createElement('div');
   translationEl.id = 'translation';
   const ttsBtn = document.createElement('button');
   ttsBtn.id = 'tts-btn';
+  const phoneticsToggleBtn = document.createElement('button');
+  phoneticsToggleBtn.id = 'phonetics-toggle-btn';
   const card = document.createElement('div');
   card.id = 'tooltip-card';
-  document.body.append(sourceEl, phoneticEl, translationEl, ttsBtn, card);
-  return { sourceEl, phoneticEl, translationEl, ttsBtn, card };
+  document.body.append(sourceEl, phoneticEl, translationEl, ttsBtn, phoneticsToggleBtn, card);
+  return { sourceEl, phoneticEl, translationEl, ttsBtn, phoneticsToggleBtn, card };
 }
 
 describe('TooltipController', () => {
@@ -160,6 +166,39 @@ describe('TooltipController', () => {
     expect(dom.translationEl.textContent).toContain('Xin chao');
     expect(dom.translationEl.textContent).toContain('Ni hao');
     expect(dom.translationEl.querySelector('.translation-phonetic')?.textContent).toContain('ni hao');
+  });
+
+  test('initialize applies saved phonetics visibility to source and translations', async () => {
+    const { SettingsManager } = await import('../src/services/settings');
+    vi.mocked(SettingsManager.getSettings).mockResolvedValueOnce({
+      primaryTargetLang: 'vi',
+      secondaryTargetLang: 'zh',
+      reverseTargetLang: 'en',
+      provider: 'google',
+      deeplApiKey: '',
+      ttsEnabled: true,
+      ocrLanguage: 'ch',
+      phoneticsVisible: false,
+    } as any);
+
+    const controller = new TooltipController(windowApi);
+    await controller.initialize('hello', dom.sourceEl, dom.phoneticEl, dom.translationEl, dom.ttsBtn);
+
+    expect(dom.phoneticEl.hidden).toBe(true);
+    expect(dom.translationEl.querySelector<HTMLElement>('.translation-phonetic')?.hidden).toBe(true);
+    expect(dom.phoneticsToggleBtn.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  test('phonetics toggle updates the shared saved setting', async () => {
+    const { SettingsManager } = await import('../src/services/settings');
+    const controller = new TooltipController(windowApi);
+    await controller.initialize('hello', dom.sourceEl, dom.phoneticEl, dom.translationEl, dom.ttsBtn);
+
+    dom.phoneticsToggleBtn.click();
+
+    expect(dom.phoneticEl.hidden).toBe(true);
+    expect(dom.translationEl.querySelector<HTMLElement>('.translation-phonetic')?.hidden).toBe(true);
+    expect(SettingsManager.updateSettings).toHaveBeenCalledWith({ phoneticsVisible: false });
   });
 
   test('initialize does not translate when OCR returns no text', async () => {

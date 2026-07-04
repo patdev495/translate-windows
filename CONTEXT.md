@@ -29,6 +29,14 @@ The full-screen transparent web view window that renders the desktop capture, al
 **Native Tooltip Window**:
 The frameless, borderless, transparent, always-on-top window created by Tauri to display translations and pinyin/IPA phonetic details.
 
+**Readable Tooltip Width**:
+The tooltip width chosen from the crop width when available, clamped so short text remains readable and wide crops stay within the screen.
+_Avoid_: Fixed tooltip width, text-only auto width
+
+**Scrollable Tooltip Card**:
+The tooltip card scrolls internally when its content is taller than the centered native tooltip window.
+_Avoid_: Expanding off-screen, page-level scrolling
+
 **Draggable Pinned Snippet**:
 The floating transparent card showing the cropped image that stays on top of all windows until dismissed.
 
@@ -37,3 +45,19 @@ A checked system tray action that turns a capture behavior preference on or off 
 
 **Local OCR Engine**:
 The offline model runner using ONNX Runtime (WASM or native bindings) to read text coordinates and values from cropped images.
+
+**Crop-relative Text Layout**:
+The reading-order arrangement of recognized text lines as they appeared inside the selected crop, used to compare source text, phonetics, and translations.
+_Avoid_: Pixel-perfect crop clone, plain merged OCR text
+
+**Layout-preserving Translation Block**:
+Translated text displayed with the same OCR line arrangement as the source crop.
+_Avoid_: Translation paragraph, reflowed translation
+
+**Language Translation Block**:
+A single target-language translation section that preserves the OCR crop line layout for that language.
+_Avoid_: Mixed-language line groups
+
+**Block Phonetics**:
+Pinyin or IPA displayed as one phonetic block beneath the full OCR source text block.
+_Avoid_: Line-paired phonetics

@@ -18,6 +18,10 @@ describe('PhoneticEngine - Chinese Pinyin', () => {
     const result = PhoneticEngine.getPinyin('我喜歡學習漢語');
     expect(result).toBe('wǒ xǐ huān xué xí hàn yǔ');
   });
+  test('should preserve OCR line breaks in Pinyin blocks', () => {
+    const result = PhoneticEngine.getPinyin('\u4f60\u597d\n\u6f22\u8a9e');
+    expect(result.split('\n')).toHaveLength(2);
+  });
 });
 
 describe('PhoneticEngine - English IPA', () => {

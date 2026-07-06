@@ -33,6 +33,7 @@ test-results/
 # Cache and temporary files
 .cache/
 .vite/
+.worktrees/
 .scratch/tmp/
 *.tmp
 *.temp

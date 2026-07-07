@@ -404,6 +404,9 @@ fn destination_with_mp4_extension(path: PathBuf) -> PathBuf {
 }
 
 fn build_ffmpeg_record_args(rect: &RecordingRect, output_path: &std::path::Path) -> Vec<String> {
+    let width = rect.width - (rect.width % 2);
+    let height = rect.height - (rect.height % 2);
+
     vec![
         "-y".to_string(),
         "-f".to_string(),
@@ -415,10 +418,14 @@ fn build_ffmpeg_record_args(rect: &RecordingRect, output_path: &std::path::Path)
         "-offset_y".to_string(),
         rect.y.to_string(),
         "-video_size".to_string(),
-        format!("{}x{}", rect.width, rect.height),
+        format!("{}x{}", width.max(2), height.max(2)),
         "-i".to_string(),
         "desktop".to_string(),
         "-an".to_string(),
+        "-c:v".to_string(),
+        "mpeg4".to_string(),
+        "-q:v".to_string(),
+        "5".to_string(),
         "-pix_fmt".to_string(),
         "yuv420p".to_string(),
         output_path.to_string_lossy().to_string(),
@@ -1735,10 +1742,28 @@ mod tests {
             "-i",
             "desktop",
             "-an",
+            "-c:v",
+            "mpeg4",
+            "-q:v",
+            "5",
             "-pix_fmt",
             "yuv420p",
             "C:\\Temp\\capture.mp4",
         ]);
+    }
+
+    #[test]
+    fn ffmpeg_record_args_round_selected_region_to_even_dimensions() {
+        let rect = RecordingRect {
+            x: 20,
+            y: 30,
+            width: 641,
+            height: 361,
+        };
+        let args = build_ffmpeg_record_args(&rect, std::path::Path::new("C:\\Temp\\capture.mp4"));
+
+        let size_arg_index = args.iter().position(|arg| arg == "-video_size").unwrap() + 1;
+        assert_eq!(args[size_arg_index], "640x360");
     }
 
     #[test]

@@ -85,8 +85,8 @@ describe('recording overlay', () => {
   test('top hover strip is centered at the top edge', () => {
     expect(getTopRecordingHoverStripBounds(
       { width: 1000 },
-      { width: 300, height: 8 }
-    )).toEqual({ x: 350, y: 0, width: 300, height: 8 });
+      { width: 300, height: 12 }
+    )).toEqual({ x: 350, y: 0, width: 300, height: 12 });
   });
 
   test('top toolbar is centered at the top edge', () => {

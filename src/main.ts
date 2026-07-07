@@ -157,8 +157,9 @@ function setupRecordingOverlay(
   const startBtn = document.getElementById("recording-start-btn") as HTMLButtonElement | null;
   const stopBtn = document.getElementById("recording-stop-btn") as HTMLButtonElement | null;
   const cancelBtn = document.getElementById("recording-cancel-btn") as HTMLButtonElement | null;
+  const hoverTab = document.getElementById("recording-hover-tab") as HTMLDivElement | null;
 
-  if (!controlBar || !status || !startBtn || !stopBtn || !cancelBtn) {
+  if (!controlBar || !status || !startBtn || !stopBtn || !cancelBtn || !hoverTab) {
     return;
   }
 
@@ -209,9 +210,33 @@ function setupRecordingOverlay(
   };
   const controlSize = { width: 300, height: 52 };
   const topToolbarSize = { width: 300, height: 60 };
-  const topHoverStripSize = { width: 300, height: 8 };
+  const topHoverStripSize = { width: 300, height: 12 };
   let dockBounds: ReturnType<typeof getDockedRecordingOverlayBounds> | null = null;
   let controlsDockedAtTop = false;
+  const dockToHoverTab = async () => {
+    const hoverBounds = getTopRecordingHoverStripBounds(
+      { width: cropCanvas.width },
+      topHoverStripSize
+    );
+    controlBar.style.display = "none";
+    hoverTab.style.display = "block";
+    hoverTab.style.left = "0px";
+    hoverTab.style.top = "0px";
+    await controller.dockControls(hoverBounds);
+  };
+
+  const expandTopToolbar = async () => {
+    const toolbarBounds = getTopRecordingToolbarBounds(
+      { width: cropCanvas.width },
+      topToolbarSize
+    );
+    await controller.dockControls(toolbarBounds);
+    hoverTab.style.display = "none";
+    controlBar.style.left = "0px";
+    controlBar.style.top = "4px";
+    controlBar.style.display = "flex";
+    render();
+  };
 
   const selector = new CropSelector(cropCanvas, {
     onCrop: (_dataUrl, rect) => {
@@ -252,46 +277,29 @@ function setupRecordingOverlay(
   startBtn.onclick = async () => {
     await controller.start();
     if (controller.getState().status === "recording" && dockBounds) {
-      const hoverBounds = getTopRecordingHoverStripBounds(
-        { width: cropCanvas.width },
-        topHoverStripSize
-      );
-      await controller.dockControls(hoverBounds);
       cropCanvas.style.display = "none";
-      controlBar.style.left = "0px";
-      controlBar.style.top = "8px";
-      controlBar.style.display = "none";
       controlsDockedAtTop = true;
+      await dockToHoverTab();
     }
     startTimer();
     render();
   };
 
-  window.addEventListener("mouseenter", async () => {
+  hoverTab.addEventListener("mouseenter", async () => {
     if (!controlsDockedAtTop || controller.getState().status !== "recording") return;
-    const toolbarBounds = getTopRecordingToolbarBounds(
-      { width: cropCanvas.width },
-      topToolbarSize
-    );
-    await controller.dockControls(toolbarBounds);
-    controlBar.style.display = "flex";
-    render();
+    await expandTopToolbar();
   });
 
-  window.addEventListener("mouseleave", async () => {
+  controlBar.addEventListener("mouseleave", async () => {
     if (!controlsDockedAtTop || controller.getState().status !== "recording") return;
-    const hoverBounds = getTopRecordingHoverStripBounds(
-      { width: cropCanvas.width },
-      topHoverStripSize
-    );
-    controlBar.style.display = "none";
-    await controller.dockControls(hoverBounds);
+    await dockToHoverTab();
   });
 
   stopBtn.onclick = async () => {
     stopTimer();
     await controller.stop();
     controlsDockedAtTop = false;
+    hoverTab.style.display = "none";
     render();
   };
 

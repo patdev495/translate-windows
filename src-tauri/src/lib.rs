@@ -543,6 +543,12 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
 
 // ── Tauri commands ────────────────────────────────────────────────────────
 
+fn build_recording_overlay_url(x: i32, y: i32, width: u32, height: u32) -> String {
+    format!(
+        "index.html?overlay=1&recording=1&screenX={x}&screenY={y}&screenWidth={width}&screenHeight={height}"
+    )
+}
+
 fn request_capture_and_overlay(app_handle: &tauri::AppHandle) {
     let request_state: tauri::State<CaptureRequestState> = app_handle.state();
     if request_state.0.swap(true, Ordering::SeqCst) {
@@ -559,20 +565,53 @@ fn request_capture_and_overlay(app_handle: &tauri::AppHandle) {
     });
 }
 
-fn trigger_recording_overlay(_app_handle: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
+fn trigger_recording_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(existing) = app_handle.get_webview_window("overlay") {
+        let _ = existing.show();
+        let _ = existing.set_focus();
+        return Ok(());
+    }
+
+    let screen = current_screen()?;
+    let info = screen.display_info;
+    let scale_factor = info.scale_factor as f64;
+    let overlay_url = build_recording_overlay_url(info.x, info.y, info.width, info.height);
+
+    let logical_x = info.x as f64 / scale_factor;
+    let logical_y = info.y as f64 / scale_factor;
+
+    WebviewWindowBuilder::new(
+        app_handle,
+        "overlay",
+        tauri::WebviewUrl::App(overlay_url.into())
+    )
+    .title("Recording Overlay")
+    .fullscreen(true)
+    .position(logical_x, logical_y)
+    .resizable(false)
+    .decorations(false)
+    .transparent(true)
+    .always_on_top(true)
+    .visible(false)
+    .build()?;
+
     Ok(())
 }
 
 fn request_recording_overlay(app_handle: &tauri::AppHandle) {
-    if let Some(existing) = app_handle.get_webview_window("overlay") {
-        let _ = existing.show();
-        let _ = existing.set_focus();
+    let request_state: tauri::State<RecordingRequestState> = app_handle.state();
+    if request_state.0.swap(true, Ordering::SeqCst) {
         return;
     }
 
-    if let Err(err) = trigger_recording_overlay(app_handle) {
-        eprintln!("Failed to trigger recording overlay: {err}");
-    }
+    let handle = app_handle.clone();
+    std::thread::spawn(move || {
+        if let Err(err) = trigger_recording_overlay(&handle) {
+            eprintln!("Failed to trigger recording overlay: {err}");
+        }
+        let request_state: tauri::State<RecordingRequestState> = handle.state();
+        request_state.0.store(false, Ordering::SeqCst);
+    });
 }
 
 #[tauri::command]
@@ -583,6 +622,17 @@ fn get_capture_image(state: tauri::State<'_, CaptureState>) -> Option<String> {
 
 #[tauri::command]
 fn close_overlay(app_handle: tauri::AppHandle) {
+    let state: tauri::State<RecordingState> = app_handle.state();
+    let active = {
+        let mut lock = state.0.lock().unwrap();
+        lock.take()
+    };
+
+    if let Some(mut recording) = active {
+        let _ = stop_ffmpeg_child(&mut recording.child);
+        let _ = fs::remove_file(&recording.temp_path);
+    }
+
     if let Some(overlay) = app_handle.get_webview_window("overlay") {
         let _ = overlay.destroy();
     }
@@ -1497,8 +1547,8 @@ pub fn run() {
 mod tests {
     use super::{
         autostart_available_in_current_build, build_ffmpeg_record_args,
-        destination_with_mp4_extension, finalize_recording_file, global_shortcut_specs,
-        recording_temp_path, tray_menu_specs, RecordingRect, TooltipData,
+        build_recording_overlay_url, destination_with_mp4_extension, finalize_recording_file,
+        global_shortcut_specs, recording_temp_path, tray_menu_specs, RecordingRect, TooltipData,
     };
     use tauri_plugin_global_shortcut::Code;
 
@@ -1621,6 +1671,15 @@ mod tests {
 
         let _ = std::fs::remove_file(final_path);
         let _ = std::fs::remove_dir(dir);
+    }
+
+    #[test]
+    fn recording_overlay_url_marks_overlay_as_recording_mode() {
+        let url = build_recording_overlay_url(10, 20, 640, 360);
+        assert_eq!(
+            url,
+            "index.html?overlay=1&recording=1&screenX=10&screenY=20&screenWidth=640&screenHeight=360"
+        );
     }
 
     #[test]

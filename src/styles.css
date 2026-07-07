@@ -211,6 +211,55 @@ html.overlay-mode body {
   transform: scale(0.97);
 }
 
+.recording-control-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 260px;
+  min-height: 52px;
+  box-sizing: border-box;
+  background: rgba(18, 18, 22, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.36);
+  pointer-events: auto;
+}
+
+.recording-status {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 82px;
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recording-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.recording-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.recording-btn.danger {
+  background: rgba(220, 38, 38, 0.88);
+  border-color: rgba(248, 113, 113, 0.8);
+}
+
 /* Spinner for overlay loading state */
 .overlay-spinner-container {
   position: absolute;

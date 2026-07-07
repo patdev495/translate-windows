@@ -1,8 +1,9 @@
 use std::borrow::Cow;
 use std::io::Cursor;
+use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
-use std::time::Duration;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use std::{fs, path::PathBuf};
 use arboard::{Clipboard, ImageData};
 use tauri::{Emitter, Manager, WebviewWindowBuilder};
@@ -129,6 +130,26 @@ pub struct TraySettingsItems {
 #[derive(Default)]
 pub struct CaptureRequestState(pub AtomicBool);
 
+#[derive(Default)]
+pub struct RecordingRequestState(pub AtomicBool);
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RecordingRect {
+    pub x: i32,
+    pub y: i32,
+    pub width: u32,
+    pub height: u32,
+}
+
+#[derive(Default)]
+pub struct RecordingState(pub Mutex<Option<ActiveRecording>>);
+
+pub struct ActiveRecording {
+    pub rect: RecordingRect,
+    pub temp_path: PathBuf,
+    pub child: Child,
+}
+
 #[derive(Clone, Copy)]
 struct TrayMenuSpec {
     id: &'static str,
@@ -141,9 +162,10 @@ struct GlobalShortcutSpec {
     code: Code,
 }
 
-fn tray_menu_specs() -> [TrayMenuSpec; 7] {
+fn tray_menu_specs() -> [TrayMenuSpec; 8] {
     [
         TrayMenuSpec { id: "capture_ocr", label: "Capture OCR (Ctrl+3)" },
+        TrayMenuSpec { id: "record_screen", label: "Record Screen (Ctrl+4)" },
         TrayMenuSpec { id: "copy_full_screen", label: "Capture Full Screen (Alt+B)" },
         TrayMenuSpec { id: "auto_translate", label: "Auto Translate" },
         TrayMenuSpec { id: "ocr_pin_image", label: "Pin OCR Image" },
@@ -153,9 +175,10 @@ fn tray_menu_specs() -> [TrayMenuSpec; 7] {
     ]
 }
 
-fn global_shortcut_specs() -> [GlobalShortcutSpec; 2] {
+fn global_shortcut_specs() -> [GlobalShortcutSpec; 3] {
     [
         GlobalShortcutSpec { id: "capture_ocr", code: Code::Digit3 },
+        GlobalShortcutSpec { id: "record_screen", code: Code::Digit4 },
         GlobalShortcutSpec { id: "copy_full_screen", code: Code::KeyB },
     ]
 }
@@ -351,6 +374,114 @@ fn spawn_copy_full_screen_to_clipboard(app_handle: tauri::AppHandle) {
     });
 }
 
+fn recording_temp_path() -> PathBuf {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis();
+    std::env::temp_dir().join(format!("polytranslate-recording-{millis}.mp4"))
+}
+
+fn destination_with_mp4_extension(path: PathBuf) -> PathBuf {
+    match path.extension().and_then(|value| value.to_str()) {
+        Some(ext) if ext.eq_ignore_ascii_case("mp4") => path,
+        _ => path.with_extension("mp4"),
+    }
+}
+
+fn build_ffmpeg_record_args(rect: &RecordingRect, output_path: &std::path::Path) -> Vec<String> {
+    vec![
+        "-y".to_string(),
+        "-f".to_string(),
+        "gdigrab".to_string(),
+        "-framerate".to_string(),
+        "30".to_string(),
+        "-offset_x".to_string(),
+        rect.x.to_string(),
+        "-offset_y".to_string(),
+        rect.y.to_string(),
+        "-video_size".to_string(),
+        format!("{}x{}", rect.width, rect.height),
+        "-i".to_string(),
+        "desktop".to_string(),
+        "-an".to_string(),
+        "-pix_fmt".to_string(),
+        "yuv420p".to_string(),
+        output_path.to_string_lossy().to_string(),
+    ]
+}
+
+fn ensure_ffmpeg_available() -> Result<(), String> {
+    let output = Command::new("ffmpeg")
+        .arg("-version")
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map_err(|_| {
+            "FFmpeg was not found. Install FFmpeg and make sure ffmpeg.exe is available on PATH."
+                .to_string()
+        })?;
+
+    if output.success() {
+        Ok(())
+    } else {
+        Err(
+            "FFmpeg was found but did not start successfully. Reinstall FFmpeg or check your PATH entry."
+                .to_string(),
+        )
+    }
+}
+
+fn spawn_ffmpeg_recording(rect: &RecordingRect, temp_path: &std::path::Path) -> Result<Child, String> {
+    let args = build_ffmpeg_record_args(rect, temp_path);
+    Command::new("ffmpeg")
+        .args(args)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|err| format!("Could not start FFmpeg recording: {err}"))
+}
+
+fn stop_ffmpeg_child(child: &mut Child) -> Result<(), String> {
+    if let Some(stdin) = child.stdin.as_mut() {
+        use std::io::Write;
+        let _ = stdin.write_all(b"q");
+    }
+
+    for _ in 0..20 {
+        match child.try_wait() {
+            Ok(Some(status)) => {
+                return if status.success() {
+                    Ok(())
+                } else {
+                    Err(format!("FFmpeg exited with status {status}"))
+                };
+            }
+            Ok(None) => std::thread::sleep(Duration::from_millis(100)),
+            Err(err) => return Err(format!("Could not read FFmpeg status: {err}")),
+        }
+    }
+
+    let _ = child.kill();
+    let _ = child.wait();
+    Err("FFmpeg did not stop in time, so the recording was aborted.".to_string())
+}
+
+fn finalize_recording_file(temp_path: &std::path::Path, destination: PathBuf) -> Result<PathBuf, String> {
+    let destination = destination_with_mp4_extension(destination);
+    match fs::rename(temp_path, &destination) {
+        Ok(()) => Ok(destination),
+        Err(_) => {
+            fs::copy(temp_path, &destination)
+                .map_err(|err| format!("Could not copy recording to selected destination: {err}"))?;
+            fs::remove_file(temp_path)
+                .map_err(|err| format!("Could not remove temporary recording after copy: {err}"))?;
+            Ok(destination)
+        }
+    }
+}
+
 #[cfg(target_os = "windows")]
 fn cursor_position() -> Option<(i32, i32)> {
     let mut point = windows_sys::Win32::Foundation::POINT { x: 0, y: 0 };
@@ -412,6 +543,12 @@ fn trigger_capture_and_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<
 
 // ── Tauri commands ────────────────────────────────────────────────────────
 
+fn build_recording_overlay_url(x: i32, y: i32, width: u32, height: u32) -> String {
+    format!(
+        "index.html?overlay=1&recording=1&screenX={x}&screenY={y}&screenWidth={width}&screenHeight={height}"
+    )
+}
+
 fn request_capture_and_overlay(app_handle: &tauri::AppHandle) {
     let request_state: tauri::State<CaptureRequestState> = app_handle.state();
     if request_state.0.swap(true, Ordering::SeqCst) {
@@ -428,6 +565,55 @@ fn request_capture_and_overlay(app_handle: &tauri::AppHandle) {
     });
 }
 
+fn trigger_recording_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(existing) = app_handle.get_webview_window("overlay") {
+        let _ = existing.show();
+        let _ = existing.set_focus();
+        return Ok(());
+    }
+
+    let screen = current_screen()?;
+    let info = screen.display_info;
+    let scale_factor = info.scale_factor as f64;
+    let overlay_url = build_recording_overlay_url(info.x, info.y, info.width, info.height);
+
+    let logical_x = info.x as f64 / scale_factor;
+    let logical_y = info.y as f64 / scale_factor;
+
+    WebviewWindowBuilder::new(
+        app_handle,
+        "overlay",
+        tauri::WebviewUrl::App(overlay_url.into())
+    )
+    .title("Recording Overlay")
+    .fullscreen(true)
+    .position(logical_x, logical_y)
+    .resizable(false)
+    .decorations(false)
+    .transparent(true)
+    .always_on_top(true)
+    .visible(false)
+    .build()?;
+
+    Ok(())
+}
+
+fn request_recording_overlay(app_handle: &tauri::AppHandle) {
+    let request_state: tauri::State<RecordingRequestState> = app_handle.state();
+    if request_state.0.swap(true, Ordering::SeqCst) {
+        return;
+    }
+
+    let handle = app_handle.clone();
+    std::thread::spawn(move || {
+        if let Err(err) = trigger_recording_overlay(&handle) {
+            eprintln!("Failed to trigger recording overlay: {err}");
+        }
+        let request_state: tauri::State<RecordingRequestState> = handle.state();
+        request_state.0.store(false, Ordering::SeqCst);
+    });
+}
+
 #[tauri::command]
 fn get_capture_image(state: tauri::State<'_, CaptureState>) -> Option<String> {
     let lock = state.0.lock().unwrap();
@@ -436,6 +622,17 @@ fn get_capture_image(state: tauri::State<'_, CaptureState>) -> Option<String> {
 
 #[tauri::command]
 fn close_overlay(app_handle: tauri::AppHandle) {
+    let state: tauri::State<RecordingState> = app_handle.state();
+    let active = {
+        let mut lock = state.0.lock().unwrap();
+        lock.take()
+    };
+
+    if let Some(mut recording) = active {
+        let _ = stop_ffmpeg_child(&mut recording.child);
+        let _ = fs::remove_file(&recording.temp_path);
+    }
+
     if let Some(overlay) = app_handle.get_webview_window("overlay") {
         let _ = overlay.destroy();
     }
@@ -450,6 +647,87 @@ fn show_overlay(app_handle: tauri::AppHandle) {
         let _ = overlay.show();
         let _ = overlay.set_focus();
     }
+}
+
+#[tauri::command]
+fn start_screen_recording(
+    state: tauri::State<'_, RecordingState>,
+    x: i32,
+    y: i32,
+    width: u32,
+    height: u32,
+) -> Result<(), String> {
+    if width == 0 || height == 0 {
+        return Err("Select a recording area before starting.".to_string());
+    }
+
+    let mut lock = state.0.lock().unwrap();
+    if lock.is_some() {
+        return Err("A screen recording is already in progress.".to_string());
+    }
+
+    ensure_ffmpeg_available()?;
+
+    let rect = RecordingRect { x, y, width, height };
+    let temp_path = recording_temp_path();
+    let child = spawn_ffmpeg_recording(&rect, &temp_path)?;
+
+    *lock = Some(ActiveRecording { rect, temp_path, child });
+    Ok(())
+}
+
+#[tauri::command]
+fn cancel_screen_recording(state: tauri::State<'_, RecordingState>) -> Result<(), String> {
+    let active = {
+        let mut lock = state.0.lock().unwrap();
+        lock.take()
+    };
+
+    if let Some(mut recording) = active {
+        let _ = stop_ffmpeg_child(&mut recording.child);
+        let _ = fs::remove_file(&recording.temp_path);
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+fn stop_screen_recording(
+    app_handle: tauri::AppHandle,
+    state: tauri::State<'_, RecordingState>,
+) -> Result<Option<String>, String> {
+    let active = {
+        let mut lock = state.0.lock().unwrap();
+        lock.take()
+    };
+
+    let Some(mut recording) = active else {
+        return Err("No screen recording is in progress.".to_string());
+    };
+
+    stop_ffmpeg_child(&mut recording.child)?;
+
+    use tauri_plugin_dialog::DialogExt;
+    let destination = app_handle
+        .dialog()
+        .file()
+        .add_filter("MP4 Video", &["mp4"])
+        .set_file_name("polytranslate-recording.mp4")
+        .blocking_save_file();
+
+    let Some(destination) = destination else {
+        let _ = fs::remove_file(&recording.temp_path);
+        return Ok(None);
+    };
+
+    let final_path = finalize_recording_file(
+        &recording.temp_path,
+        destination.into_path().map_err(|_| {
+            "The selected save destination is not a local filesystem path.".to_string()
+        })?,
+    )?;
+
+    Ok(Some(final_path.to_string_lossy().to_string()))
 }
 
 #[tauri::command]
@@ -1039,21 +1317,22 @@ fn open_settings_window_inner(app_handle: &tauri::AppHandle) -> Result<(), Box<d
 fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let specs = tray_menu_specs();
     let capture_item = MenuItem::with_id(app, specs[0].id, specs[0].label, true, None::<&str>)?;
-    let copy_full_screen_item = MenuItem::with_id(app, specs[1].id, specs[1].label, true, None::<&str>)?;
+    let record_screen_item = MenuItem::with_id(app, specs[1].id, specs[1].label, true, None::<&str>)?;
+    let copy_full_screen_item = MenuItem::with_id(app, specs[2].id, specs[2].label, true, None::<&str>)?;
     let settings_state: tauri::State<AppSettingsState> = app.handle().state();
     let current_settings = settings_state.0.lock().unwrap().clone();
     let auto_translate_item = CheckMenuItem::with_id(
         app,
-        specs[2].id,
-        specs[2].label,
+        specs[3].id,
+        specs[3].label,
         true,
         current_settings.auto_translate,
         None::<&str>,
     )?;
     let pin_image_item = CheckMenuItem::with_id(
         app,
-        specs[3].id,
-        specs[3].label,
+        specs[4].id,
+        specs[4].label,
         true,
         current_settings.ocr_pin_image,
         None::<&str>,
@@ -1065,18 +1344,19 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     };
     let autostart_item = CheckMenuItem::with_id(
         app,
-        specs[5].id,
-        specs[5].label,
+        specs[6].id,
+        specs[6].label,
         autostart_available_in_current_build(),
         autostart_enabled,
         None::<&str>,
     )?;
-    let settings_item = MenuItem::with_id(app, specs[4].id, specs[4].label, true, None::<&str>)?;
-    let exit_item = MenuItem::with_id(app, specs[6].id, specs[6].label, true, None::<&str>)?;
+    let settings_item = MenuItem::with_id(app, specs[5].id, specs[5].label, true, None::<&str>)?;
+    let exit_item = MenuItem::with_id(app, specs[7].id, specs[7].label, true, None::<&str>)?;
     let menu = Menu::with_items(
         app,
         &[
             &capture_item,
+            &record_screen_item,
             &copy_full_screen_item,
             &auto_translate_item,
             &pin_image_item,
@@ -1099,6 +1379,9 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         .on_menu_event(move |app_handle, event| match event.id().as_ref() {
             "capture_ocr" => {
                 request_capture_and_overlay(app_handle);
+            }
+            "record_screen" => {
+                request_recording_overlay(app_handle);
             }
             "copy_full_screen" => {
                 spawn_copy_full_screen_to_clipboard(app_handle.clone());
@@ -1184,6 +1467,7 @@ pub fn run() {
             None,
         ))
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_dialog::init())
         .manage(CaptureState::default())
         .manage(TooltipState::default())
         .manage(SnippetCounter::default())
@@ -1191,6 +1475,8 @@ pub fn run() {
         .manage(AppSettingsState::default())
         .manage(TraySettingsItems::default())
         .manage(CaptureRequestState::default())
+        .manage(RecordingState::default())
+        .manage(RecordingRequestState::default())
         .setup(|app| {
             cleanup_unsupported_autostart(app.handle());
             let settings = load_settings_from_disk(app.handle());
@@ -1201,10 +1487,10 @@ pub fn run() {
             }
             setup_tray(app)?;
             for spec in global_shortcut_specs() {
-                let modifiers = if spec.id == "capture_ocr" {
-                    Modifiers::CONTROL
-                } else {
-                    Modifiers::ALT
+                let modifiers = match spec.id {
+                    "capture_ocr" | "record_screen" => Modifiers::CONTROL,
+                    "copy_full_screen" => Modifiers::ALT,
+                    _ => Modifiers::CONTROL,
                 };
                 let shortcut = Shortcut::new(Some(modifiers), spec.code);
                 app.global_shortcut().on_shortcut(shortcut, move |app_handle, _shortcut, event| {
@@ -1215,6 +1501,9 @@ pub fn run() {
                     match spec.id {
                         "capture_ocr" => {
                             request_capture_and_overlay(app_handle);
+                        }
+                        "record_screen" => {
+                            request_recording_overlay(app_handle);
                         }
                         "copy_full_screen" => {
                             spawn_copy_full_screen_to_clipboard(app_handle.clone());
@@ -1229,6 +1518,9 @@ pub fn run() {
             get_capture_image,
             close_overlay,
             show_overlay,
+            start_screen_recording,
+            stop_screen_recording,
+            cancel_screen_recording,
             process_crop,
             process_crop_area,
             process_crop_image_actions,
@@ -1254,7 +1546,9 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::{
-        autostart_available_in_current_build, global_shortcut_specs, tray_menu_specs, TooltipData,
+        autostart_available_in_current_build, build_ffmpeg_record_args,
+        build_recording_overlay_url, destination_with_mp4_extension, finalize_recording_file,
+        global_shortcut_specs, recording_temp_path, tray_menu_specs, RecordingRect, TooltipData,
     };
     use tauri_plugin_global_shortcut::Code;
 
@@ -1282,6 +1576,7 @@ mod tests {
 
         assert_eq!(ids, vec![
             "capture_ocr",
+            "record_screen",
             "copy_full_screen",
             "auto_translate",
             "ocr_pin_image",
@@ -1292,13 +1587,99 @@ mod tests {
     }
 
     #[test]
-    fn global_shortcuts_expose_ocr_and_clipboard_capture() {
+    fn global_shortcuts_expose_ocr_recording_and_clipboard_capture() {
         let specs = global_shortcut_specs();
         let ids: Vec<&str> = specs.iter().map(|item| item.id).collect();
         let codes: Vec<Code> = specs.iter().map(|item| item.code).collect();
 
-        assert_eq!(ids, vec!["capture_ocr", "copy_full_screen"]);
-        assert_eq!(codes, vec![Code::Digit3, Code::KeyB]);
+        assert_eq!(ids, vec!["capture_ocr", "record_screen", "copy_full_screen"]);
+        assert_eq!(codes, vec![Code::Digit3, Code::Digit4, Code::KeyB]);
+    }
+
+    #[test]
+    fn ffmpeg_record_args_target_selected_region_without_audio() {
+        let rect = RecordingRect {
+            x: 20,
+            y: 30,
+            width: 640,
+            height: 360,
+        };
+        let args = build_ffmpeg_record_args(&rect, std::path::Path::new("C:\\Temp\\capture.mp4"));
+
+        assert_eq!(args, vec![
+            "-y",
+            "-f",
+            "gdigrab",
+            "-framerate",
+            "30",
+            "-offset_x",
+            "20",
+            "-offset_y",
+            "30",
+            "-video_size",
+            "640x360",
+            "-i",
+            "desktop",
+            "-an",
+            "-pix_fmt",
+            "yuv420p",
+            "C:\\Temp\\capture.mp4",
+        ]);
+    }
+
+    #[test]
+    fn destination_with_mp4_extension_adds_missing_extension() {
+        let path = destination_with_mp4_extension(std::path::PathBuf::from("C:\\Videos\\clip"));
+        assert_eq!(path, std::path::PathBuf::from("C:\\Videos\\clip.mp4"));
+    }
+
+    #[test]
+    fn destination_with_mp4_extension_preserves_existing_mp4_extension() {
+        let path = destination_with_mp4_extension(std::path::PathBuf::from("C:\\Videos\\clip.mp4"));
+        assert_eq!(path, std::path::PathBuf::from("C:\\Videos\\clip.mp4"));
+    }
+
+    #[test]
+    fn recording_temp_path_uses_mp4_extension() {
+        let path = recording_temp_path();
+        assert_eq!(path.extension().and_then(|value| value.to_str()), Some("mp4"));
+    }
+
+    #[test]
+    fn recording_rect_rejects_empty_dimensions() {
+        assert!(RecordingRect { x: 0, y: 0, width: 0, height: 100 }.width == 0);
+        assert!(RecordingRect { x: 0, y: 0, width: 100, height: 0 }.height == 0);
+    }
+
+    #[test]
+    fn finalize_recording_file_moves_temp_and_adds_mp4_extension() {
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir = std::env::temp_dir().join(format!("polytranslate-recording-test-{unique}"));
+        std::fs::create_dir_all(&dir).unwrap();
+        let temp_path = dir.join("recording.tmp");
+        let destination = dir.join("saved-clip");
+        std::fs::write(&temp_path, b"video").unwrap();
+
+        let final_path = finalize_recording_file(&temp_path, destination).unwrap();
+
+        assert_eq!(final_path, dir.join("saved-clip.mp4"));
+        assert_eq!(std::fs::read(&final_path).unwrap(), b"video");
+        assert!(!temp_path.exists());
+
+        let _ = std::fs::remove_file(final_path);
+        let _ = std::fs::remove_dir(dir);
+    }
+
+    #[test]
+    fn recording_overlay_url_marks_overlay_as_recording_mode() {
+        let url = build_recording_overlay_url(10, 20, 640, 360);
+        assert_eq!(
+            url,
+            "index.html?overlay=1&recording=1&screenX=10&screenY=20&screenWidth=640&screenHeight=360"
+        );
     }
 
     #[test]

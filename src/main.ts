@@ -8,6 +8,11 @@ import { getScreenRectMapper } from "./screen-rect";
 import { recognizeWithBlocks } from "./services/ocr";
 import { TranslationEngine } from "./services/translation";
 import { getDetectionTarget, getTranslationTargets } from "./services/translation-plan";
+import {
+  getRecordingControlPosition,
+  RecordingOverlayController,
+  type RecordingCommandApi,
+} from "./recording-overlay";
 
 const windowApi = {
   close: () => {
@@ -20,6 +25,7 @@ const overlayController = new OverlayController(windowApi);
 window.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const isOverlayWindow = params.get("overlay") === "1";
+  const isRecordingWindow = params.get("recording") === "1";
 
   // Compute logical (CSS-pixel) viewport dimensions from the physical screen
   // dimensions embedded in the URL params. window.innerWidth/Height can be 0
@@ -33,6 +39,26 @@ window.addEventListener("DOMContentLoaded", async () => {
   const logicalH = physH > 0 ? Math.round(physH / dpr) : window.innerHeight;
 
   const toScreenRect = getScreenRectMapper(params, logicalW, logicalH) ?? ((rect: CropRect) => rect);
+  if (isOverlayWindow && isRecordingWindow) {
+    document.documentElement.classList.add("overlay-mode");
+    document.body.classList.add("overlay-mode");
+    document.getElementById("main-container")?.setAttribute("hidden", "");
+
+    const cropCanvas = document.getElementById("crop-canvas") as HTMLCanvasElement | null;
+    if (cropCanvas) {
+      cropCanvas.style.display = "block";
+      cropCanvas.width = logicalW;
+      cropCanvas.height = logicalH;
+      setupRecordingOverlay(cropCanvas, toScreenRect);
+      void invoke("show_overlay");
+    }
+
+    window.addEventListener("keydown", (e) => {
+      overlayController.handleKeyDown(e);
+    });
+
+    return;
+  }
   // ── Overlay mode ─────────────────────────────────────────────────────────
   try {
     const imgUrl = await invoke<string | null>("get_capture_image");
@@ -118,6 +144,113 @@ window.addEventListener("DOMContentLoaded", async () => {
   void initializeOcrModelLifecycle();
   document.getElementById("main-container")?.setAttribute("hidden", "");
 });
+
+function setupRecordingOverlay(
+  cropCanvas: HTMLCanvasElement,
+  toScreenRect: (r: CropRect) => CropRect
+): void {
+  const controlBar = document.getElementById("recording-control-bar") as HTMLDivElement | null;
+  const status = document.getElementById("recording-status") as HTMLDivElement | null;
+  const startBtn = document.getElementById("recording-start-btn") as HTMLButtonElement | null;
+  const stopBtn = document.getElementById("recording-stop-btn") as HTMLButtonElement | null;
+  const cancelBtn = document.getElementById("recording-cancel-btn") as HTMLButtonElement | null;
+
+  if (!controlBar || !status || !startBtn || !stopBtn || !cancelBtn) {
+    return;
+  }
+
+  const api: RecordingCommandApi = {
+    start: (rect) => invoke("start_screen_recording", {
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+    }),
+    stop: () => invoke<string | null>("stop_screen_recording"),
+    cancel: () => invoke("cancel_screen_recording"),
+    close: () => invoke("close_overlay"),
+  };
+  const controller = new RecordingOverlayController(api);
+
+  const render = () => {
+    const state = controller.getState();
+    startBtn.style.display = state.status === "ready" || state.status === "error" ? "inline-flex" : "none";
+    stopBtn.style.display = state.status === "recording" ? "inline-flex" : "none";
+    cancelBtn.textContent = state.status === "saved" || state.status === "discarded" ? "Close" : "Cancel";
+
+    if (state.status === "recording" && state.startedAt) {
+      const elapsed = Math.max(0, Math.floor((Date.now() - state.startedAt) / 1000));
+      const minutes = String(Math.floor(elapsed / 60)).padStart(2, "0");
+      const seconds = String(elapsed % 60).padStart(2, "0");
+      status.textContent = `Recording ${minutes}:${seconds}`;
+      return;
+    }
+
+    if (state.status === "saved") {
+      status.textContent = "Saved";
+      return;
+    }
+
+    if (state.status === "discarded") {
+      status.textContent = "Discarded";
+      return;
+    }
+
+    status.textContent = state.error ?? (state.status === "ready" ? "Ready" : "Select area");
+  };
+
+  const selector = new CropSelector(cropCanvas, {
+    onCrop: (_dataUrl, rect) => {
+      const rounded = {
+        x: Math.round(rect.x),
+        y: Math.round(rect.y),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      };
+      const screenRect = toScreenRect(rounded);
+      controller.selectRegion(rect, screenRect);
+
+      const position = getRecordingControlPosition(
+        rect,
+        { width: window.innerWidth || cropCanvas.width, height: window.innerHeight || cropCanvas.height },
+        { width: 260, height: 52 }
+      );
+      controlBar.style.left = `${position.x}px`;
+      controlBar.style.top = `${position.y}px`;
+      controlBar.style.display = "flex";
+      render();
+    },
+  });
+
+  selector.attach();
+
+  let timer: number | undefined;
+  const startTimer = () => {
+    window.clearInterval(timer);
+    timer = window.setInterval(render, 500);
+  };
+  const stopTimer = () => {
+    window.clearInterval(timer);
+    timer = undefined;
+  };
+
+  startBtn.onclick = async () => {
+    await controller.start();
+    startTimer();
+    render();
+  };
+
+  stopBtn.onclick = async () => {
+    stopTimer();
+    await controller.stop();
+    render();
+  };
+
+  cancelBtn.onclick = async () => {
+    stopTimer();
+    await controller.cancel();
+  };
+}
 
 function sampleBackgroundColor(
   ctx: CanvasRenderingContext2D,

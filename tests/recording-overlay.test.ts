@@ -1,10 +1,7 @@
 import { describe, expect, test, vi } from 'vitest';
 import {
   createInitialRecordingState,
-  getDockedRecordingOverlayBounds,
   getRecordingControlPosition,
-  getTopRecordingHoverStripBounds,
-  getTopRecordingToolbarBounds,
   RecordingOverlayController,
   type RecordingCommandApi,
 } from '../src/recording-overlay';
@@ -13,7 +10,7 @@ import type { CropRect } from '../src/crop-selector';
 function makeApi(): RecordingCommandApi {
   return {
     start: vi.fn(async () => undefined),
-    dock: vi.fn(async () => undefined),
+    hideControls: vi.fn(async () => undefined),
     stop: vi.fn(async () => 'C:\\Videos\\clip.mp4'),
     cancel: vi.fn(async () => undefined),
     close: vi.fn(async () => undefined),
@@ -66,34 +63,13 @@ describe('recording overlay', () => {
     expect(controller.getState().startedAt).toBe(1000);
   });
 
-  test('docked overlay bounds match the visible recording controls', () => {
-    expect(getDockedRecordingOverlayBounds(
-      { x: 120, y: 312 },
-      { width: 260, height: 52 }
-    )).toEqual({ x: 120, y: 312, width: 260, height: 52 });
-  });
-
-  test('dockControls shrinks the overlay to the recording controls', async () => {
+  test('hideControls hides overlay controls while recording continues', async () => {
     const api = makeApi();
     const controller = new RecordingOverlayController(api, () => 1000);
 
-    await controller.dockControls({ x: 120, y: 312, width: 260, height: 52 });
+    await controller.hideControls();
 
-    expect(api.dock).toHaveBeenCalledWith({ x: 120, y: 312, width: 260, height: 52 });
-  });
-
-  test('top hover strip is centered at the top edge', () => {
-    expect(getTopRecordingHoverStripBounds(
-      { width: 1000 },
-      { width: 300, height: 12 }
-    )).toEqual({ x: 350, y: 0, width: 300, height: 12 });
-  });
-
-  test('top toolbar is centered at the top edge', () => {
-    expect(getTopRecordingToolbarBounds(
-      { width: 1000 },
-      { width: 300, height: 60 }
-    )).toEqual({ x: 350, y: 0, width: 300, height: 60 });
+    expect(api.hideControls).toHaveBeenCalledTimes(1);
   });
 
   test('stop stores saved path and moves to saved state', async () => {

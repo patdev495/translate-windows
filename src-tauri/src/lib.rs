@@ -150,6 +150,12 @@ pub struct ActiveRecording {
     pub child: Child,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum RecordingShortcutAction {
+    OpenOverlay,
+    StopRecording,
+}
+
 #[derive(Debug, PartialEq)]
 pub struct DockedRecordingOverlayRect {
     pub x: f64,
@@ -567,6 +573,14 @@ fn build_recording_overlay_url(x: i32, y: i32, width: u32, height: u32) -> Strin
     )
 }
 
+fn recording_shortcut_action(is_recording: bool) -> RecordingShortcutAction {
+    if is_recording {
+        RecordingShortcutAction::StopRecording
+    } else {
+        RecordingShortcutAction::OpenOverlay
+    }
+}
+
 fn recording_overlay_dock_rect(
     screen_x: i32,
     screen_y: i32,
@@ -636,6 +650,22 @@ fn trigger_recording_overlay(app_handle: &tauri::AppHandle) -> Result<(), Box<dy
 }
 
 fn request_recording_overlay(app_handle: &tauri::AppHandle) {
+    let is_recording = {
+        let state: tauri::State<RecordingState> = app_handle.state();
+        let active = state.0.lock().unwrap().is_some();
+        active
+    };
+
+    if recording_shortcut_action(is_recording) == RecordingShortcutAction::StopRecording {
+        let handle = app_handle.clone();
+        std::thread::spawn(move || {
+            if let Err(err) = stop_screen_recording_inner(&handle) {
+                eprintln!("Failed to stop screen recording: {err}");
+            }
+        });
+        return;
+    }
+
     let request_state: tauri::State<RecordingRequestState> = app_handle.state();
     if request_state.0.swap(true, Ordering::SeqCst) {
         return;
@@ -683,6 +713,13 @@ fn show_overlay(app_handle: tauri::AppHandle) {
     if let Some(overlay) = app_handle.get_webview_window("overlay") {
         let _ = overlay.show();
         let _ = overlay.set_focus();
+    }
+}
+
+#[tauri::command]
+fn close_recording_overlay_controls(app_handle: tauri::AppHandle) {
+    if let Some(overlay) = app_handle.get_webview_window("overlay") {
+        let _ = overlay.destroy();
     }
 }
 
@@ -763,8 +800,12 @@ fn cancel_screen_recording(state: tauri::State<'_, RecordingState>) -> Result<()
 #[tauri::command]
 fn stop_screen_recording(
     app_handle: tauri::AppHandle,
-    state: tauri::State<'_, RecordingState>,
 ) -> Result<Option<String>, String> {
+    stop_screen_recording_inner(&app_handle)
+}
+
+fn stop_screen_recording_inner(app_handle: &tauri::AppHandle) -> Result<Option<String>, String> {
+    let state: tauri::State<RecordingState> = app_handle.state();
     let active = {
         let mut lock = state.0.lock().unwrap();
         lock.take()
@@ -1586,6 +1627,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             get_capture_image,
             close_overlay,
+            close_recording_overlay_controls,
             show_overlay,
             dock_recording_overlay,
             start_screen_recording,
@@ -1619,7 +1661,8 @@ mod tests {
         autostart_available_in_current_build, build_ffmpeg_record_args,
         build_recording_overlay_url, destination_with_mp4_extension, finalize_recording_file,
         global_shortcut_specs, recording_file_has_content, recording_overlay_dock_rect,
-        recording_temp_path, tray_menu_specs, RecordingRect, TooltipData,
+        recording_shortcut_action, recording_temp_path, tray_menu_specs, RecordingRect,
+        RecordingShortcutAction, TooltipData,
     };
     use tauri_plugin_global_shortcut::Code;
 
@@ -1751,6 +1794,12 @@ mod tests {
             url,
             "index.html?overlay=1&recording=1&screenX=10&screenY=20&screenWidth=640&screenHeight=360"
         );
+    }
+
+    #[test]
+    fn recording_shortcut_opens_overlay_when_idle_and_stops_when_recording() {
+        assert_eq!(recording_shortcut_action(false), RecordingShortcutAction::OpenOverlay);
+        assert_eq!(recording_shortcut_action(true), RecordingShortcutAction::StopRecording);
     }
 
     #[test]

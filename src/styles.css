@@ -262,17 +262,6 @@ html.overlay-mode body {
   border-color: rgba(248, 113, 113, 0.8);
 }
 
-.recording-hover-tab {
-  left: 0;
-  top: 0;
-  width: 300px;
-  height: 12px;
-  border-radius: 0 0 999px 999px;
-  background: rgba(220, 38, 38, 0.92);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.28);
-  pointer-events: auto;
-}
-
 /* Spinner for overlay loading state */
 .overlay-spinner-container {
   position: absolute;

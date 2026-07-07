@@ -9,10 +9,7 @@ import { recognizeWithBlocks } from "./services/ocr";
 import { TranslationEngine } from "./services/translation";
 import { getDetectionTarget, getTranslationTargets } from "./services/translation-plan";
 import {
-  getDockedRecordingOverlayBounds,
   getRecordingControlPosition,
-  getTopRecordingHoverStripBounds,
-  getTopRecordingToolbarBounds,
   RecordingOverlayController,
   type RecordingCommandApi,
 } from "./recording-overlay";
@@ -157,9 +154,8 @@ function setupRecordingOverlay(
   const startBtn = document.getElementById("recording-start-btn") as HTMLButtonElement | null;
   const stopBtn = document.getElementById("recording-stop-btn") as HTMLButtonElement | null;
   const cancelBtn = document.getElementById("recording-cancel-btn") as HTMLButtonElement | null;
-  const hoverTab = document.getElementById("recording-hover-tab") as HTMLDivElement | null;
 
-  if (!controlBar || !status || !startBtn || !stopBtn || !cancelBtn || !hoverTab) {
+  if (!controlBar || !status || !startBtn || !stopBtn || !cancelBtn) {
     return;
   }
 
@@ -170,12 +166,7 @@ function setupRecordingOverlay(
       width: rect.width,
       height: rect.height,
     }),
-    dock: (bounds) => invoke("dock_recording_overlay", {
-      x: bounds.x,
-      y: bounds.y,
-      width: bounds.width,
-      height: bounds.height,
-    }),
+    hideControls: () => invoke("close_recording_overlay_controls"),
     stop: () => invoke<string | null>("stop_screen_recording"),
     cancel: () => invoke("cancel_screen_recording"),
     close: () => invoke("close_overlay"),
@@ -209,34 +200,6 @@ function setupRecordingOverlay(
     status.textContent = state.error ?? (state.status === "ready" ? "Ready" : "Select area");
   };
   const controlSize = { width: 300, height: 52 };
-  const topToolbarSize = { width: 300, height: 60 };
-  const topHoverStripSize = { width: 300, height: 12 };
-  let dockBounds: ReturnType<typeof getDockedRecordingOverlayBounds> | null = null;
-  let controlsDockedAtTop = false;
-  const dockToHoverTab = async () => {
-    const hoverBounds = getTopRecordingHoverStripBounds(
-      { width: cropCanvas.width },
-      topHoverStripSize
-    );
-    controlBar.style.display = "none";
-    hoverTab.style.display = "block";
-    hoverTab.style.left = "0px";
-    hoverTab.style.top = "0px";
-    await controller.dockControls(hoverBounds);
-  };
-
-  const expandTopToolbar = async () => {
-    const toolbarBounds = getTopRecordingToolbarBounds(
-      { width: cropCanvas.width },
-      topToolbarSize
-    );
-    await controller.dockControls(toolbarBounds);
-    hoverTab.style.display = "none";
-    controlBar.style.left = "0px";
-    controlBar.style.top = "4px";
-    controlBar.style.display = "flex";
-    render();
-  };
 
   const selector = new CropSelector(cropCanvas, {
     onCrop: (_dataUrl, rect) => {
@@ -254,7 +217,6 @@ function setupRecordingOverlay(
         { width: window.innerWidth || cropCanvas.width, height: window.innerHeight || cropCanvas.height },
         controlSize
       );
-      dockBounds = getDockedRecordingOverlayBounds(position, controlSize);
       controlBar.style.left = `${position.x}px`;
       controlBar.style.top = `${position.y}px`;
       controlBar.style.display = "flex";
@@ -276,30 +238,17 @@ function setupRecordingOverlay(
 
   startBtn.onclick = async () => {
     await controller.start();
-    if (controller.getState().status === "recording" && dockBounds) {
-      cropCanvas.style.display = "none";
-      controlsDockedAtTop = true;
-      await dockToHoverTab();
+    if (controller.getState().status === "recording") {
+      await controller.hideControls();
+      return;
     }
     startTimer();
     render();
   };
 
-  hoverTab.addEventListener("mouseenter", async () => {
-    if (!controlsDockedAtTop || controller.getState().status !== "recording") return;
-    await expandTopToolbar();
-  });
-
-  controlBar.addEventListener("mouseleave", async () => {
-    if (!controlsDockedAtTop || controller.getState().status !== "recording") return;
-    await dockToHoverTab();
-  });
-
   stopBtn.onclick = async () => {
     stopTimer();
     await controller.stop();
-    controlsDockedAtTop = false;
-    hoverTab.style.display = "none";
     render();
   };
 

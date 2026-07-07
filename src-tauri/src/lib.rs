@@ -1,8 +1,9 @@
 use std::borrow::Cow;
 use std::io::Cursor;
+use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
-use std::time::Duration;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use std::{fs, path::PathBuf};
 use arboard::{Clipboard, ImageData};
 use tauri::{Emitter, Manager, WebviewWindowBuilder};
@@ -128,6 +129,26 @@ pub struct TraySettingsItems {
 
 #[derive(Default)]
 pub struct CaptureRequestState(pub AtomicBool);
+
+#[derive(Default)]
+pub struct RecordingRequestState(pub AtomicBool);
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RecordingRect {
+    pub x: i32,
+    pub y: i32,
+    pub width: u32,
+    pub height: u32,
+}
+
+#[derive(Default)]
+pub struct RecordingState(pub Mutex<Option<ActiveRecording>>);
+
+pub struct ActiveRecording {
+    pub rect: RecordingRect,
+    pub temp_path: PathBuf,
+    pub child: Child,
+}
 
 #[derive(Clone, Copy)]
 struct TrayMenuSpec {
@@ -351,6 +372,43 @@ fn spawn_copy_full_screen_to_clipboard(app_handle: tauri::AppHandle) {
             eprintln!("Failed to show full-screen capture toast: {}", e);
         }
     });
+}
+
+fn recording_temp_path() -> PathBuf {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis();
+    std::env::temp_dir().join(format!("polytranslate-recording-{millis}.mp4"))
+}
+
+fn destination_with_mp4_extension(path: PathBuf) -> PathBuf {
+    match path.extension().and_then(|value| value.to_str()) {
+        Some(ext) if ext.eq_ignore_ascii_case("mp4") => path,
+        _ => path.with_extension("mp4"),
+    }
+}
+
+fn build_ffmpeg_record_args(rect: &RecordingRect, output_path: &std::path::Path) -> Vec<String> {
+    vec![
+        "-y".to_string(),
+        "-f".to_string(),
+        "gdigrab".to_string(),
+        "-framerate".to_string(),
+        "30".to_string(),
+        "-offset_x".to_string(),
+        rect.x.to_string(),
+        "-offset_y".to_string(),
+        rect.y.to_string(),
+        "-video_size".to_string(),
+        format!("{}x{}", rect.width, rect.height),
+        "-i".to_string(),
+        "desktop".to_string(),
+        "-an".to_string(),
+        "-pix_fmt".to_string(),
+        "yuv420p".to_string(),
+        output_path.to_string_lossy().to_string(),
+    ]
 }
 
 #[cfg(target_os = "windows")]
@@ -1280,7 +1338,9 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::{
-        autostart_available_in_current_build, global_shortcut_specs, tray_menu_specs, TooltipData,
+        autostart_available_in_current_build, build_ffmpeg_record_args,
+        destination_with_mp4_extension, global_shortcut_specs, recording_temp_path, tray_menu_specs,
+        RecordingRect, TooltipData,
     };
     use tauri_plugin_global_shortcut::Code;
 
@@ -1326,6 +1386,55 @@ mod tests {
 
         assert_eq!(ids, vec!["capture_ocr", "record_screen", "copy_full_screen"]);
         assert_eq!(codes, vec![Code::Digit3, Code::Digit4, Code::KeyB]);
+    }
+
+    #[test]
+    fn ffmpeg_record_args_target_selected_region_without_audio() {
+        let rect = RecordingRect {
+            x: 20,
+            y: 30,
+            width: 640,
+            height: 360,
+        };
+        let args = build_ffmpeg_record_args(&rect, std::path::Path::new("C:\\Temp\\capture.mp4"));
+
+        assert_eq!(args, vec![
+            "-y",
+            "-f",
+            "gdigrab",
+            "-framerate",
+            "30",
+            "-offset_x",
+            "20",
+            "-offset_y",
+            "30",
+            "-video_size",
+            "640x360",
+            "-i",
+            "desktop",
+            "-an",
+            "-pix_fmt",
+            "yuv420p",
+            "C:\\Temp\\capture.mp4",
+        ]);
+    }
+
+    #[test]
+    fn destination_with_mp4_extension_adds_missing_extension() {
+        let path = destination_with_mp4_extension(std::path::PathBuf::from("C:\\Videos\\clip"));
+        assert_eq!(path, std::path::PathBuf::from("C:\\Videos\\clip.mp4"));
+    }
+
+    #[test]
+    fn destination_with_mp4_extension_preserves_existing_mp4_extension() {
+        let path = destination_with_mp4_extension(std::path::PathBuf::from("C:\\Videos\\clip.mp4"));
+        assert_eq!(path, std::path::PathBuf::from("C:\\Videos\\clip.mp4"));
+    }
+
+    #[test]
+    fn recording_temp_path_uses_mp4_extension() {
+        let path = recording_temp_path();
+        assert_eq!(path.extension().and_then(|value| value.to_str()), Some("mp4"));
     }
 
     #[test]

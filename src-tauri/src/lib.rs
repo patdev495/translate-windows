@@ -411,6 +411,77 @@ fn build_ffmpeg_record_args(rect: &RecordingRect, output_path: &std::path::Path)
     ]
 }
 
+fn ensure_ffmpeg_available() -> Result<(), String> {
+    let output = Command::new("ffmpeg")
+        .arg("-version")
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map_err(|_| {
+            "FFmpeg was not found. Install FFmpeg and make sure ffmpeg.exe is available on PATH."
+                .to_string()
+        })?;
+
+    if output.success() {
+        Ok(())
+    } else {
+        Err(
+            "FFmpeg was found but did not start successfully. Reinstall FFmpeg or check your PATH entry."
+                .to_string(),
+        )
+    }
+}
+
+fn spawn_ffmpeg_recording(rect: &RecordingRect, temp_path: &std::path::Path) -> Result<Child, String> {
+    let args = build_ffmpeg_record_args(rect, temp_path);
+    Command::new("ffmpeg")
+        .args(args)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|err| format!("Could not start FFmpeg recording: {err}"))
+}
+
+fn stop_ffmpeg_child(child: &mut Child) -> Result<(), String> {
+    if let Some(stdin) = child.stdin.as_mut() {
+        use std::io::Write;
+        let _ = stdin.write_all(b"q");
+    }
+
+    for _ in 0..20 {
+        match child.try_wait() {
+            Ok(Some(status)) => {
+                return if status.success() {
+                    Ok(())
+                } else {
+                    Err(format!("FFmpeg exited with status {status}"))
+                };
+            }
+            Ok(None) => std::thread::sleep(Duration::from_millis(100)),
+            Err(err) => return Err(format!("Could not read FFmpeg status: {err}")),
+        }
+    }
+
+    let _ = child.kill();
+    let _ = child.wait();
+    Err("FFmpeg did not stop in time, so the recording was aborted.".to_string())
+}
+
+fn finalize_recording_file(temp_path: &std::path::Path, destination: PathBuf) -> Result<PathBuf, String> {
+    let destination = destination_with_mp4_extension(destination);
+    match fs::rename(temp_path, &destination) {
+        Ok(()) => Ok(destination),
+        Err(_) => {
+            fs::copy(temp_path, &destination)
+                .map_err(|err| format!("Could not copy recording to selected destination: {err}"))?;
+            fs::remove_file(temp_path)
+                .map_err(|err| format!("Could not remove temporary recording after copy: {err}"))?;
+            Ok(destination)
+        }
+    }
+}
+
 #[cfg(target_os = "windows")]
 fn cursor_position() -> Option<(i32, i32)> {
     let mut point = windows_sys::Win32::Foundation::POINT { x: 0, y: 0 };
@@ -526,6 +597,87 @@ fn show_overlay(app_handle: tauri::AppHandle) {
         let _ = overlay.show();
         let _ = overlay.set_focus();
     }
+}
+
+#[tauri::command]
+fn start_screen_recording(
+    state: tauri::State<'_, RecordingState>,
+    x: i32,
+    y: i32,
+    width: u32,
+    height: u32,
+) -> Result<(), String> {
+    if width == 0 || height == 0 {
+        return Err("Select a recording area before starting.".to_string());
+    }
+
+    let mut lock = state.0.lock().unwrap();
+    if lock.is_some() {
+        return Err("A screen recording is already in progress.".to_string());
+    }
+
+    ensure_ffmpeg_available()?;
+
+    let rect = RecordingRect { x, y, width, height };
+    let temp_path = recording_temp_path();
+    let child = spawn_ffmpeg_recording(&rect, &temp_path)?;
+
+    *lock = Some(ActiveRecording { rect, temp_path, child });
+    Ok(())
+}
+
+#[tauri::command]
+fn cancel_screen_recording(state: tauri::State<'_, RecordingState>) -> Result<(), String> {
+    let active = {
+        let mut lock = state.0.lock().unwrap();
+        lock.take()
+    };
+
+    if let Some(mut recording) = active {
+        let _ = stop_ffmpeg_child(&mut recording.child);
+        let _ = fs::remove_file(&recording.temp_path);
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+fn stop_screen_recording(
+    app_handle: tauri::AppHandle,
+    state: tauri::State<'_, RecordingState>,
+) -> Result<Option<String>, String> {
+    let active = {
+        let mut lock = state.0.lock().unwrap();
+        lock.take()
+    };
+
+    let Some(mut recording) = active else {
+        return Err("No screen recording is in progress.".to_string());
+    };
+
+    stop_ffmpeg_child(&mut recording.child)?;
+
+    use tauri_plugin_dialog::DialogExt;
+    let destination = app_handle
+        .dialog()
+        .file()
+        .add_filter("MP4 Video", &["mp4"])
+        .set_file_name("polytranslate-recording.mp4")
+        .blocking_save_file();
+
+    let Some(destination) = destination else {
+        let _ = fs::remove_file(&recording.temp_path);
+        return Ok(None);
+    };
+
+    let final_path = finalize_recording_file(
+        &recording.temp_path,
+        destination.into_path().map_err(|_| {
+            "The selected save destination is not a local filesystem path.".to_string()
+        })?,
+    )?;
+
+    Ok(Some(final_path.to_string_lossy().to_string()))
 }
 
 #[tauri::command]
@@ -1265,6 +1417,7 @@ pub fn run() {
             None,
         ))
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_dialog::init())
         .manage(CaptureState::default())
         .manage(TooltipState::default())
         .manage(SnippetCounter::default())
@@ -1272,6 +1425,8 @@ pub fn run() {
         .manage(AppSettingsState::default())
         .manage(TraySettingsItems::default())
         .manage(CaptureRequestState::default())
+        .manage(RecordingState::default())
+        .manage(RecordingRequestState::default())
         .setup(|app| {
             cleanup_unsupported_autostart(app.handle());
             let settings = load_settings_from_disk(app.handle());
@@ -1313,6 +1468,9 @@ pub fn run() {
             get_capture_image,
             close_overlay,
             show_overlay,
+            start_screen_recording,
+            stop_screen_recording,
+            cancel_screen_recording,
             process_crop,
             process_crop_area,
             process_crop_image_actions,
@@ -1339,8 +1497,8 @@ pub fn run() {
 mod tests {
     use super::{
         autostart_available_in_current_build, build_ffmpeg_record_args,
-        destination_with_mp4_extension, global_shortcut_specs, recording_temp_path, tray_menu_specs,
-        RecordingRect, TooltipData,
+        destination_with_mp4_extension, finalize_recording_file, global_shortcut_specs,
+        recording_temp_path, tray_menu_specs, RecordingRect, TooltipData,
     };
     use tauri_plugin_global_shortcut::Code;
 
@@ -1435,6 +1593,34 @@ mod tests {
     fn recording_temp_path_uses_mp4_extension() {
         let path = recording_temp_path();
         assert_eq!(path.extension().and_then(|value| value.to_str()), Some("mp4"));
+    }
+
+    #[test]
+    fn recording_rect_rejects_empty_dimensions() {
+        assert!(RecordingRect { x: 0, y: 0, width: 0, height: 100 }.width == 0);
+        assert!(RecordingRect { x: 0, y: 0, width: 100, height: 0 }.height == 0);
+    }
+
+    #[test]
+    fn finalize_recording_file_moves_temp_and_adds_mp4_extension() {
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let dir = std::env::temp_dir().join(format!("polytranslate-recording-test-{unique}"));
+        std::fs::create_dir_all(&dir).unwrap();
+        let temp_path = dir.join("recording.tmp");
+        let destination = dir.join("saved-clip");
+        std::fs::write(&temp_path, b"video").unwrap();
+
+        let final_path = finalize_recording_file(&temp_path, destination).unwrap();
+
+        assert_eq!(final_path, dir.join("saved-clip.mp4"));
+        assert_eq!(std::fs::read(&final_path).unwrap(), b"video");
+        assert!(!temp_path.exists());
+
+        let _ = std::fs::remove_file(final_path);
+        let _ = std::fs::remove_dir(dir);
     }
 
     #[test]

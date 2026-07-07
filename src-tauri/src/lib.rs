@@ -141,9 +141,10 @@ struct GlobalShortcutSpec {
     code: Code,
 }
 
-fn tray_menu_specs() -> [TrayMenuSpec; 7] {
+fn tray_menu_specs() -> [TrayMenuSpec; 8] {
     [
         TrayMenuSpec { id: "capture_ocr", label: "Capture OCR (Ctrl+3)" },
+        TrayMenuSpec { id: "record_screen", label: "Record Screen (Ctrl+4)" },
         TrayMenuSpec { id: "copy_full_screen", label: "Capture Full Screen (Alt+B)" },
         TrayMenuSpec { id: "auto_translate", label: "Auto Translate" },
         TrayMenuSpec { id: "ocr_pin_image", label: "Pin OCR Image" },
@@ -153,9 +154,10 @@ fn tray_menu_specs() -> [TrayMenuSpec; 7] {
     ]
 }
 
-fn global_shortcut_specs() -> [GlobalShortcutSpec; 2] {
+fn global_shortcut_specs() -> [GlobalShortcutSpec; 3] {
     [
         GlobalShortcutSpec { id: "capture_ocr", code: Code::Digit3 },
+        GlobalShortcutSpec { id: "record_screen", code: Code::Digit4 },
         GlobalShortcutSpec { id: "copy_full_screen", code: Code::KeyB },
     ]
 }
@@ -426,6 +428,22 @@ fn request_capture_and_overlay(app_handle: &tauri::AppHandle) {
         let request_state: tauri::State<CaptureRequestState> = handle.state();
         request_state.0.store(false, Ordering::SeqCst);
     });
+}
+
+fn trigger_recording_overlay(_app_handle: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> {
+    Ok(())
+}
+
+fn request_recording_overlay(app_handle: &tauri::AppHandle) {
+    if let Some(existing) = app_handle.get_webview_window("overlay") {
+        let _ = existing.show();
+        let _ = existing.set_focus();
+        return;
+    }
+
+    if let Err(err) = trigger_recording_overlay(app_handle) {
+        eprintln!("Failed to trigger recording overlay: {err}");
+    }
 }
 
 #[tauri::command]
@@ -1039,21 +1057,22 @@ fn open_settings_window_inner(app_handle: &tauri::AppHandle) -> Result<(), Box<d
 fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let specs = tray_menu_specs();
     let capture_item = MenuItem::with_id(app, specs[0].id, specs[0].label, true, None::<&str>)?;
-    let copy_full_screen_item = MenuItem::with_id(app, specs[1].id, specs[1].label, true, None::<&str>)?;
+    let record_screen_item = MenuItem::with_id(app, specs[1].id, specs[1].label, true, None::<&str>)?;
+    let copy_full_screen_item = MenuItem::with_id(app, specs[2].id, specs[2].label, true, None::<&str>)?;
     let settings_state: tauri::State<AppSettingsState> = app.handle().state();
     let current_settings = settings_state.0.lock().unwrap().clone();
     let auto_translate_item = CheckMenuItem::with_id(
         app,
-        specs[2].id,
-        specs[2].label,
+        specs[3].id,
+        specs[3].label,
         true,
         current_settings.auto_translate,
         None::<&str>,
     )?;
     let pin_image_item = CheckMenuItem::with_id(
         app,
-        specs[3].id,
-        specs[3].label,
+        specs[4].id,
+        specs[4].label,
         true,
         current_settings.ocr_pin_image,
         None::<&str>,
@@ -1065,18 +1084,19 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     };
     let autostart_item = CheckMenuItem::with_id(
         app,
-        specs[5].id,
-        specs[5].label,
+        specs[6].id,
+        specs[6].label,
         autostart_available_in_current_build(),
         autostart_enabled,
         None::<&str>,
     )?;
-    let settings_item = MenuItem::with_id(app, specs[4].id, specs[4].label, true, None::<&str>)?;
-    let exit_item = MenuItem::with_id(app, specs[6].id, specs[6].label, true, None::<&str>)?;
+    let settings_item = MenuItem::with_id(app, specs[5].id, specs[5].label, true, None::<&str>)?;
+    let exit_item = MenuItem::with_id(app, specs[7].id, specs[7].label, true, None::<&str>)?;
     let menu = Menu::with_items(
         app,
         &[
             &capture_item,
+            &record_screen_item,
             &copy_full_screen_item,
             &auto_translate_item,
             &pin_image_item,
@@ -1099,6 +1119,9 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         .on_menu_event(move |app_handle, event| match event.id().as_ref() {
             "capture_ocr" => {
                 request_capture_and_overlay(app_handle);
+            }
+            "record_screen" => {
+                request_recording_overlay(app_handle);
             }
             "copy_full_screen" => {
                 spawn_copy_full_screen_to_clipboard(app_handle.clone());
@@ -1201,10 +1224,10 @@ pub fn run() {
             }
             setup_tray(app)?;
             for spec in global_shortcut_specs() {
-                let modifiers = if spec.id == "capture_ocr" {
-                    Modifiers::CONTROL
-                } else {
-                    Modifiers::ALT
+                let modifiers = match spec.id {
+                    "capture_ocr" | "record_screen" => Modifiers::CONTROL,
+                    "copy_full_screen" => Modifiers::ALT,
+                    _ => Modifiers::CONTROL,
                 };
                 let shortcut = Shortcut::new(Some(modifiers), spec.code);
                 app.global_shortcut().on_shortcut(shortcut, move |app_handle, _shortcut, event| {
@@ -1215,6 +1238,9 @@ pub fn run() {
                     match spec.id {
                         "capture_ocr" => {
                             request_capture_and_overlay(app_handle);
+                        }
+                        "record_screen" => {
+                            request_recording_overlay(app_handle);
                         }
                         "copy_full_screen" => {
                             spawn_copy_full_screen_to_clipboard(app_handle.clone());
@@ -1282,6 +1308,7 @@ mod tests {
 
         assert_eq!(ids, vec![
             "capture_ocr",
+            "record_screen",
             "copy_full_screen",
             "auto_translate",
             "ocr_pin_image",
@@ -1292,13 +1319,13 @@ mod tests {
     }
 
     #[test]
-    fn global_shortcuts_expose_ocr_and_clipboard_capture() {
+    fn global_shortcuts_expose_ocr_recording_and_clipboard_capture() {
         let specs = global_shortcut_specs();
         let ids: Vec<&str> = specs.iter().map(|item| item.id).collect();
         let codes: Vec<Code> = specs.iter().map(|item| item.code).collect();
 
-        assert_eq!(ids, vec!["capture_ocr", "copy_full_screen"]);
-        assert_eq!(codes, vec![Code::Digit3, Code::KeyB]);
+        assert_eq!(ids, vec!["capture_ocr", "record_screen", "copy_full_screen"]);
+        assert_eq!(codes, vec![Code::Digit3, Code::Digit4, Code::KeyB]);
     }
 
     #[test]

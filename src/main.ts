@@ -9,7 +9,10 @@ import { recognizeWithBlocks } from "./services/ocr";
 import { TranslationEngine } from "./services/translation";
 import { getDetectionTarget, getTranslationTargets } from "./services/translation-plan";
 import {
+  getDockedRecordingOverlayBounds,
   getRecordingControlPosition,
+  getTopRecordingHoverStripBounds,
+  getTopRecordingToolbarBounds,
   RecordingOverlayController,
   type RecordingCommandApi,
 } from "./recording-overlay";
@@ -166,6 +169,12 @@ function setupRecordingOverlay(
       width: rect.width,
       height: rect.height,
     }),
+    dock: (bounds) => invoke("dock_recording_overlay", {
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height,
+    }),
     stop: () => invoke<string | null>("stop_screen_recording"),
     cancel: () => invoke("cancel_screen_recording"),
     close: () => invoke("close_overlay"),
@@ -198,6 +207,11 @@ function setupRecordingOverlay(
 
     status.textContent = state.error ?? (state.status === "ready" ? "Ready" : "Select area");
   };
+  const controlSize = { width: 300, height: 52 };
+  const topToolbarSize = { width: 300, height: 60 };
+  const topHoverStripSize = { width: 300, height: 8 };
+  let dockBounds: ReturnType<typeof getDockedRecordingOverlayBounds> | null = null;
+  let controlsDockedAtTop = false;
 
   const selector = new CropSelector(cropCanvas, {
     onCrop: (_dataUrl, rect) => {
@@ -213,8 +227,9 @@ function setupRecordingOverlay(
       const position = getRecordingControlPosition(
         rect,
         { width: window.innerWidth || cropCanvas.width, height: window.innerHeight || cropCanvas.height },
-        { width: 260, height: 52 }
+        controlSize
       );
+      dockBounds = getDockedRecordingOverlayBounds(position, controlSize);
       controlBar.style.left = `${position.x}px`;
       controlBar.style.top = `${position.y}px`;
       controlBar.style.display = "flex";
@@ -236,13 +251,47 @@ function setupRecordingOverlay(
 
   startBtn.onclick = async () => {
     await controller.start();
+    if (controller.getState().status === "recording" && dockBounds) {
+      const hoverBounds = getTopRecordingHoverStripBounds(
+        { width: cropCanvas.width },
+        topHoverStripSize
+      );
+      await controller.dockControls(hoverBounds);
+      cropCanvas.style.display = "none";
+      controlBar.style.left = "0px";
+      controlBar.style.top = "8px";
+      controlBar.style.display = "none";
+      controlsDockedAtTop = true;
+    }
     startTimer();
     render();
   };
 
+  window.addEventListener("mouseenter", async () => {
+    if (!controlsDockedAtTop || controller.getState().status !== "recording") return;
+    const toolbarBounds = getTopRecordingToolbarBounds(
+      { width: cropCanvas.width },
+      topToolbarSize
+    );
+    await controller.dockControls(toolbarBounds);
+    controlBar.style.display = "flex";
+    render();
+  });
+
+  window.addEventListener("mouseleave", async () => {
+    if (!controlsDockedAtTop || controller.getState().status !== "recording") return;
+    const hoverBounds = getTopRecordingHoverStripBounds(
+      { width: cropCanvas.width },
+      topHoverStripSize
+    );
+    controlBar.style.display = "none";
+    await controller.dockControls(hoverBounds);
+  });
+
   stopBtn.onclick = async () => {
     stopTimer();
     await controller.stop();
+    controlsDockedAtTop = false;
     render();
   };
 

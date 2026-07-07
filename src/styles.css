@@ -215,6 +215,8 @@ html.overlay-mode body {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 300px;
+  height: 52px;
   min-width: 260px;
   min-height: 52px;
   box-sizing: border-box;

@@ -18,8 +18,16 @@ export interface RoundedRecordingRect {
   height: number;
 }
 
+export interface DockedRecordingOverlayBounds {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface RecordingCommandApi {
   start(rect: RoundedRecordingRect): Promise<void>;
+  dock(bounds: DockedRecordingOverlayBounds): Promise<void>;
   stop(): Promise<string | null>;
   cancel(): Promise<void>;
   close(): Promise<void>;
@@ -50,6 +58,42 @@ export function getRecordingControlPosition(
     : Math.max(margin, rect.y - controls.height - margin);
 
   return { x: Math.round(x), y: Math.round(y) };
+}
+
+export function getDockedRecordingOverlayBounds(
+  position: { x: number; y: number },
+  controls: { width: number; height: number }
+): DockedRecordingOverlayBounds {
+  return {
+    x: Math.round(position.x),
+    y: Math.round(position.y),
+    width: Math.round(controls.width),
+    height: Math.round(controls.height),
+  };
+}
+
+export function getTopRecordingHoverStripBounds(
+  viewport: { width: number },
+  strip: { width: number; height: number }
+): DockedRecordingOverlayBounds {
+  return {
+    x: Math.round(Math.max(0, (viewport.width - strip.width) / 2)),
+    y: 0,
+    width: Math.round(strip.width),
+    height: Math.round(strip.height),
+  };
+}
+
+export function getTopRecordingToolbarBounds(
+  viewport: { width: number },
+  toolbar: { width: number; height: number }
+): DockedRecordingOverlayBounds {
+  return {
+    x: Math.round(Math.max(0, (viewport.width - toolbar.width) / 2)),
+    y: 0,
+    width: Math.round(toolbar.width),
+    height: Math.round(toolbar.height),
+  };
 }
 
 function roundScreenRect(rect: CropRect): RoundedRecordingRect {
@@ -97,6 +141,10 @@ export class RecordingOverlayController {
     } catch (err) {
       this.state = { ...this.state, status: 'error', error: err instanceof Error ? err.message : String(err) };
     }
+  }
+
+  async dockControls(bounds: DockedRecordingOverlayBounds): Promise<void> {
+    await this.api.dock(bounds);
   }
 
   async stop(): Promise<void> {

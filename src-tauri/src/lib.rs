@@ -6,7 +6,7 @@ use std::sync::Mutex;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use std::{fs, path::PathBuf};
 use arboard::{Clipboard, ImageData};
-use tauri::{Emitter, Manager, WebviewWindowBuilder};
+use tauri::{Emitter, LogicalPosition, LogicalSize, Manager, Position, Size, WebviewWindowBuilder};
 use tauri::menu::{CheckMenuItem, Menu, MenuItem};
 use tauri::tray::{MouseButton, TrayIconBuilder, TrayIconEvent};
 use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
@@ -148,6 +148,14 @@ pub struct ActiveRecording {
     pub rect: RecordingRect,
     pub temp_path: PathBuf,
     pub child: Child,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct DockedRecordingOverlayRect {
+    pub x: f64,
+    pub y: f64,
+    pub width: f64,
+    pub height: f64,
 }
 
 #[derive(Clone, Copy)]
@@ -443,8 +451,12 @@ fn spawn_ffmpeg_recording(rect: &RecordingRect, temp_path: &std::path::Path) -> 
         .map_err(|err| format!("Could not start FFmpeg recording: {err}"))
 }
 
-fn stop_ffmpeg_child(child: &mut Child) -> Result<(), String> {
-    if let Some(stdin) = child.stdin.as_mut() {
+fn recording_file_has_content(path: &std::path::Path) -> bool {
+    fs::metadata(path).map(|metadata| metadata.len() > 0).unwrap_or(false)
+}
+
+fn stop_ffmpeg_child(child: &mut Child, output_path: &std::path::Path) -> Result<(), String> {
+    if let Some(mut stdin) = child.stdin.take() {
         use std::io::Write;
         let _ = stdin.write_all(b"q");
     }
@@ -453,6 +465,8 @@ fn stop_ffmpeg_child(child: &mut Child) -> Result<(), String> {
         match child.try_wait() {
             Ok(Some(status)) => {
                 return if status.success() {
+                    Ok(())
+                } else if recording_file_has_content(output_path) {
                     Ok(())
                 } else {
                     Err(format!("FFmpeg exited with status {status}"))
@@ -465,7 +479,11 @@ fn stop_ffmpeg_child(child: &mut Child) -> Result<(), String> {
 
     let _ = child.kill();
     let _ = child.wait();
-    Err("FFmpeg did not stop in time, so the recording was aborted.".to_string())
+    if recording_file_has_content(output_path) {
+        Ok(())
+    } else {
+        Err("FFmpeg did not stop in time, so the recording was aborted.".to_string())
+    }
 }
 
 fn finalize_recording_file(temp_path: &std::path::Path, destination: PathBuf) -> Result<PathBuf, String> {
@@ -549,6 +567,25 @@ fn build_recording_overlay_url(x: i32, y: i32, width: u32, height: u32) -> Strin
     )
 }
 
+fn recording_overlay_dock_rect(
+    screen_x: i32,
+    screen_y: i32,
+    scale_factor: f64,
+    control_x: f64,
+    control_y: f64,
+    control_width: f64,
+    control_height: f64,
+) -> DockedRecordingOverlayRect {
+    let scale_factor = if scale_factor > 0.0 { scale_factor } else { 1.0 };
+
+    DockedRecordingOverlayRect {
+        x: screen_x as f64 / scale_factor + control_x,
+        y: screen_y as f64 / scale_factor + control_y,
+        width: control_width,
+        height: control_height,
+    }
+}
+
 fn request_capture_and_overlay(app_handle: &tauri::AppHandle) {
     let request_state: tauri::State<CaptureRequestState> = app_handle.state();
     if request_state.0.swap(true, Ordering::SeqCst) {
@@ -629,7 +666,7 @@ fn close_overlay(app_handle: tauri::AppHandle) {
     };
 
     if let Some(mut recording) = active {
-        let _ = stop_ffmpeg_child(&mut recording.child);
+        let _ = stop_ffmpeg_child(&mut recording.child, &recording.temp_path);
         let _ = fs::remove_file(&recording.temp_path);
     }
 
@@ -647,6 +684,38 @@ fn show_overlay(app_handle: tauri::AppHandle) {
         let _ = overlay.show();
         let _ = overlay.set_focus();
     }
+}
+
+#[tauri::command]
+fn dock_recording_overlay(
+    app_handle: tauri::AppHandle,
+    x: f64,
+    y: f64,
+    width: f64,
+    height: f64,
+) -> Result<(), String> {
+    let screen = current_screen().map_err(|err| err.to_string())?;
+    let info = screen.display_info;
+    let rect = recording_overlay_dock_rect(info.x, info.y, info.scale_factor as f64, x, y, width, height);
+
+    let Some(overlay) = app_handle.get_webview_window("overlay") else {
+        return Err("Recording overlay is not open.".to_string());
+    };
+
+    overlay
+        .set_size(Size::Logical(LogicalSize::new(rect.width, rect.height)))
+        .map_err(|err| format!("Could not resize recording controls: {err}"))?;
+    overlay
+        .set_position(Position::Logical(LogicalPosition::new(rect.x, rect.y)))
+        .map_err(|err| format!("Could not move recording controls: {err}"))?;
+    overlay
+        .show()
+        .map_err(|err| format!("Could not show recording controls: {err}"))?;
+    overlay
+        .set_focus()
+        .map_err(|err| format!("Could not focus recording controls: {err}"))?;
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -684,7 +753,7 @@ fn cancel_screen_recording(state: tauri::State<'_, RecordingState>) -> Result<()
     };
 
     if let Some(mut recording) = active {
-        let _ = stop_ffmpeg_child(&mut recording.child);
+        let _ = stop_ffmpeg_child(&mut recording.child, &recording.temp_path);
         let _ = fs::remove_file(&recording.temp_path);
     }
 
@@ -705,7 +774,7 @@ fn stop_screen_recording(
         return Err("No screen recording is in progress.".to_string());
     };
 
-    stop_ffmpeg_child(&mut recording.child)?;
+    stop_ffmpeg_child(&mut recording.child, &recording.temp_path)?;
 
     use tauri_plugin_dialog::DialogExt;
     let destination = app_handle
@@ -1518,6 +1587,7 @@ pub fn run() {
             get_capture_image,
             close_overlay,
             show_overlay,
+            dock_recording_overlay,
             start_screen_recording,
             stop_screen_recording,
             cancel_screen_recording,
@@ -1548,7 +1618,8 @@ mod tests {
     use super::{
         autostart_available_in_current_build, build_ffmpeg_record_args,
         build_recording_overlay_url, destination_with_mp4_extension, finalize_recording_file,
-        global_shortcut_specs, recording_temp_path, tray_menu_specs, RecordingRect, TooltipData,
+        global_shortcut_specs, recording_file_has_content, recording_overlay_dock_rect,
+        recording_temp_path, tray_menu_specs, RecordingRect, TooltipData,
     };
     use tauri_plugin_global_shortcut::Code;
 
@@ -1680,6 +1751,44 @@ mod tests {
             url,
             "index.html?overlay=1&recording=1&screenX=10&screenY=20&screenWidth=640&screenHeight=360"
         );
+    }
+
+    #[test]
+    fn recording_file_has_content_accepts_nonempty_temp_file() {
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!("polytranslate-recording-content-{unique}.mp4"));
+        std::fs::write(&path, b"video").unwrap();
+
+        assert!(recording_file_has_content(&path));
+
+        let _ = std::fs::remove_file(path);
+    }
+
+    #[test]
+    fn recording_file_has_content_rejects_empty_temp_file() {
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!("polytranslate-recording-empty-{unique}.mp4"));
+        std::fs::write(&path, b"").unwrap();
+
+        assert!(!recording_file_has_content(&path));
+
+        let _ = std::fs::remove_file(path);
+    }
+
+    #[test]
+    fn recording_overlay_dock_rect_converts_monitor_origin_to_logical_coordinates() {
+        let rect = recording_overlay_dock_rect(1920, 0, 1.5, 120.0, 312.0, 260.0, 52.0);
+
+        assert_eq!(rect.x, 1400.0);
+        assert_eq!(rect.y, 312.0);
+        assert_eq!(rect.width, 260.0);
+        assert_eq!(rect.height, 52.0);
     }
 
     #[test]

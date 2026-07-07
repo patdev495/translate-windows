@@ -1,7 +1,10 @@
 import { describe, expect, test, vi } from 'vitest';
 import {
   createInitialRecordingState,
+  getDockedRecordingOverlayBounds,
   getRecordingControlPosition,
+  getTopRecordingHoverStripBounds,
+  getTopRecordingToolbarBounds,
   RecordingOverlayController,
   type RecordingCommandApi,
 } from '../src/recording-overlay';
@@ -10,6 +13,7 @@ import type { CropRect } from '../src/crop-selector';
 function makeApi(): RecordingCommandApi {
   return {
     start: vi.fn(async () => undefined),
+    dock: vi.fn(async () => undefined),
     stop: vi.fn(async () => 'C:\\Videos\\clip.mp4'),
     cancel: vi.fn(async () => undefined),
     close: vi.fn(async () => undefined),
@@ -60,6 +64,36 @@ describe('recording overlay', () => {
     expect(api.start).toHaveBeenCalledWith({ x: 110, y: 221, width: 120, height: 81 });
     expect(controller.getState().status).toBe('recording');
     expect(controller.getState().startedAt).toBe(1000);
+  });
+
+  test('docked overlay bounds match the visible recording controls', () => {
+    expect(getDockedRecordingOverlayBounds(
+      { x: 120, y: 312 },
+      { width: 260, height: 52 }
+    )).toEqual({ x: 120, y: 312, width: 260, height: 52 });
+  });
+
+  test('dockControls shrinks the overlay to the recording controls', async () => {
+    const api = makeApi();
+    const controller = new RecordingOverlayController(api, () => 1000);
+
+    await controller.dockControls({ x: 120, y: 312, width: 260, height: 52 });
+
+    expect(api.dock).toHaveBeenCalledWith({ x: 120, y: 312, width: 260, height: 52 });
+  });
+
+  test('top hover strip is centered at the top edge', () => {
+    expect(getTopRecordingHoverStripBounds(
+      { width: 1000 },
+      { width: 300, height: 8 }
+    )).toEqual({ x: 350, y: 0, width: 300, height: 8 });
+  });
+
+  test('top toolbar is centered at the top edge', () => {
+    expect(getTopRecordingToolbarBounds(
+      { width: 1000 },
+      { width: 300, height: 60 }
+    )).toEqual({ x: 350, y: 0, width: 300, height: 60 });
   });
 
   test('stop stores saved path and moves to saved state', async () => {

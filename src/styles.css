@@ -294,3 +294,62 @@ html.overlay-mode body {
     transform: rotate(360deg);
   }
 }
+
+/* Styling for recording control bar in recording mode (Snipping Tool behavior) */
+.recording-control-bar.recording-mode {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  transform: translateY(-50px);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 220;
+}
+
+.recording-control-bar.recording-mode:hover {
+  transform: translateY(0);
+}
+
+/* Elegant handle for the collapsed state */
+.recording-control-bar.recording-mode::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 8px;
+  background: rgba(18, 18, 22, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: none;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  transition: opacity 0.2s ease;
+}
+
+/* A subtle pill shape indicator inside the handle */
+.recording-control-bar.recording-mode::before {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 1px;
+  z-index: 221;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.recording-control-bar.recording-mode:hover::after,
+.recording-control-bar.recording-mode:hover::before {
+  opacity: 0;
+}

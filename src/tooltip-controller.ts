@@ -65,6 +65,24 @@ export class TooltipController {
       this.renderTranslations(translationEl, translations, Boolean(settings.ttsEnabled));
       this.applyPhoneticsVisibility(settings.phoneticsVisible !== false);
       translationLangEl?.remove();
+
+      const sourceLangEl = document.getElementById('source-lang');
+      if (sourceLangEl) {
+        sourceLangEl.textContent = `${this.langLabel(sourceLang)} (Gốc)`;
+      }
+
+      const dictSourceBtn = document.getElementById('dict-source-btn') as HTMLButtonElement | null;
+      if (dictSourceBtn) {
+        const url = this.getDictionaryUrl(normalizedSource, sourceLang);
+        if (url) {
+          dictSourceBtn.hidden = false;
+          dictSourceBtn.onclick = () => {
+            window.open(url, '_blank');
+          };
+        } else {
+          dictSourceBtn.hidden = true;
+        }
+      }
     } catch (err) {
       translationEl.textContent = '(translation failed)';
       if (translationLangEl) {
@@ -119,24 +137,22 @@ export class TooltipController {
     const detectedLang = this.resolveDetectedLang(sourceText, detectionResult.detectedLang || 'auto');
     const targets = getTranslationTargets(settings, detectedLang);
 
-    const translations: TooltipTranslation[] = [];
-    for (const target of targets) {
+    const translations = await Promise.all(targets.map(async (target) => {
       if (target.lang === detectionTarget) {
-        translations.push({
+        return {
           lang: target.lang,
           text: detectionResult.translation,
           phonetics: this.getPhonetics(detectionResult.translation, target.lang),
-        });
-        continue;
+        };
       }
 
       const result = await TranslationEngine.translateWithSettings(sourceText, target.lang, settings);
-      translations.push({
+      return {
         lang: target.lang,
         text: result.translation,
         phonetics: this.getPhonetics(result.translation, target.lang),
-      });
-    }
+      };
+    }));
 
     return { detectedLang, translations };
   }
@@ -174,6 +190,27 @@ export class TooltipController {
         void navigator.clipboard?.writeText(item.text);
       });
 
+      const dictUrl = this.getDictionaryUrl(item.text, item.lang);
+      const dict = document.createElement('button');
+      dict.className = 'icon-btn compact translation-dict-btn';
+      dict.type = 'button';
+      const isEn = item.lang.toLowerCase().split('-')[0] === 'en';
+      dict.title = isEn ? 'Open in Cambridge Dictionary' : 'Open in Hanzii Dictionary';
+      dict.setAttribute('aria-label', dict.title);
+      dict.innerHTML = `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+        </svg>
+      `;
+      if (dictUrl) {
+        dict.hidden = false;
+        dict.addEventListener('click', () => {
+          window.open(dictUrl, '_blank');
+        });
+      } else {
+        dict.hidden = true;
+      }
+
       const speak = document.createElement('button');
       speak.className = 'icon-btn compact translation-tts-btn';
       speak.type = 'button';
@@ -197,7 +234,7 @@ export class TooltipController {
 
       const actions = document.createElement('div');
       actions.className = 'translation-actions';
-      actions.append(speak, copy);
+      actions.append(speak, dict, copy);
 
       header.append(lang, actions);
       block.append(header, text);
@@ -209,6 +246,17 @@ export class TooltipController {
       }
       container.append(block);
     }
+  }
+
+  private getDictionaryUrl(text: string, lang: string): string | null {
+    const l = lang.toLowerCase().split('-')[0];
+    if (l === 'en') {
+      const query = encodeURIComponent(text).replace(/%20/g, '+');
+      return `https://dictionary.cambridge.org/spellcheck/english/?q=${query}`;
+    } else if (l === 'zh') {
+      return `https://hanzii.net/search/word/${encodeURIComponent(text)}?hl=en`;
+    }
+    return null;
   }
 
   private getPhonetics(text: string, lang: string): string {

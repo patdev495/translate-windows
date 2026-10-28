@@ -116,14 +116,21 @@ describe('SettingsPanelController', () => {
     const controller = new SettingsPanelController(form, document.getElementById('save-state'), autostart);
     await controller.load();
 
-    (form.elements.namedItem('provider') as HTMLSelectElement).value = 'deepl';
-    form.elements.namedItem('provider')?.dispatchEvent(new Event('change'));
-    (form.elements.namedItem('deeplApiKey') as HTMLInputElement).value = 'abc:fx';
-    form.elements.namedItem('deeplApiKey')?.dispatchEvent(new Event('input'));
-    (form.elements.namedItem('ttsEnabled') as HTMLInputElement).checked = false;
-    form.elements.namedItem('ttsEnabled')?.dispatchEvent(new Event('change'));
-    (form.elements.namedItem('phoneticsVisible') as HTMLInputElement).checked = false;
-    form.elements.namedItem('phoneticsVisible')?.dispatchEvent(new Event('change'));
+    const provider = form.elements.namedItem('provider') as HTMLSelectElement;
+    provider.value = 'deepl';
+    provider.dispatchEvent(new Event('change'));
+
+    const deeplApiKey = form.elements.namedItem('deeplApiKey') as HTMLInputElement;
+    deeplApiKey.value = 'abc:fx';
+    deeplApiKey.dispatchEvent(new Event('input'));
+
+    const ttsEnabled = form.elements.namedItem('ttsEnabled') as HTMLInputElement;
+    ttsEnabled.checked = false;
+    ttsEnabled.dispatchEvent(new Event('change'));
+
+    const phoneticsVisible = form.elements.namedItem('phoneticsVisible') as HTMLInputElement;
+    phoneticsVisible.checked = false;
+    phoneticsVisible.dispatchEvent(new Event('change'));
 
     await new Promise((resolve) => setTimeout(resolve, 160));
 

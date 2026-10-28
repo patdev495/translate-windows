@@ -175,6 +175,9 @@ function setupRecordingOverlay(
 
   const render = () => {
     const state = controller.getState();
+    if (state.status !== "recording" && controlBar) {
+      controlBar.classList.remove("recording-mode");
+    }
     startBtn.style.display = state.status === "ready" || state.status === "error" ? "inline-flex" : "none";
     stopBtn.style.display = state.status === "recording" ? "inline-flex" : "none";
     cancelBtn.textContent = state.status === "saved" || state.status === "discarded" ? "Close" : "Cancel";
@@ -210,6 +213,7 @@ function setupRecordingOverlay(
         height: Math.round(rect.height),
       };
       const screenRect = toScreenRect(rounded);
+
       controller.selectRegion(rect, screenRect);
 
       const position = getRecordingControlPosition(
@@ -239,10 +243,31 @@ function setupRecordingOverlay(
   startBtn.onclick = async () => {
     await controller.start();
     if (controller.getState().status === "recording") {
-      await controller.hideControls();
-      return;
+      cropCanvas.style.display = "none";
+      controlBar.style.left = "0px";
+      controlBar.style.top = "0px";
+      if (controlBar) {
+        controlBar.classList.add("recording-mode");
+      }
+      
+      const params = new URLSearchParams(window.location.search);
+      const physW = Number(params.get("screenWidth"));
+      const dpr = window.devicePixelRatio || 1;
+      const logicalW = physW > 0 ? Math.round(physW / dpr) : window.innerWidth;
+
+      const dockWidth = 300;
+      const dockHeight = 60; // 52px control bar + 8px handle
+      const dockX = Math.round((logicalW - dockWidth) / 2);
+      const dockY = 0;
+
+      await invoke("dock_recording_overlay", {
+        x: dockX,
+        y: dockY,
+        width: dockWidth,
+        height: dockHeight,
+      });
+      startTimer();
     }
-    startTimer();
     render();
   };
 

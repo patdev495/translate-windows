@@ -13,8 +13,8 @@
   <body>
     <div id="tooltip-card" class="tooltip-card">
       <section class="tooltip-section source-section">
-        <div class="tooltip-row">
-          <div id="source-text" class="source-text"></div>
+        <div class="source-block-header">
+          <span id="source-lang" class="lang-pill"></span>
           <div class="tooltip-actions">
             <button id="phonetics-toggle-btn" class="icon-btn" title="Toggle Pinyin / IPA" aria-label="Toggle Pinyin / IPA" aria-pressed="true" type="button">
               <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -28,6 +28,11 @@
                 <path d="M5 15.25h-.25A2.75 2.75 0 0 1 2 12.5V5.75A2.75 2.75 0 0 1 4.75 3h7.5A2.75 2.75 0 0 1 15 5.75V6"/>
               </svg>
             </button>
+            <button id="dict-source-btn" class="icon-btn" title="Dictionary" type="button" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+              </svg>
+            </button>
             <button id="tts-btn" class="icon-btn" title="Listen" type="button">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M4 9.25v5.5h3.25L12 19.5v-15L7.25 9.25H4Z"/>
@@ -37,6 +42,7 @@
             </button>
           </div>
         </div>
+        <div id="source-text" class="source-text"></div>
         <div id="phonetic" class="phonetic"></div>
       </section>
 

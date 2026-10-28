@@ -747,6 +747,10 @@ fn dock_recording_overlay(
     };
 
     overlay
+        .set_fullscreen(false)
+        .map_err(|err| format!("Could not exit fullscreen: {err}"))?;
+
+    overlay
         .set_size(Size::Logical(LogicalSize::new(rect.width, rect.height)))
         .map_err(|err| format!("Could not resize recording controls: {err}"))?;
     overlay

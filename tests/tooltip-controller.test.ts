@@ -168,6 +168,53 @@ describe('TooltipController', () => {
     expect(dom.translationEl.querySelector('.translation-phonetic')?.textContent).toContain('ni hao');
   });
 
+  test('initialize translates non-detection targets in parallel', async () => {
+    vi.useFakeTimers();
+    let TranslationEngine: typeof import('../src/services/translation').TranslationEngine | undefined;
+    try {
+      ({ TranslationEngine } = await import('../src/services/translation'));
+      const { SettingsManager } = await import('../src/services/settings');
+      vi.mocked(SettingsManager.getSettings).mockResolvedValueOnce({
+        primaryTargetLang: 'vi',
+        secondaryTargetLang: 'zh',
+        reverseTargetLang: 'en',
+        provider: 'google',
+        deeplApiKey: '',
+        ttsEnabled: true,
+        ocrLanguage: 'ch',
+        phoneticsVisible: true,
+      } as any);
+      vi.mocked(TranslationEngine.translateWithSettings).mockImplementation(async (_text: string, targetLang: string) => (
+        new Promise((resolve) => {
+          setTimeout(() => resolve({
+            translation: `${targetLang} text`,
+            detectedLang: targetLang === 'vi' ? 'vi' : 'en',
+          }), 100);
+        })
+      ));
+
+      const controller = new TooltipController(windowApi);
+      const initialization = controller.initialize('hello', dom.sourceEl, dom.phoneticEl, dom.translationEl, dom.ttsBtn);
+
+      await vi.advanceTimersByTimeAsync(100);
+
+      expect(TranslationEngine.translateWithSettings).toHaveBeenCalledTimes(3);
+
+      await vi.runAllTimersAsync();
+      await initialization;
+
+      expect(dom.translationEl.querySelectorAll('.translation-block')).toHaveLength(2);
+    } finally {
+      if (TranslationEngine) {
+        vi.mocked(TranslationEngine.translateWithSettings).mockImplementation(async (_text: string, targetLang: string) => ({
+          translation: targetLang === 'vi' ? 'Xin chao' : 'Ni hao',
+          detectedLang: 'en',
+        }));
+      }
+      vi.useRealTimers();
+    }
+  });
+
   test('initialize applies saved phonetics visibility to source and translations', async () => {
     const { SettingsManager } = await import('../src/services/settings');
     vi.mocked(SettingsManager.getSettings).mockResolvedValueOnce({

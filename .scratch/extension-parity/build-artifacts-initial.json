@@ -1,0 +1,14 @@
+[
+  {
+    "path": "D:\\Workspace\\translation-desktop\\src-tauri\\target\\release\\translation-desktop.exe",
+    "bytes": 267574784,
+    "modified": "2026-11-11T14:45:00+07:00",
+    "sha256": "6FB1691B31C405F2FDA9A18D0A9E51F060C1E3D1DD5500F9A46E55417946A1FB"
+  },
+  {
+    "path": "D:\\Workspace\\translation-desktop\\src-tauri\\target\\release\\bundle\\nsis\\PolyTranslate_1.0.0_x64-setup.exe",
+    "bytes": 256474174,
+    "modified": "2026-11-11T14:45:00+07:00",
+    "sha256": "2BB07F8BE2EED9E2DA313D77F4D4253EB7AE2DD44D5B5E8AE50C80C11D240C33"
+  }
+]

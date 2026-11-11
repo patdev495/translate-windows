@@ -10,6 +10,12 @@ describe('TranslationEngine', () => {
     mockFetch.mockReset();
   });
 
+  test('DeepL Web without an API key uses the selected provider and returns its detected language', async () => {
+    mockFetch.mockResolvedValueOnce({ ok:true,json:async()=>({translations:[{text:'Xin chào',detected_source_language:'EN'}]}) });
+    expect(await TranslationEngine.translateWithSettings('hello','vi',{provider:'deepl-free',deeplApiKey:''})).toEqual({translation:'Xin chào',detectedLang:'en'});
+    expect(String(mockFetch.mock.calls[0][0])).toBe('https://oneshot-free.www.deepl.com/v1/translate');
+  });
+
   test('should translate English to Vietnamese and return detected language', async () => {
     // Mock response for Google Translate (hello -> Xin chào)
     mockFetch.mockResolvedValueOnce({

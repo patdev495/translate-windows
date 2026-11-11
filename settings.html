@@ -1,220 +1,151 @@
-<!doctype html>
-<html lang="en" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PolyTranslate Settings</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <script type="module" src="/src/settings-window.ts" defer></script>
-  </head>
-  <body>
-    <main class="settings-shell">
-      <header class="settings-header">
-        <div class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M10.5 21 15.75 9.75 21 21m-9-3h7.5M3 5.62c1.96-.25 3.96-.37 6-.37m0 0c1.12 0 2.23.04 3.33.11M9 5.25V3m3.33 2.36C11.18 10.66 7.69 15.08 3 17.5m9.33-12.14c.9.06 1.79.15 2.67.26" />
-          </svg>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PolyTranslate language, reading, translation and OCR settings.">
+  <title>PolyTranslate Settings</title>
+  <link rel="stylesheet" href="/src/settings.css">
+</head>
+<body>
+<div class="popup-root">
+  <header class="header">
+    <div class="brand">
+      <svg class="brand-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-2.666-2.621a9 9 0 0 1 3.224 5.29"/>
+      </svg>
+      <div class="brand-text">
+        <h1>PolyTranslate</h1>
+        <p class="visually-hidden">Multi-language Learning Tool</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <label class="power-label" for="active-toggle">Desktop</label>
+      <label class="toggle-wrap" title="Enable or disable translation">
+        <input type="checkbox" id="active-toggle" name="translationActive" form="settings-form" checked aria-label="Enable or disable translation">
+        <span class="toggle-track" aria-hidden="true"></span>
+      </label>
+    </div>
+  </header>
+  <form id="settings-form"><main class="settings-main">
+<div class="settings-tabs" role="tablist" aria-label="Settings categories">
+      <button id="tab-languages" type="button" role="tab" aria-controls="panel-languages" aria-selected="true" tabindex="0">Languages</button>
+      <button id="tab-provider" type="button" role="tab" aria-controls="panel-provider" aria-selected="false" tabindex="-1">Provider</button>
+      <button id="tab-display" type="button" role="tab" aria-controls="panel-display" aria-selected="false" tabindex="-1">Display</button>
+      <button id="tab-website" type="button" role="tab" aria-controls="panel-website" aria-selected="false" tabindex="-1">Website</button>
+      <button id="tab-ocr" type="button" role="tab" aria-controls="panel-ocr" aria-selected="false" tabindex="-1">OCR</button>
+    </div>
+    <div id="panel-languages" class="settings-panel" role="tabpanel" aria-labelledby="tab-languages" tabindex="0">
+      <section class="language-section" aria-labelledby="languages-title">
+        <h2 id="languages-title">Languages</h2>
+        <div class="language-grid">
+          <div class="setting-row"><label class="setting-info" for="primary-lang" title="Main output language"><span class="setting-label">Primary Target</span><span class="setting-desc">Main output language</span></label><div class="select-wrap"><select id="primary-lang" name="primaryTargetLang"><option value="vi" selected>Vietnamese</option><option value="none">Disabled</option><option value="en">English</option><option value="zh">Chinese</option></select></div></div>
+          <div class="setting-row"><label class="setting-info" for="secondary-lang" title="Fallback language"><span class="setting-label">Secondary Target</span><span class="setting-desc">Fallback language</span></label><div class="select-wrap"><select id="secondary-lang" name="secondaryTargetLang"><option value="vi">Vietnamese</option><option value="none">Disabled</option><option value="en" selected>English</option><option value="zh">Chinese</option></select></div></div>
+          <div class="setting-row"><label class="setting-info" for="reverse-lang" title="Smart swap fallback"><span class="setting-label">Reverse Target</span><span class="setting-desc">Smart swap fallback</span></label><div class="select-wrap"><select id="reverse-lang" name="reverseTargetLang"><option value="vi">Vietnamese</option><option value="none">Disabled</option><option value="en">English</option><option value="zh" selected>Chinese</option></select></div></div>
         </div>
-        <div class="brand-copy">
-          <h1>PolyTranslate</h1>
-          <p>Multi-language Learning Tool</p>
-        </div>
-        <p id="save-state" class="save-state" aria-live="polite"></p>
-      </header>
-
-      <form id="settings-form" class="settings-form">
-        <section class="settings-card">
-          <h2>Languages</h2>
-
-          <label class="setting-row" for="primaryTargetLang">
-            <span>
-              <strong>Primary Target</strong>
-              <small>Main translation language</small>
-            </span>
-            <select id="primaryTargetLang" name="primaryTargetLang">
-              <option value="vi">Vietnamese</option>
-              <option value="none">Disabled</option>
-              <option value="en">English</option>
-              <option value="zh">Chinese</option>
-            </select>
-          </label>
-
-          <label class="setting-row" for="secondaryTargetLang">
-            <span>
-              <strong>Secondary Target</strong>
-              <small>Optional second translation</small>
-            </span>
-            <select id="secondaryTargetLang" name="secondaryTargetLang">
-              <option value="zh">Chinese</option>
-              <option value="none">Disabled</option>
-              <option value="vi">Vietnamese</option>
-              <option value="en">English</option>
-            </select>
-          </label>
-
-          <label class="setting-row" for="reverseTargetLang">
-            <span>
-              <strong>Reverse Target</strong>
-              <small>Used when source matches a target</small>
-            </span>
-            <select id="reverseTargetLang" name="reverseTargetLang">
-              <option value="en">English</option>
-              <option value="none">Disabled</option>
-              <option value="vi">Vietnamese</option>
-              <option value="zh">Chinese</option>
-            </select>
-          </label>
-        </section>
-
-        <section class="settings-card">
-          <h2>Translation Provider</h2>
-
-          <label class="setting-row" for="provider">
-            <span>
-              <strong>Engine</strong>
-              <small>Select translation engine</small>
-            </span>
-            <select id="provider" name="provider">
-              <option value="google">Google</option>
-              <option value="deepl">DeepL API</option>
-            </select>
-          </label>
-
-          <div id="deepl-key-container" class="deepl-key" hidden>
-            <label for="deeplApiKey">DeepL API Key</label>
-            <div class="password-field">
-              <input id="deeplApiKey" name="deeplApiKey" type="password" placeholder="Enter API key" />
-              <button id="toggle-deepl-key" class="icon-btn" type="button" title="Toggle key visibility" aria-label="Toggle key visibility">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M2.04 12.32a1 1 0 0 1 0-.64C3.42 7.51 7.36 4.5 12 4.5s8.57 3.01 9.96 7.18c.07.21.07.43 0 .64C20.58 16.49 16.64 19.5 12 19.5s-8.58-3.01-9.96-7.18Z" />
-                  <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg>
-              </button>
-            </div>
-            <div class="deepl-verify-container">
-              <button id="verify-deepl-key" class="verify-btn" type="button">Verify Key</button>
-              <span id="deepl-key-status" class="key-status-text"></span>
-            </div>
+        <p id="languages-error" class="shortcut-error" role="alert"></p>
+      </section>
+    </div>
+    <div id="panel-provider" class="settings-panel" role="tabpanel" aria-labelledby="tab-provider" tabindex="0" hidden>
+      <section class="settings-section" aria-labelledby="translation-title">
+        <h2 id="translation-title">Translation Engine</h2>
+        <div class="setting-row"><label class="setting-info" for="provider"><span class="setting-label">Provider</span><span class="setting-desc">Active engine service</span></label><div class="select-wrap"><select id="provider" name="provider"><option value="google" selected>Google</option><option value="deepl-free">DeepL Web (no key)</option><option value="deepl">DeepL API</option></select></div></div>
+        <div id="deepl-key-container" class="deepl-section hidden">
+          <label class="input-label" for="deepl-api-key">DeepL API Key</label>
+          <div class="input-wrap">
+            <input type="password" id="deepl-api-key" name="deeplApiKey" placeholder="Paste your API key…" autocomplete="off" spellcheck="false" aria-describedby="deepl-key-status">
+            <button class="eye-btn" id="toggle-deepl-key" type="button" aria-label="Toggle API key visibility">
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="eye-icon">
+                <path d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.43 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+              </svg>
+            </button>
           </div>
-        </section>
-
-        <section class="settings-card">
-          <h2>Behavior & Triggers</h2>
-
-          <label class="setting-row toggle-row" for="autoTranslate">
-            <span>
-              <strong>Auto Translate</strong>
-              <small>Show translation tooltip after crop</small>
-            </span>
-            <input id="autoTranslate" name="autoTranslate" type="checkbox" />
-          </label>
-
-          <label class="setting-row" for="ocrShortcut">
-            <span>
-              <strong>OCR Shortcut</strong>
-              <small>Start screen crop mode</small>
-            </span>
-            <select id="ocrShortcut" name="ocrShortcut">
-              <option value="ctrl-3">Ctrl+3</option>
-              <option value="alt-space">Alt+Space</option>
-              <option value="ctrl-space">Ctrl+Space</option>
-              <option value="alt-o">Alt+O</option>
-              <option value="ctrl-shift-o">Ctrl+Shift+O</option>
-              <option value="disabled">Disabled</option>
-            </select>
-          </label>
-
-          <label class="setting-row" for="ocrModelTier">
-            <span>
-              <strong>OCR Model Size</strong>
-              <small>PP-OCRv6 model size</small>
-            </span>
-            <select id="ocrModelTier" name="ocrModelTier">
-              <option value="tiny">Tiny</option>
-              <option value="small">Small</option>
-              <option value="medium">Medium</option>
-            </select>
-          </label>
-
-          <label class="setting-row" for="ocrLanguage">
-            <span>
-              <strong>OCR Language</strong>
-              <small>Language engine mode</small>
-            </span>
-            <select id="ocrLanguage" name="ocrLanguage">
-              <option value="ch">Chinese / English</option>
-              <option value="latin">Latin / Multilingual</option>
-            </select>
-          </label>
-        </section>
-
-        <section class="settings-card">
-          <h2>Tooltip Settings</h2>
-
-          <label class="setting-row" for="tooltipFontSize">
-            <span>
-              <strong>Font Size</strong>
-              <small>Set tooltip text size</small>
-            </span>
-            <select id="tooltipFontSize" name="tooltipFontSize">
-              <option value="12">Small (12px)</option>
-              <option value="14">Normal (14px)</option>
-              <option value="16">Large (16px)</option>
-              <option value="18">Extra Large (18px)</option>
-              <option value="20">Huge (20px)</option>
-              <option value="24">2XL (24px)</option>
-              <option value="28">3XL (28px)</option>
-              <option value="32">4XL (32px)</option>
-              <option value="36">5XL (36px)</option>
-              <option value="40">6XL (40px)</option>
-            </select>
-          </label>
-
-          <label class="setting-row toggle-row">
-            <span>
-              <strong>TTS Pronounce</strong>
-              <small>Show speaker button</small>
-            </span>
-            <input id="ttsEnabled" name="ttsEnabled" type="checkbox" />
-          </label>
-
-          <label class="setting-row toggle-row">
-            <span>
-              <strong>Pinyin / IPA</strong>
-              <small>Show phonetics in tooltip</small>
-            </span>
-            <input id="phoneticsVisible" name="phoneticsVisible" type="checkbox" />
-          </label>
-
-          <label class="setting-row toggle-row">
-            <span>
-              <strong>Pin OCR Image</strong>
-              <small>Keep crop preview on screen</small>
-            </span>
-            <input id="ocrPinImage" name="ocrPinImage" type="checkbox" />
-          </label>
-
-          <label class="setting-row toggle-row">
-            <span>
-              <strong>Copy OCR to Clipboard</strong>
-              <small>Copy crop image automatically</small>
-            </span>
-            <input id="ocrCopyToClipboard" name="ocrCopyToClipboard" type="checkbox" />
-          </label>
-
-          <label class="setting-row toggle-row">
-            <span>
-              <strong>Start with Windows</strong>
-              <small>Launch PolyTranslate after sign in</small>
-            </span>
-            <input id="startWithWindows" name="startWithWindows" type="checkbox" />
-          </label>
-        </section>
-
-        <button class="save-button" type="submit">Save</button>
-      </form>
-    </main>
-  </body>
+          <div id="deepl-key-status" role="status" aria-live="polite"></div>
+        </div>
+        <div class="setting-row"><label class="setting-info" for="auto-translate"><span class="setting-label">Auto Translate</span><span class="setting-desc">On text selection</span></label><label class="toggle-wrap" title="Auto Translate"><input type="checkbox" id="auto-translate" name="autoSelectionTranslate" checked aria-label="Auto Translate"><span class="toggle-track" aria-hidden="true"></span></label></div>
+        <div class="setting-row"><label class="setting-info" for="input-replacement-enabled"><span class="setting-label">Translate with shortcut</span><span class="setting-desc">Replace only the selected text in inputs</span></label><label class="toggle-wrap" title="Translate with shortcut"><input type="checkbox" id="input-replacement-enabled" name="inputReplacementEnabled" checked aria-label="Translate with shortcut"><span class="toggle-track" aria-hidden="true"></span></label></div>
+        <div class="setting-row shortcut-row"><label class="setting-info" for="translation-shortcut"><span class="setting-label">Tooltip shortcut</span><span class="setting-desc">Translate selection without replacing</span></label><input class="shortcut-capture" type="text" id="translation-shortcut" name="translationShortcut" readonly aria-label="Tooltip shortcut"></div><p id="shortcut-error" role="alert"></p><div class="setting-row shortcut-row">
+          <label class="setting-info" for="input-replacement-shortcut"><span class="setting-label">Replace text shortcut</span><span class="setting-desc">Click, then press a key</span></label>
+          <input class="shortcut-capture" type="text" id="input-replacement-shortcut" name="inputReplacementShortcut" readonly aria-label="Translation shortcut" aria-describedby="input-replacement-error">
+        </div>
+        <p id="input-replacement-error" class="shortcut-error" role="alert"></p>
+      </section>
+    </div>
+    <div id="panel-display" class="settings-panel" role="tabpanel" aria-labelledby="tab-display" tabindex="0" hidden>
+      <section class="settings-section" aria-labelledby="display-title">
+        <h2 id="display-title">Tooltip</h2>
+        <div class="setting-row"><label class="setting-info" for="tooltip-font-size"><span class="setting-label">Font Size</span><span class="setting-desc">Tooltip text size</span></label><div class="select-wrap"><select id="tooltip-font-size" name="tooltipFontSize"><option value="12">12px (Small)</option><option value="14" selected>14px (Normal)</option><option value="16">16px (Large)</option><option value="18">18px (XL)</option><option value="20">20px (2XL)</option><option value="24">24px (3XL)</option><option value="28">28px</option><option value="32">32px</option><option value="36">36px</option><option value="40">40px</option><option value="48">48px</option><option value="56">56px</option><option value="64">64px</option><option value="72">72px</option><option value="80">80px</option></select></div></div>
+        <div class="setting-row"><label class="setting-info" for="tts-toggle"><span class="setting-label">TTS Pronounce</span><span class="setting-desc">Speaker button</span></label><label class="toggle-wrap" title="TTS Pronounce"><input type="checkbox" id="tts-toggle" name="ttsEnabled" checked aria-label="TTS Pronounce"><span class="toggle-track" aria-hidden="true"></span></label></div>
+        <div class="setting-row"><label class="setting-info" for="phonetics-toggle"><span class="setting-label">Phonetics</span><span class="setting-desc">IPA / Pinyin display</span></label><label class="toggle-wrap" title="Phonetics"><input type="checkbox" id="phonetics-toggle" name="phoneticsVisible" checked aria-label="Phonetics"><span class="toggle-track" aria-hidden="true"></span></label></div>
+      </section>
+      <section class="settings-section panel-section" aria-labelledby="hanzi-title">
+        <h2 id="hanzi-title">Hanzi</h2>
+        <div class="setting-row"><label class="setting-info" for="hanzi-stroke-speed"><span class="setting-label">Hanzi Stroke Speed</span><span class="setting-desc">Higher is faster</span></label><div class="select-wrap"><select id="hanzi-stroke-speed" name="hanziStrokeSpeed"><option value="0.5">0.5×</option><option value="1">1×</option><option value="1.5">1.5×</option><option value="2" selected>2× (Default)</option><option value="3">3×</option></select></div></div>
+        <div class="setting-row"><label class="setting-info" for="hanzi-breakdown-enabled"><span class="setting-label">Hanzi Breakdown</span><span class="setting-desc">Show components while strokes loop</span></label><label class="toggle-wrap" title="Hanzi Breakdown"><input type="checkbox" id="hanzi-breakdown-enabled" name="hanziBreakdownEnabled" aria-label="Hanzi Breakdown"><span class="toggle-track" aria-hidden="true"></span></label></div>
+        <div class="setting-row"><label class="setting-info" for="hanzi-breakdown-language"><span class="setting-label">Breakdown Language</span><span class="setting-desc">Component explanations</span></label><div class="select-wrap"><select id="hanzi-breakdown-language" name="hanziBreakdownLanguage"><option value="vi" selected>Vietnamese</option><option value="en">English</option></select></div></div>
+      </section>
+      <section class="hanzi-backup-section" aria-labelledby="hanzi-backup-title">
+        <h2 id="hanzi-backup-title">Backup</h2>
+        <p>Save your personal meanings and memory notes to a JSON file.</p>
+        <div class="hanzi-backup-actions">
+          <button id="hanzi-export-backup" type="button">Export JSON</button>
+          <button id="hanzi-import-backup" type="button">Import JSON</button>
+          <input id="hanzi-backup-file" type="file" accept="application/json,.json" hidden aria-label="Hanzi backup file">
+        </div>
+        <div id="hanzi-import-choice" hidden>
+          <p id="hanzi-import-summary"></p>
+          <div class="hanzi-backup-actions">
+            <button id="hanzi-import-keep-current" type="button">Keep current</button>
+            <button id="hanzi-import-use-file" type="button">Use file</button>
+          </div>
+        </div>
+        <p id="hanzi-backup-status" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+    <div id="panel-website" class="settings-panel" role="tabpanel" aria-labelledby="tab-website" tabindex="0" hidden>
+      <section class="learning-account-section" aria-labelledby="learning-account-title">
+        <div class="learning-account-heading">
+          <h2 id="learning-account-title">Tài khoản học tập</h2>
+          <span class="learning-account-badge">WEB</span>
+        </div>
+        <p>Liên kết để quản lý thư mục học tiếng Trung trên web. Tên đăng nhập và tên thư mục lưu trên máy chủ web; ghi chú hiện có không tự tải lên.</p>
+        <p>Trang web liên kết: <a id="learning-account-web-url" href="https://learning.peebot.shop/" target="_blank" rel="noopener noreferrer">https://learning.peebot.shop/</a></p>
+        <p id="learning-account-status" class="learning-account-status" role="status" aria-live="polite">Đang kiểm tra liên kết…</p>
+        <div class="learning-account-actions">
+          <button id="learning-account-link" type="button">Liên kết tài khoản</button>
+          <button id="learning-account-unlink" type="button" hidden>Ngắt liên kết</button>
+        </div>
+        <div class="learning-sync-section" aria-labelledby="learning-sync-title">
+          <div class="learning-sync-heading"><h3 id="learning-sync-title">Đồng bộ mục học tập</h3><button id="learning-sync-retry" type="button">Thử lại</button></div>
+          <ul id="learning-sync-list" aria-live="polite"><li>Đang tải trạng thái…</li></ul>
+        </div>
+      </section>
+    </div>
+    <div id="panel-ocr" class="settings-panel" role="tabpanel" aria-labelledby="tab-ocr" tabindex="0" hidden>
+      <section class="ocr-section" aria-labelledby="ocr-title">
+        <div class="ocr-heading">
+          <h2 id="ocr-title">OCR</h2>
+          <div class="ocr-actions">
+            <div class="setting-row"><label class="setting-info" for="ocr-pin-toggle" title="Float cropped region"><span class="setting-label">Pin OCR Image</span><span class="setting-desc">Float cropped region</span></label><label class="toggle-wrap" title="Pin OCR Image"><input type="checkbox" id="ocr-pin-toggle" name="ocrPinImage" aria-label="Pin OCR Image"><span class="toggle-track" aria-hidden="true"></span></label></div>
+            <div class="setting-row"><label class="setting-info" for="ocr-copy-toggle" title="Auto-copy to clipboard"><span class="setting-label">Copy OCR Image</span><span class="setting-desc">Auto-copy to clipboard</span></label><label class="toggle-wrap" title="Copy OCR Image"><input type="checkbox" id="ocr-copy-toggle" name="ocrCopyToClipboard" aria-label="Copy OCR Image"><span class="toggle-track" aria-hidden="true"></span></label></div>
+          </div>
+        </div>
+        <div class="setting-row"><label for="ocr-auto-translate">Translate after screen crop</label><input type="checkbox" id="ocr-auto-translate" name="autoTranslate"></div><div class="ocr-fields">
+          <div class="setting-row"><label class="setting-info" for="ocr-shortcut" title="Toggle OCR mode"><span class="setting-label">OCR Shortcut</span><span class="setting-desc">Toggle OCR mode</span></label><div class="select-wrap"><select id="ocr-shortcut" name="ocrShortcut" aria-describedby="ocr-shortcut-error"><option value="ctrl-3">Ctrl+3</option><option value="alt-space">Alt+Space</option><option value="ctrl-space" selected>Ctrl+Space</option><option value="alt-o">Alt+O</option><option value="ctrl-shift-o">Ctrl+Shift+O</option><option value="disabled">Disabled</option></select></div></div>
+          <div class="setting-row"><label class="setting-info" for="ocr-model-tier" title="PP-OCRv6 tier"><span class="setting-label">OCR Model</span><span class="setting-desc">PP-OCRv6 tier</span></label><div class="select-wrap"><select id="ocr-model-tier" name="ocrModelTier"><option value="tiny">Tiny (Fast)</option><option value="small" selected>Small (Balanced)</option><option value="medium">Medium (Accurate)</option></select></div></div>
+          <div class="setting-row"><label class="setting-info" for="ocr-language" title="Character set mode"><span class="setting-label">OCR Language</span><span class="setting-desc">Character set mode</span></label><div class="select-wrap"><select id="ocr-language" name="ocrLanguage"><option value="ch" selected>CJK / English</option><option value="latin">Latin / Multi</option></select></div></div>
+        </div>
+        <p id="ocr-shortcut-error" class="shortcut-error" role="alert"></p>
+      </section>
+    </div>
+  </main><section class="settings-section"><div class="setting-row"><label for="start-with-windows">Start with Windows</label><input type="checkbox" id="start-with-windows" name="startWithWindows"></div><p id="save-state" role="status"></p></section></form>
+  <div class="status-footer">
+    <div id="status-msg" class="status-toast" role="status" aria-live="polite">
+      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Settings saved
+    </div>
+  </div>
+</div>
+<script type="module" src="/src/settings-window.ts"></script>
+</body>
 </html>

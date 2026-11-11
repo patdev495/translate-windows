@@ -1,0 +1,53 @@
+:host { --hanzi-unit: calc(max(14px, var(--tooltip-font-size, 14px)) / 14); }
+.hanzi-breakdown-card {
+  position: relative;
+  box-sizing: border-box;
+  width: calc(320 * var(--hanzi-unit));
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: min(calc(16 * var(--hanzi-unit)), 5vw);
+  border: 1px solid rgba(130, 145, 165, .35);
+  border-radius: 16px;
+  background: #fff;
+  color: #182131;
+  box-shadow: 0 16px 48px rgba(16, 24, 40, .2);
+  font: calc(14 * var(--hanzi-unit))/1.4 system-ui, sans-serif;
+  overflow-wrap: anywhere;
+}
+.hanzi-breakdown-card [hidden] { display: none !important; }
+.hanzi-breakdown-card button, .hanzi-breakdown-card textarea { font: inherit; }
+.hanzi-breakdown-card h2 { margin: 0 0 calc(12 * var(--hanzi-unit)); font-size: calc(24 * var(--hanzi-unit)); }
+.hanzi-breakdown-reading-note { margin: calc(-8 * var(--hanzi-unit)) 0 calc(12 * var(--hanzi-unit)); color: #5a6680; font-size: calc(12 * var(--hanzi-unit)); }
+.hanzi-breakdown-meaning-label { margin: 0 0 calc(8 * var(--hanzi-unit)); color: #5a6680; font-size: calc(12 * var(--hanzi-unit)); font-weight: 600; }
+.hanzi-breakdown-definition { margin: calc(-6 * var(--hanzi-unit)) 0 calc(12 * var(--hanzi-unit)); color: #465269; }
+.hanzi-breakdown-heading, .hanzi-breakdown-loading { display: block; margin: 0 0 calc(4 * var(--hanzi-unit)); padding-right: calc(32 * var(--hanzi-unit)); color: #5a6680; font-size: calc(12 * var(--hanzi-unit)); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; user-select: none; }
+.hanzi-breakdown-heading { cursor: move; }
+.hanzi-breakdown-card .hanzi-breakdown-close { position: absolute; display: grid; place-items: center; top: min(calc(8 * var(--hanzi-unit)), 2vw); right: min(calc(10 * var(--hanzi-unit)), 3vw); width: calc(32 * var(--hanzi-unit)); height: calc(32 * var(--hanzi-unit)); padding: 0; border: 0; background: transparent; color: inherit; font-size: calc(26 * var(--hanzi-unit)); line-height: 1; cursor: pointer; }
+.hanzi-breakdown-component { display: flex; flex-wrap: wrap; align-items: baseline; gap: calc(12 * var(--hanzi-unit)); padding: calc(8 * var(--hanzi-unit)) 0; border-top: 1px solid #e5e9ef; }
+.hanzi-breakdown-component small { flex-basis: 100%; margin-left: min(calc(42 * var(--hanzi-unit)), 15%); color: #5a6680; font-size: calc(12 * var(--hanzi-unit)); }
+.hanzi-breakdown-component strong { min-width: calc(30 * var(--hanzi-unit)); font-size: calc(23 * var(--hanzi-unit)); }
+.hanzi-breakdown-component button { min-width: calc(30 * var(--hanzi-unit)); padding: 0; border: 0; background: transparent; color: #1e5fb5; font: 700 calc(23 * var(--hanzi-unit))/1.2 system-ui, sans-serif; cursor: pointer; }
+.hanzi-breakdown-pinyin { color: #61708a; font-size: calc(13 * var(--hanzi-unit)); }
+.hanzi-breakdown-back { margin: 0 0 calc(8 * var(--hanzi-unit)); padding: 0 calc(32 * var(--hanzi-unit)) 0 0; border: 0; background: transparent; color: #1e5fb5; text-align: left; white-space: normal; overflow-wrap: anywhere; cursor: pointer; }
+.hanzi-breakdown-note { display: block; margin-top: calc(14 * var(--hanzi-unit)); padding-top: calc(12 * var(--hanzi-unit)); border-top: 1px solid #e5e9ef; color: #5a6680; font-size: calc(13 * var(--hanzi-unit)); font-weight: 600; }
+.hanzi-breakdown-note textarea { display: block; box-sizing: border-box; width: 100%; min-height: calc(72 * var(--hanzi-unit)); margin-top: calc(6 * var(--hanzi-unit)); padding: calc(8 * var(--hanzi-unit)) calc(10 * var(--hanzi-unit)); resize: vertical; border: 1px solid #c8d1dd; border-radius: 8px; background: #fff; color: #182131; font: calc(14 * var(--hanzi-unit))/1.4 system-ui, sans-serif; }
+.hanzi-breakdown-save-status { display: block; min-height: calc(18 * var(--hanzi-unit)); margin-top: calc(4 * var(--hanzi-unit)); font-size: calc(11 * var(--hanzi-unit)); font-weight: 400; }
+.hanzi-breakdown-card .hanzi-breakdown-meaning-action { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; width: calc(26 * var(--hanzi-unit)); min-width: calc(26 * var(--hanzi-unit)); height: calc(26 * var(--hanzi-unit)); margin-left: calc(4 * var(--hanzi-unit)); padding: 0; vertical-align: middle; border: 1px solid transparent; border-radius: 6px; background: transparent; color: #1e5fb5; cursor: pointer; }
+.hanzi-breakdown-meaning-action svg { width: calc(16 * var(--hanzi-unit)); height: calc(16 * var(--hanzi-unit)); flex: 0 0 auto; }
+.hanzi-breakdown-meaning-action:hover { background: rgba(30, 95, 181, .1); }
+.hanzi-breakdown-meaning-action:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.hanzi-breakdown-card .hanzi-breakdown-meaning-input { display: block; box-sizing: border-box; width: 100%; margin-top: calc(6 * var(--hanzi-unit)); padding: calc(6 * var(--hanzi-unit)) calc(8 * var(--hanzi-unit)); border: 1px solid #c8d1dd; border-radius: 6px; background: #fff; color: #182131; font: calc(14 * var(--hanzi-unit))/1.4 system-ui, sans-serif; }
+.hanzi-breakdown-component-meaning { flex: 1 1 calc(100 * var(--hanzi-unit)); min-width: 0; }
+.hanzi-breakdown-unidentified textarea, .hanzi-breakdown-unidentified .hanzi-breakdown-save-status { flex-basis: 100%; }
+.hanzi-breakdown-unidentified > svg { width: calc(44 * var(--hanzi-unit)); height: calc(44 * var(--hanzi-unit)); fill: currentColor; color: #1e5fb5; flex: 0 0 auto; }
+@media (prefers-color-scheme: dark) {
+  .hanzi-breakdown-card { background: #1d2533; color: #f3f6fb; border-color: #475467; }
+  .hanzi-breakdown-definition, .hanzi-breakdown-heading, .hanzi-breakdown-loading, .hanzi-breakdown-pinyin, .hanzi-breakdown-reading-note, .hanzi-breakdown-meaning-label, .hanzi-breakdown-component small { color: #b5c0d0; }
+  .hanzi-breakdown-component { border-color: #475467; }
+  .hanzi-breakdown-component button, .hanzi-breakdown-back { color: #91c6ff; }
+  .hanzi-breakdown-note { border-color: #475467; color: #b5c0d0; }
+  .hanzi-breakdown-note textarea { background: #111827; border-color: #475467; color: #f3f6fb; }
+  .hanzi-breakdown-card .hanzi-breakdown-meaning-input { background: #111827; border-color: #475467; color: #f3f6fb; }
+  .hanzi-breakdown-card .hanzi-breakdown-meaning-action { color: #91c6ff; }
+}

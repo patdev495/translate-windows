@@ -10,7 +10,7 @@ A lightweight Windows desktop application built with Tauri v2 (Rust backend) and
 graph TD
     A[Global Shortcut Listener] -->|Trigger hotkey| B[Screen Capture Module]
     B -->|Grabs screen frames| C[Interactive Crop Overlay]
-    C -->|Crops region| D[Local OCR Engine]
+    C -->|Sends cropped image through Tauri IPC| D[Local OCR Engine in hidden main WebView]
     D -->|Recognizes text| E[Native Tooltip Window]
     D -->|Saves image| F[Draggable Pinned Snippets]
     E -->|Translates text| G[Translation Service API]
@@ -19,6 +19,34 @@ graph TD
 ---
 
 ## Domain Glossary
+
+**Selected Text**:
+The source text the user has highlighted inside another application for translation, distinct from a rectangular region selected for screen capture.
+_Avoid_: Crop selection, OCR text
+
+**Selected Text Translation**:
+A translation of Selected Text shown in the Native Tooltip Window, requested through the configured keyboard shortcut or automatically after selection when Automatic Selected Text Translation is enabled.
+_Avoid_: Input Replacement Translation
+
+**Automatic Selected Text Translation**:
+The optional behavior that displays a translation after the user highlights directly readable text, without requiring a shortcut, replacing the original text, or changing the clipboard. The user can turn it on or off in settings; unreadable selections are skipped.
+_Avoid_: Automatic input replacement, OCR auto translation
+
+**Selected Text Translation Shortcut**:
+The user-configurable key or key combination that requests Selected Text Translation in the Native Tooltip Window.
+_Avoid_: Fixed Ctrl trigger
+
+**Input Replacement Translation**:
+A translation that replaces only the selected text segment inside an editable field with text in the user's primary target language.
+_Avoid_: Replace all text, Selected Text Translation
+
+**Input Replacement Shortcut**:
+The user-configurable key or key combination that requests Input Replacement Translation, configured separately from the Selected Text Translation Shortcut.
+_Avoid_: Shared context-dependent translation shortcut
+
+**Desktop PDF Reader**:
+The PDF reading area inside the desktop application, where the learner can select text or an image region for translation and use the same Chinese-learning tools as other translation flows.
+_Avoid_: External PDF reader, Browser extension PDF viewer
 
 **Screen Capture Module**:
 The native Rust crate/module that captures the pixel buffers of all active monitors to feed the selection overlay.
@@ -30,11 +58,11 @@ The full-screen transparent web view window that renders the desktop capture, al
 The frameless, borderless, transparent, always-on-top window created by Tauri to display translations and pinyin/IPA phonetic details.
 
 **Readable Tooltip Width**:
-The tooltip width chosen from the crop width when available, clamped so short text remains readable and wide crops stay within the screen.
-_Avoid_: Fixed tooltip width, text-only auto width
+The extension's content-sized reading card: at least 350 logical pixels of reading content, or the OCR crop width when larger, plus its existing card padding. Clamp to the usable viewport and lock the initially measured width; the native window fits the card without another inset. Native OCR crop dimensions are converted from physical pixels for the monitor's scale factor.
+_Avoid_: Fixed tooltip width, extra native padding
 
 **Scrollable Tooltip Card**:
-The tooltip card scrolls internally when its content is taller than the centered native tooltip window.
+The tooltip card scrolls internally when content reaches the usable viewport height minus 32 logical pixels. The native window centers in that monitor's work area and fits the card; manually dragging it preserves the chosen position.
 _Avoid_: Expanding off-screen, page-level scrolling
 
 **Draggable Pinned Snippet**:
@@ -45,6 +73,7 @@ A checked system tray action that turns a capture behavior preference on or off 
 
 **Local OCR Engine**:
 The offline model runner using ONNX Runtime (WASM or native bindings) to read text coordinates and values from cropped images.
+The hidden `main` WebView owns its model sessions for the app session. Capture, tooltip, and PDF views share this engine; closing a view preserves the model. Turning off automatic screen-crop translation releases resident resources; explicitly requested PDF OCR remains available. See ADR-0002 and the extension-parity specification.
 
 **Crop-relative Text Layout**:
 The reading-order arrangement of recognized text lines as they appeared inside the selected crop, used to compare source text, phonetics, and translations.
@@ -61,3 +90,41 @@ _Avoid_: Mixed-language line groups
 **Block Phonetics**:
 Pinyin or IPA displayed as one phonetic block beneath the full OCR source text block.
 _Avoid_: Line-paired phonetics
+
+## Learning
+
+**Learning Account**:
+The learner's account on the companion website, shared by the desktop application and extension so saved learning content belongs to the same learner.
+
+**Account Link**:
+The connection the learner initiates between the desktop application or extension and their Learning Account. Saving to the Learning Library requires this link.
+
+**Learning Library**:
+The learner's personal collection of saved Chinese learning content on the companion website, shared with linked desktop and extension clients. Library management and review take place on the website.
+_Avoid_: Desktop-only library, General-purpose cloud drive
+
+**Learning Folder**:
+A learner-named location in the Learning Library containing saved learning items and optionally child folders. Folder management takes place on the companion website.
+
+**Pending Sync Item**:
+A learning save accepted for a linked Learning Account while the server is unavailable, retained for retry under that same account.
+_Avoid_: Save belonging to whichever account is currently linked
+
+**Primary Target Language**:
+The learner's main translation language. Input Replacement Translation requests this language directly rather than applying the tooltip's source-language fallback choices.
+
+**Hanzi Stroke Order Animation**:
+A demonstration that draws one Chinese character stroke by stroke in writing order. The learner may loop several characters independently.
+
+**Hanzi Component Breakdown**:
+A learning view of a Chinese character's identifiable parts, their meanings or sounds, and deeper parts reached by selecting a component. Unidentified parts remain explicitly unknown.
+_Avoid_: Calling every component a dictionary radical
+
+**Hanzi Breakdown Tooltip**:
+The independently draggable card showing the currently focused Hanzi Component Breakdown. Closing it keeps stroke loops running; closing the owning translation view or the focused loop closes the card.
+
+**Personal Hanzi Meaning**:
+The learner's own meaning for one exact character in Vietnamese or English, separate from the supplied meaning and the other language. It is reused wherever that character appears as a component.
+
+**Hanzi Memory Note**:
+The learner's free-form reminder for one exact character, shared across explanation languages but separate from that character's meaning.

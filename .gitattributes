@@ -1,0 +1,4 @@
+# PDF cross-reference offsets depend on the exact bytes, including line endings.
+tests/fixtures/*.pdf binary
+# Preserve this upstream license verbatim.
+third_party/makemeahanzi/LGPL -whitespace

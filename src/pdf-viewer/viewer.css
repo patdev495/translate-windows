@@ -1,0 +1,69 @@
+/* Hallmark · shape: app screen · genre: modern-minimal · theme: Coral · redesign: full
+ * nav: document toolbar · signature: PDF reading canvas · states: loading, full, error, password, OCR · axes: light/grotesk-sans/warm · posture: restrained · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R5 V4 · weakest: E, unified password, document and OCR surfaces */
+/* Hallmark · answered F4 · active OCR is a selected toggle; file access and password submit belong to separate mutually exclusive states */
+/* Hallmark · reworded "Enable file access →" to "Enable file access" · 63 names the attached arrow */
+@import "../ui/tokens.css";
+@import "../ui/base.css";
+@import "../ui/ocr.css";
+
+html, body { height: 100%; overflow-x: clip; overflow-y: clip; }
+#toolbar { position: fixed; inset: 0 0 auto; height: var(--toolbar-h); display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); padding: 0 var(--space-lg); background: var(--color-cotton); border-bottom: 1px solid var(--color-rule); z-index: 100; }
+#toolbar-left, #toolbar-right { display: flex; align-items: center; gap: var(--space-xs); flex-shrink: 0; }
+#toolbar-center { flex: 1; min-width: 0; text-align: center; }
+#pdf-title { display: block; font-size: var(--text-md); color: var(--color-muted); white-space: nowrap; overflow: clip; text-overflow: ellipsis; }
+#toolbar button { position: relative; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: var(--radius-input); color: var(--color-ink-2); background: var(--color-transparent); }
+#toolbar button::before { content: ""; position: absolute; inset: -4px; }
+#toolbar button svg { width: 20px; height: 20px; }
+#toolbar button.active { background: var(--color-accent-soft); color: var(--color-accent); }
+#toolbar button:active { background: var(--color-paper-3); }
+#toolbar button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+#page-info { display: flex; align-items: center; gap: var(--space-xs); font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+#page-input { width: 48px; height: var(--control-height); padding: 0 var(--space-2xs); border: 1px solid var(--color-field-edge); border-radius: var(--radius-input); color: var(--color-ink); background: var(--color-cotton); text-align: center; font-size: var(--text-md); appearance: textfield; }
+#page-input::-webkit-inner-spin-button { appearance: none; }
+#page-input:focus-visible, #password-input:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+#page-input:active, #password-input:active { background: var(--color-paper-2); }
+#page-total, #zoom-level { color: var(--color-muted); font-size: var(--text-sm); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#zoom-level { min-width: 44px; text-align: center; }
+#viewer-container { position: fixed; inset: var(--toolbar-h) 0 0; overflow: auto; background: var(--color-paper-2); padding: var(--space-lg) var(--space-md) var(--space-xl); }
+#pages-container { display: flex; flex-direction: column; align-items: center; gap: var(--space-lg); min-width: min-content; }
+.page-wrapper { position: relative; background: var(--color-cotton); box-shadow: var(--shadow-page); overflow: clip; line-height: 0; flex-shrink: 0; }
+.page-wrapper canvas { display: block; }
+.ocr-selection-mode .page-wrapper { cursor: crosshair; }
+.ocr-selection-mode .page-wrapper .textLayer { pointer-events: none; user-select: none; }
+.ocr-selection-box { z-index: 8; }
+.ocr-progress-indicator { z-index: 9; max-width: min(320px, calc(100% - 16px)); }
+.page-wrapper .textLayer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: clip; pointer-events: auto; line-height: 1; }
+.page-wrapper .textLayer span { color: var(--color-transparent); position: absolute; white-space: pre; cursor: text; transform-origin: 0% 0%; -webkit-font-smoothing: antialiased; }
+.page-wrapper .textLayer ::selection { background: var(--color-selection); color: var(--color-transparent); }
+#loading-overlay, #error-overlay { position: fixed; inset: var(--toolbar-h) 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-md); background: var(--color-paper); padding: var(--space-md); z-index: 10; }
+.spinner { width: 32px; height: 32px; border: 2px solid var(--color-rule); border-top-color: var(--color-accent); border-radius: var(--radius-pill); animation: viewer-spin 0.8s linear infinite; }
+@keyframes viewer-spin { to { transform: rotate(360deg); } }
+#loading-text { font-size: var(--text-md); color: var(--color-muted); }
+#error-box { display: flex; flex-direction: column; align-items: center; gap: var(--space-md); max-width: 400px; padding: var(--space-lg); text-align: center; }
+#error-icon { width: 40px; height: 40px; color: var(--color-error); }
+#error-message { font-size: var(--text-lg); color: var(--color-ink); line-height: 1.5; }
+#btn-enable-file-access, #btn-password-submit, #btn-password-cancel { display: inline-flex; align-items: center; justify-content: center; min-height: var(--control-height); padding: 0 var(--space-md); border: 1px solid var(--color-ink); border-radius: var(--radius-input); font-size: var(--text-md); font-weight: 600; background: var(--color-ink); color: var(--color-cotton); }
+#btn-enable-file-access:focus-visible, #btn-password-submit:focus-visible, #btn-password-cancel:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+#btn-password-cancel { border-color: var(--color-field-edge); background: var(--color-cotton); color: var(--color-ink); }
+#password-overlay { position: fixed; inset: 0; display: grid; place-items: center; padding: var(--space-md); background: var(--color-scrim); z-index: 200; }
+#password-dialog { display: flex; flex-direction: column; gap: var(--space-sm); width: min(400px, 100%); padding: var(--space-lg); border-radius: var(--radius-card); background: var(--color-cotton); color: var(--color-ink); box-shadow: var(--shadow-panel); }
+#password-dialog h2 { font-size: var(--text-xl); }
+#password-dialog p { font-size: var(--text-md); color: var(--color-muted); line-height: 1.5; }
+#password-input { width: 100%; height: var(--control-height); padding: 0 var(--space-sm); border: 1px solid var(--color-field-edge); border-radius: var(--radius-input); background: var(--color-cotton); color: var(--color-ink); font-size: var(--text-md); }
+#password-input::placeholder { color: var(--color-muted); }
+#password-dialog #password-error { color: var(--color-error); font-size: var(--text-sm); }
+#password-actions { display: flex; justify-content: flex-end; gap: var(--space-xs); margin-top: var(--space-xs); }
+@media (hover: hover) {
+  #toolbar button:hover { background: var(--color-paper-2); }
+  #btn-enable-file-access:hover, #btn-password-submit:hover { background: var(--color-ink-2); }
+  #btn-password-cancel:hover, #page-input:hover, #password-input:hover { background: var(--color-paper-2); }
+}
+@media (max-width: 600px) {
+  :root { --toolbar-h: 152px; }
+  #toolbar { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 0; padding: var(--space-xs) var(--space-md); }
+  #toolbar-center { order: -1; width: 100%; }
+  #toolbar-left, #toolbar-right { min-height: 44px; }
+  #viewer-container { padding: var(--space-md) var(--space-xs); }
+}
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }

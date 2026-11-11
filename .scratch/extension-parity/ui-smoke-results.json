@@ -1,0 +1,28 @@
+{
+  "tooltip": {
+    "copy": "你好",
+    "layout": {
+      "centered": true,
+      "inset": 0,
+      "outerFrame": 0,
+      "width": 382
+    },
+    "strokePaths": 42
+  },
+  "main": {
+    "host": true
+  },
+  "settings": {
+    "accountLinked": true,
+    "shortcut": "Ctrl",
+    "tabs": 5
+  },
+  "pdf": {
+    "pages": 1,
+    "text": "Hello PDF"
+  },
+  "hanzi-breakdown": {
+    "components": 2,
+    "noteSaved": true
+  }
+}

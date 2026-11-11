@@ -1,0 +1,100 @@
+import { desktopRuntime as chrome } from '../platform/runtime';
+import { OutputFormat, pinyin, segment } from 'pinyin-pro';
+
+let cmuDictCache: Record<string, string> | null = null;
+
+const zhRunPattern = /[\u3400-\u9fff\uf900-\ufaff]+/g;
+const zhCharPattern = /[\u3400-\u9fff\uf900-\ufaff]/;
+
+async function getCmuDict(): Promise<Record<string, string>> {
+  if (cmuDictCache) return cmuDictCache;
+
+  try {
+    const url = chrome.runtime.getURL('cmu-dict.json');
+    const response = await fetch(url);
+    cmuDictCache = await response.json();
+  } catch (err) {
+    console.error('Failed to load CMU dictionary:', err);
+  }
+
+  return cmuDictCache || {};
+}
+
+export class PhoneticEngine {
+  static getPinyin(text: string): string {
+    const isolatedCharacter = text.trim();
+    if (/^\p{Script=Han}$/u.test(isolatedCharacter)) {
+      return `${isolatedCharacter} ${PhoneticEngine.getPinyinReadings(isolatedCharacter).join(' / ')}`;
+    }
+    return text
+      .split('\n')
+      .map(line => line.replace(zhRunPattern, run => formatZhPinyinRun(run)).replace(/\s+([,.;:?!])/g, '$1'))
+      .join('\n');
+  }
+
+  static getPinyinReadings(character: string): string[] {
+    return pinyin(character, { multiple: true, type: 'array' }) as string[];
+  }
+
+  static async getEnglishIPA(text: string): Promise<string> {
+    const cmuDict = await getCmuDict();
+    const tokens = text.split(/([a-zA-Z'-]+)/);
+    const grouped: string[] = [];
+
+    for (const token of tokens) {
+      if (token.length === 0) {
+        continue;
+      }
+
+      if (/^[a-zA-Z'-]+$/.test(token)) {
+        const lower = token.toLowerCase();
+        if (lower in cmuDict) {
+          grouped.push(`${token} ${cmuDict[lower]}`);
+        } else {
+          grouped.push(token);
+        }
+        continue;
+      }
+
+      if (token.trim().length === 0) {
+        continue;
+      }
+
+      if (grouped.length > 0) {
+        grouped[grouped.length - 1] += token.trimEnd();
+      } else {
+        grouped.push(token.trimStart());
+      }
+    }
+
+    return grouped.join(' · ');
+  }
+}
+
+function formatZhPinyinRun(run: string): string {
+  return segmentZhWords(run)
+    .map(word => `${word} ${formatPinyin(word)}`)
+    .join(' · ');
+}
+
+function segmentZhWords(run: string): string[] {
+  const segmenterCtor = (globalThis.Intl as typeof Intl & { Segmenter?: typeof Intl.Segmenter }).Segmenter;
+  if (segmenterCtor) {
+    const segmenter = new segmenterCtor('zh', { granularity: 'word' });
+    const words = Array.from(segmenter.segment(run))
+      .map(item => item.segment)
+      .filter(item => zhCharPattern.test(item));
+    if (words.length > 0) {
+      return words;
+    }
+  }
+
+  const segmented = segment(run, { format: OutputFormat.AllSegment, nonZh: 'consecutive' });
+  return segmented
+    .map(item => item.origin)
+    .filter(item => zhCharPattern.test(item));
+}
+
+function formatPinyin(word: string): string {
+  return pinyin(word, { nonZh: 'consecutive' }).replace(/\s+/g, ' ').trim();
+}

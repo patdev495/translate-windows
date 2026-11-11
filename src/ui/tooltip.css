@@ -1,0 +1,72 @@
+/* Hallmark · shape: app screen · genre: modern-minimal · theme: Coral · redesign: full · signature: multilingual reading sheet · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R5 V4 · weakest: H, reading blocks now use rules and a shared action rail */
+@import "./tokens.css";
+@import "./base.css";
+
+:host { all: initial; font-family: var(--font-body); color: var(--color-ink); }
+#tooltip { --color-muted: var(--color-tooltip-muted); --color-rule: var(--color-tooltip-rule); --color-paper-2: var(--color-tooltip-hover); --color-paper-3: var(--color-tooltip-pressed); position: absolute; display: none; background: var(--color-tooltip-paper); color: var(--color-ink); outline: 1px solid var(--color-tooltip-edge); outline-offset: -1px; border-radius: var(--radius-card); padding: var(--space-md); box-shadow: var(--shadow-panel); font-family: var(--font-body); font-size: var(--tooltip-font-size, 14px); line-height: 1.6; max-height: calc(100dvh - 32px); overflow: auto; scrollbar-width: thin; scrollbar-color: var(--color-tooltip-edge) var(--color-tooltip-paper); cursor: move; transform: translate(-50%, -50%); }
+.tt-body { display: flex; flex-direction: column; gap: var(--space-sm); cursor: default; }
+.tt-body > div { min-width: 0; }
+.tt-section-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2xs) var(--space-xs); min-height: 44px; margin-bottom: var(--space-2xs); }
+.tt-lang-badge { font-size: max(12px, 0.78em); font-weight: 600; color: var(--color-muted); line-height: 1.5; }
+.tt-lang-badge.tr1, .tt-lang-badge.tr2 { color: var(--color-ink); }
+.tt-hanzi-strip { --hanzi-size: min(max(56px, 4em), calc(100vw - 64px)); display: flex; flex: 1 1 var(--hanzi-size); align-items: center; gap: max(var(--space-2xs), calc(4em / 14)); min-width: min(100%, var(--hanzi-size)); max-width: 100%; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
+.tt-hanzi-button { display: grid; place-items: center; position: relative; flex: 0 0 var(--hanzi-size); width: var(--hanzi-size); height: var(--hanzi-size); padding: 0; border: 1px solid var(--color-tooltip-edge); border-radius: var(--radius-input); background: var(--color-transparent); color: var(--color-ink); cursor: pointer; }
+.tt-hanzi-button[aria-pressed="true"] { border-color: var(--color-accent); background: var(--color-accent-soft); }
+.tt-hanzi-button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+.tt-hanzi-fallback { position: absolute; font-size: calc(var(--hanzi-size) * 4 / 7); line-height: 1; }
+.tt-hanzi-drawing { display: block; width: 100%; height: 100%; }
+.tt-hanzi-drawing svg { width: 100%; height: 100%; }
+/* Keep the 14px layout as the minimum; scale actions with Tooltip Font Size. */
+.tt-actions { display: flex; flex-wrap: wrap; align-items: center; gap: max(var(--space-xs), calc(8em / 14)); max-width: 100%; min-width: 0; flex-shrink: 0; }
+.tt-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; width: max(36px, calc(36em / 14)); height: max(36px, calc(36em / 14)); padding: 0; border: 0; border-radius: var(--radius-input); color: var(--color-muted); background: var(--color-transparent); cursor: pointer; flex-shrink: 0; }
+.tt-btn::before { content: ""; position: absolute; inset: -4px; }
+.tt-btn:focus-visible, #trigger:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.tt-btn:active { background: var(--color-paper-3); }
+.tt-btn:disabled, #trigger:disabled { opacity: 0.55; cursor: not-allowed; }
+.tt-btn svg { width: max(16px, calc(16em / 14)) !important; height: max(16px, calc(16em / 14)) !important; }
+.tt-source-text, .tt-translation-text { display: block; color: var(--color-ink); font-weight: 400; line-height: 1.6; }
+.tt-source-text, .tt-translation-text, .tt-phonetic, .tt-lang-badge { cursor: text; user-select: text; }
+.tt-source-text { color: var(--color-ink-2); }
+.tt-translation-text { font-weight: 500; }
+.tt-phonetic { display: block; color: var(--color-muted); font-family: var(--font-body); font-size: max(12px, 0.875em); line-height: 1.6; overflow-wrap: break-word; white-space: pre-wrap; }
+.tt-selection-gloss { display: block; margin-top: 2px; color: var(--color-ink-2); line-height: 1.5; overflow-wrap: anywhere; }
+.tt-selection-gloss strong { font-weight: 800; }
+.tt-selection-gloss-pronunciation { color: var(--color-muted); font-size: .92em; }
+.tt-reading-focus { font-weight: 800; color: var(--color-ink); }
+.phonetics-container { margin-top: var(--space-xs); }
+.tt-sep { height: 1px; background: var(--color-rule); }
+.break-words { overflow-wrap: break-word; white-space: pre-wrap; }
+.break-normal { word-break: normal; white-space: pre; }
+.tt-copy-ok { color: var(--color-success); background: var(--color-success-soft); }
+.tt-save-button { border: 1px solid var(--color-accent); background: var(--color-accent-soft); color: var(--color-accent); }
+.tt-save-button svg { width: max(19px, calc(19em / 14)) !important; height: max(19px, calc(19em / 14)) !important; }
+.tt-btn.tt-save-button:hover, .tt-btn.tt-save-button:focus-visible { background: var(--color-accent); color: var(--color-accent-ink); }
+.tt-save-panel { display: grid; gap: 8px; margin-top: 12px; padding: 14px; border: 1px solid var(--color-rule); border-radius: var(--radius-card); background: var(--color-paper-2); color: var(--color-ink); box-shadow: var(--shadow-card); }
+.tt-save-unlinked { position: relative; border: 2px solid #e35d35; background: #fff2e9; color: #7e2411; box-shadow: 0 8px 24px #7e241133; }
+.tt-save-unlinked > strong { padding-right: 28px; font-size: 16px; }
+.tt-save-unlinked p { margin: 0; font-size: 13px; line-height: 1.5; }
+.tt-save-unlinked .tt-save-link-account { min-height: 40px; border: 0; border-radius: var(--radius-input); background: #b9351b; color: #fff; font-weight: 800; cursor: pointer; }
+.tt-save-unlinked .tt-save-close { position: absolute; right: 9px; top: 7px; }
+.tt-save-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; }
+.tt-save-title { min-width: 0; overflow-wrap: anywhere; font-size: 14px; line-height: 1.4; }
+.tt-save-shortcut { color: var(--color-muted); font-size: 11px; }
+.tt-save-close { border: 0; background: transparent; color: var(--color-ink); font-size: 20px; cursor: pointer; }
+.tt-save-choice { width: 100%; min-height: 38px; padding: 8px 12px; border: 1px solid var(--color-rule); border-radius: var(--radius-input); background: var(--color-paper); color: var(--color-ink); text-align: left; cursor: pointer; }
+.tt-save-choice:hover { border-color: var(--color-accent); }
+.tt-save-form { display: grid; gap: 10px; min-width: min(320px, 100%); }
+.tt-save-form label { display: grid; gap: 4px; font-size: 12px; font-weight: 600; }
+.tt-save-form input, .tt-save-form select, .tt-save-form textarea { box-sizing: border-box; width: 100%; min-height: 36px; padding: 7px 9px; border: 1px solid var(--color-rule); border-radius: var(--radius-input); background: var(--color-paper); color: var(--color-ink); font: inherit; }
+.tt-save-form textarea { min-height: 60px; resize: vertical; }
+.tt-save-status { min-height: 16px; margin: 0; font-size: 12px; }
+.tt-save-existing-sentence { color: var(--color-muted); font-size: 11px; }
+.tt-save-success { padding: 11px 13px; border: 1px solid var(--color-success); border-radius: var(--radius-input); background: var(--color-success-soft); color: var(--color-success); font-size: 14px; font-weight: 800; }
+.tt-save-submit { min-height: 38px; border: 0; border-radius: var(--radius-input); background: var(--color-accent); color: var(--color-accent-ink); font-weight: 700; cursor: pointer; }
+.tt-save-submit:disabled { opacity: 0.65; cursor: default; }
+.tt-save-panel :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.tt-save-form select:focus-visible { outline-color: var(--color-ink-2); }
+#trigger { position: absolute; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-card); color: var(--color-accent-ink); background: var(--color-accent); box-shadow: var(--shadow-card); transform: translate(-50%, -100%); }
+#trigger svg { width: 24px; height: 24px; }
+#trigger:active { background: var(--color-ink); }
+@media (hover: hover) { .tt-btn:hover { background: var(--color-paper-2); color: var(--color-ink); } #trigger:hover { background: var(--color-ink-2); } }
+@media (max-width: 480px) { .tt-actions { gap: max(var(--space-2xs), calc(4em / 14)); } }

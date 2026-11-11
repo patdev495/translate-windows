@@ -1,0 +1,471 @@
+{
+  "created": 79,
+  "disabledMemory": {
+    "privateBytes": 954425344,
+    "processCount": 7,
+    "workingSetBytes": 1117212672
+  },
+  "idle": {
+    "privateBytes": 149254144,
+    "processCount": 7,
+    "workingSetBytes": 329027584
+  },
+  "phases": [
+    {
+      "afterCaptures": {
+        "created": 2,
+        "released": 0
+      },
+      "before": {
+        "created": 0,
+        "released": 0
+      },
+      "language": "ch",
+      "loadMs": 1328.4000000357628,
+      "loaded": {
+        "created": 2,
+        "released": 0
+      },
+      "memory": {
+        "privateBytes": 677642240,
+        "processCount": 7,
+        "workingSetBytes": 827523072
+      },
+      "memoryAfterFive": {
+        "privateBytes": 806416384,
+        "processCount": 7,
+        "workingSetBytes": 956133376
+      },
+      "reloadPerCaptureSamples": [
+        {
+          "durationMs": 1143.4000000357628,
+          "ocrMs": 972.100000023842
+        },
+        {
+          "durationMs": 1190.2999999523165,
+          "ocrMs": 1012.399999976158
+        },
+        {
+          "durationMs": 1149.9000000357628,
+          "ocrMs": 954.6999999880792
+        },
+        {
+          "durationMs": 1208,
+          "ocrMs": 1036.9000000357628
+        },
+        {
+          "durationMs": 1155.399999976158,
+          "ocrMs": 980.3000000119208
+        },
+        {
+          "durationMs": 1118.199999988079,
+          "ocrMs": 954
+        },
+        {
+          "durationMs": 1209.100000023842,
+          "ocrMs": 1043
+        },
+        {
+          "durationMs": 1466.5,
+          "ocrMs": 1280.100000023842
+        },
+        {
+          "durationMs": 2290.600000023842,
+          "ocrMs": 2070.599999964237
+        },
+        {
+          "durationMs": 2395,
+          "ocrMs": 2121.2000000476837
+        }
+      ],
+      "samples": [
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 35,
+                "width": 170,
+                "x": 13,
+                "y": 25
+              },
+              "text": "你好世界0"
+            }
+          ],
+          "durationMs": 1058.899999976158,
+          "fullText": "你好世界0"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 35,
+                "width": 168,
+                "x": 12,
+                "y": 25
+              },
+              "text": "你好世界1"
+            }
+          ],
+          "durationMs": 708.5,
+          "fullText": "你好世界1"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 35,
+                "width": 170,
+                "x": 13,
+                "y": 25
+              },
+              "text": "你好世界2"
+            }
+          ],
+          "durationMs": 696.7999999523163,
+          "fullText": "你好世界2"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 35,
+                "width": 169,
+                "x": 13,
+                "y": 25
+              },
+              "text": "你好世界3"
+            }
+          ],
+          "durationMs": 658.5,
+          "fullText": "你好世界3"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 35,
+                "width": 170,
+                "x": 13,
+                "y": 25
+              },
+              "text": "你好世界4"
+            }
+          ],
+          "durationMs": 706.9000000357628,
+          "fullText": "你好世界4"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 35,
+                "width": 170,
+                "x": 13,
+                "y": 25
+              },
+              "text": "你好世界5"
+            }
+          ],
+          "durationMs": 727.1999999880791,
+          "fullText": "你好世界5"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 35,
+                "width": 170,
+                "x": 13,
+                "y": 25
+              },
+              "text": "你好世界6"
+            }
+          ],
+          "durationMs": 684,
+          "fullText": "你好世界6"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 35,
+                "width": 170,
+                "x": 13,
+                "y": 25
+              },
+              "text": "你好世界7"
+            }
+          ],
+          "durationMs": 704.7000000476837,
+          "fullText": "你好世界7"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 35,
+                "width": 170,
+                "x": 13,
+                "y": 25
+              },
+              "text": "你好世界8"
+            }
+          ],
+          "durationMs": 737.1000000238419,
+          "fullText": "你好世界8"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 35,
+                "width": 169,
+                "x": 13,
+                "y": 25
+              },
+              "text": "你好世界9"
+            }
+          ],
+          "durationMs": 673.7999999523163,
+          "fullText": "你好世界9"
+        }
+      ]
+    },
+    {
+      "afterCaptures": {
+        "created": 27,
+        "released": 22
+      },
+      "before": {
+        "created": 22,
+        "released": 20
+      },
+      "language": "latin",
+      "loadMs": 2608.800000011921,
+      "loaded": {
+        "created": 27,
+        "released": 22
+      },
+      "memory": {
+        "privateBytes": 706650112,
+        "processCount": 7,
+        "workingSetBytes": 932188160
+      },
+      "memoryAfterFive": {
+        "privateBytes": 686297088,
+        "processCount": 7,
+        "workingSetBytes": 913813504
+      },
+      "reloadPerCaptureSamples": [
+        {
+          "durationMs": 1586.399999976158,
+          "ocrMs": 1410.5
+        },
+        {
+          "durationMs": 1554.699999988079,
+          "ocrMs": 1374.699999988079
+        },
+        {
+          "durationMs": 1599.100000023842,
+          "ocrMs": 1426.100000023842
+        },
+        {
+          "durationMs": 1578.899999976158,
+          "ocrMs": 1402.2000000476835
+        },
+        {
+          "durationMs": 1597.4000000357628,
+          "ocrMs": 1412.5999999642372
+        },
+        {
+          "durationMs": 1560.399999976158,
+          "ocrMs": 1397
+        },
+        {
+          "durationMs": 1612.699999988079,
+          "ocrMs": 1420.0999999642372
+        },
+        {
+          "durationMs": 1795,
+          "ocrMs": 1587.399999976158
+        },
+        {
+          "durationMs": 1944.9000000357628,
+          "ocrMs": 1745.699999988079
+        },
+        {
+          "durationMs": 1830.199999988079,
+          "ocrMs": 1615.600000023842
+        }
+      ],
+      "samples": [
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 23,
+                "width": 314,
+                "x": 13,
+                "y": 31
+              },
+              "text": "Xin chào Việt Nam 0"
+            }
+          ],
+          "durationMs": 1197.5,
+          "fullText": "Xin chào Việt Nam 0"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 22,
+                "width": 309,
+                "x": 15,
+                "y": 33
+              },
+              "text": "Xin chào Việt Nam 1"
+            }
+          ],
+          "durationMs": 989.8000000119208,
+          "fullText": "Xin chào Việt Nam 1"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 23,
+                "width": 314,
+                "x": 14,
+                "y": 32
+              },
+              "text": "Xin chào Việt Nam 2"
+            }
+          ],
+          "durationMs": 980.8000000119208,
+          "fullText": "Xin chào Việt Nam 2"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 26,
+                "width": 313,
+                "x": 14,
+                "y": 30
+              },
+              "text": "Xin chào Việt Nam 3"
+            }
+          ],
+          "durationMs": 889.5,
+          "fullText": "Xin chào Việt Nam 3"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 23,
+                "width": 314,
+                "x": 14,
+                "y": 34
+              },
+              "text": "Xin chào Việt Nam 4"
+            }
+          ],
+          "durationMs": 937,
+          "fullText": "Xin chào Việt Nam 4"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 23,
+                "width": 314,
+                "x": 14,
+                "y": 32
+              },
+              "text": "Xin chào Việt Nam 5"
+            }
+          ],
+          "durationMs": 999,
+          "fullText": "Xin chào Việt Nam 5"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 26,
+                "width": 314,
+                "x": 14,
+                "y": 30
+              },
+              "text": "Xin chào Việt Nam 6"
+            }
+          ],
+          "durationMs": 857,
+          "fullText": "Xin chào Việt Nam 6"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 23,
+                "width": 313,
+                "x": 14,
+                "y": 32
+              },
+              "text": "Xin chào Việt Nam 7"
+            }
+          ],
+          "durationMs": 909.7999999523164,
+          "fullText": "Xin chào Việt Nam 7"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 26,
+                "width": 314,
+                "x": 14,
+                "y": 30
+              },
+              "text": "Xin chào Việt Nam 8"
+            }
+          ],
+          "durationMs": 787.8000000119209,
+          "fullText": "Xin chào Việt Nam 8"
+        },
+        {
+          "blocks": [
+            {
+              "bbox": {
+                "height": 23,
+                "width": 314,
+                "x": 13,
+                "y": 31
+              },
+              "text": "Xin chào Việt Nam 9"
+            }
+          ],
+          "durationMs": 875.6000000238419,
+          "fullText": "Xin chào Việt Nam 9"
+        }
+      ]
+    }
+  ],
+  "released": 79,
+  "restarted": {
+    "blocks": [
+      {
+        "bbox": {
+          "height": 36,
+          "width": 190,
+          "x": 11,
+          "y": 24
+        },
+        "text": "你好世界11"
+      }
+    ],
+    "fullText": "你好世界11"
+  },
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0"
+}

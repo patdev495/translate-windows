@@ -31,7 +31,7 @@ type ModelUrls = {
 
 type PaddleOcrServiceCtor = new (options?: unknown) => {
   initialize(): Promise<void>;
-  recognize(image: HTMLCanvasElement, options?: { flatten?: false; strategy?: 'per-box' | 'per-line' | 'cross-line' }): Promise<{ text: string }>;
+  recognize(image: HTMLCanvasElement, options?: { flatten?: false; strategy?: 'per-box' | 'per-line' | 'cross-line'; noCache?: boolean }): Promise<{ text: string }>;
   destroy?(): Promise<void>;
 };
 
@@ -56,6 +56,13 @@ let activeServiceInstance: OcrService | null = null;
 let activeLoadGeneration = 0;
 let activeRecognitionCount = 0;
 let deferredDestroyServices: OcrService[] = [];
+let operationTail: Promise<void> = Promise.resolve();
+
+function serializeOcr<T>(operation: () => Promise<T>): Promise<T> {
+  const result = operationTail.then(operation);
+  operationTail = result.then(() => {}, () => {});
+  return result;
+}
 
 export function getOcrWasmPaths(): { wasm: string } {
   return {
@@ -175,7 +182,12 @@ async function createService(
     recognition: { strategy: 'per-line' },
     debugging: { verbose: false, debug: false },
   });
-  await service.initialize();
+  try {
+    await service.initialize();
+  } catch (err) {
+    await destroyService(service);
+    throw err;
+  }
   return service;
 }
 
@@ -195,7 +207,11 @@ export function getActiveOcrModelKey(): string | null {
   return activeServiceKey;
 }
 
-export async function unloadOcrModel(): Promise<void> {
+export function unloadOcrModel(): Promise<void> {
+  return serializeOcr(unloadModel);
+}
+
+async function unloadModel(): Promise<void> {
   activeLoadGeneration += 1;
   activeServiceKey = null;
   activeServicePromise = null;
@@ -213,9 +229,22 @@ export async function unloadOcrModel(): Promise<void> {
   if (service) {
     await destroyService(service);
   }
+  const sessions = vietOcrSessions;
+  vietOcrSessions = null;
+  if (sessions) {
+    await Promise.all([sessions.cnn.release(), sessions.encoder.release(), sessions.decoder.release()]);
+  }
 }
 
-export async function preloadOcrModel(
+export function preloadOcrModel(
+  tier: OcrTier,
+  language: OcrLanguage = 'ch',
+  onProgress?: ProgressHandler
+): Promise<OcrService> {
+  return serializeOcr(() => prepareOcrModel(tier, language, onProgress));
+}
+
+async function prepareOcrModel(
   tier: OcrTier,
   language: OcrLanguage = 'ch',
   onProgress?: ProgressHandler
@@ -225,12 +254,20 @@ export async function preloadOcrModel(
     return activeServicePromise;
   }
 
-  await unloadOcrModel();
+  await unloadModel();
 
   const generation = activeLoadGeneration;
   activeServiceKey = key;
-  activeServicePromise = createService(tier, language, onProgress)
+  activeServicePromise = createService(tier, 'ch', onProgress)
     .then(async (service) => {
+      if (language === 'latin') {
+        try {
+          await getVietOcrSessions(onProgress);
+        } catch (err) {
+          await destroyService(service);
+          throw err;
+        }
+      }
       if (generation !== activeLoadGeneration || activeServiceKey !== key) {
         await destroyService(service);
         throw new Error('OCR model load was superseded.');
@@ -255,7 +292,7 @@ async function getService(
   language: OcrLanguage = 'ch',
   onProgress?: ProgressHandler
 ): Promise<OcrService> {
-  return preloadOcrModel(tier, language, onProgress);
+  return prepareOcrModel(tier, language, onProgress);
 }
 
 async function withRecognition<T>(run: (service: OcrService) => Promise<T>, service: OcrService): Promise<T> {
@@ -299,11 +336,17 @@ async function getVietOcrSessions(onProgress?: ProgressHandler) {
 
   onProgress?.({ stage: 'loading', message: 'Initializing VietOCR...' });
 
-  const [cnn, encoder, decoder] = await Promise.all([
+  const loaded = await Promise.allSettled([
     ort.InferenceSession.create(cnnBuf),
     ort.InferenceSession.create(encoderBuf),
     ort.InferenceSession.create(decoderBuf),
   ]);
+  const failure = loaded.find((result) => result.status === 'rejected');
+  if (failure?.status === 'rejected') {
+    await Promise.allSettled(loaded.flatMap((result) => result.status === 'fulfilled' ? [result.value.release()] : []));
+    throw failure.reason;
+  }
+  const [cnn, encoder, decoder] = loaded.map((result) => (result as PromiseFulfilledResult<ort.InferenceSession>).value);
 
   const dictStr = new TextDecoder('utf-8').decode(dictBuf);
   const vocab = dictStr.split(/\r?\n/).filter(line => line.length > 0);
@@ -553,7 +596,7 @@ async function recognizeWithVietOcr(
   tier: 'tiny' | 'small' | 'medium',
   onProgress?: ProgressHandler
 ): Promise<{ fullText: string; blocks: OcrTextBlock[] }> {
-  const service = await getService(tier, 'ch', onProgress);
+  const service = await getService(tier, 'latin', onProgress);
   const sessions = await getVietOcrSessions(onProgress);
 
   onProgress?.({ stage: 'recognizing', message: 'Detecting text boxes...' });
@@ -617,17 +660,8 @@ export async function recognizeImageRegion(
   language: 'ch' | 'latin' = 'ch',
   onProgress?: ProgressHandler
 ): Promise<string> {
-  if (language === 'latin') {
-    const result = await recognizeWithVietOcr(canvas, tier, onProgress);
-    return result.fullText;
-  }
-  const service = await getService(tier, language, onProgress);
-  onProgress?.({ stage: 'recognizing', message: 'Reading text from image...' });
-  const result = await withRecognition(
-    (ocrService) => ocrService.recognize(canvas, { flatten: false, strategy: 'per-line' }),
-    service
-  );
-  return result.text.trim();
+  const result = await recognizeWithBlocks(canvas, tier, language, onProgress);
+  return result.fullText;
 }
 
 /**
@@ -643,6 +677,15 @@ export async function recognizeWithBlocks(
   language: 'ch' | 'latin' = 'ch',
   onProgress?: ProgressHandler
 ): Promise<{ fullText: string; blocks: OcrTextBlock[] }> {
+  return serializeOcr(() => recognizeBlocks(canvas, tier, language, onProgress));
+}
+
+async function recognizeBlocks(
+  canvas: HTMLCanvasElement,
+  tier: OcrTier,
+  language: OcrLanguage,
+  onProgress?: ProgressHandler
+): Promise<{ fullText: string; blocks: OcrTextBlock[] }> {
   if (language === 'latin') {
     return recognizeWithVietOcr(canvas, tier, onProgress);
   }
@@ -651,13 +694,15 @@ export async function recognizeWithBlocks(
   onProgress?.({ stage: 'recognizing', message: 'Reading text from image...' });
 
   const result = await withRecognition(
-    (ocrService) => ocrService.recognize(canvas, { flatten: false, strategy: 'per-line' }) as Promise<any>,
+    // The library's sampled image hash collides for similar screen crops.
+    // Reuse the model, but always recognize the current image.
+    (ocrService) => ocrService.recognize(canvas, { flatten: false, strategy: 'per-line', noCache: true }) as Promise<any>,
     service
   );
 
   const fullText = (result.text ?? '').trim();
 
-  const rawRegions: unknown[] = result.regions ?? result.blocks ?? result.boxes ?? [];
+  const rawRegions: unknown[] = result.regions ?? result.blocks ?? result.boxes ?? result.lines?.flat() ?? [];
   const blocks: OcrTextBlock[] = rawRegions.map((r: any) => {
     const text: string = typeof r.text === 'string' ? r.text.trim() : '';
     let x = 0, y = 0, width = 0, height = 0;
@@ -668,6 +713,8 @@ export async function recognizeWithBlocks(
       y = Math.min(...ys);
       width = Math.max(...xs) - x;
       height = Math.max(...ys) - y;
+    } else if (r.box && typeof r.box.x === 'number') {
+      x = r.box.x; y = r.box.y; width = r.box.width; height = r.box.height;
     } else if (r.bbox && typeof r.bbox.x === 'number') {
       x = r.bbox.x; y = r.bbox.y; width = r.bbox.width; height = r.bbox.height;
     } else if (typeof r.x === 'number') {

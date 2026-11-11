@@ -1,10 +1,12 @@
+import { desktopFetch } from '../platform/http';
+
 export interface TranslationResult {
   translation: string;
   detectedLang: string;
 }
 
 export interface TranslationSettings {
-  provider: 'google' | 'deepl';
+  provider: 'google' | 'deepl' | 'deepl-free';
   deeplApiKey: string;
 }
 
@@ -50,6 +52,17 @@ export class TranslationEngine {
   ): Promise<TranslationResult> {
     if (settings.provider === 'deepl') {
       return this.translateDeepL(text, targetLang, settings.deeplApiKey);
+    }
+    if (settings.provider === 'deepl-free') {
+      const language = targetLang.toLowerCase().split('-')[0];
+      const response = await desktopFetch('https://oneshot-free.www.deepl.com/v1/translate', {
+        method:'POST',headers:{Authorization:'None','Content-Type':'application/json'},
+        body:JSON.stringify({text:[text],target_lang:language === 'zh' ? 'zh-Hans' : language === 'en' ? 'en-US' : language}),
+      });
+      if (!response.ok) throw new Error(`DeepL Web translation failed: ${response.status}`);
+      const item = (await response.json())?.translations?.[0];
+      if (typeof item?.text !== 'string' || !item.text.trim()) throw new Error('DeepL Web returned no translation');
+      return {translation:item.text,detectedLang:typeof item.detected_source_language === 'string' ? item.detected_source_language.toLowerCase() : 'auto'};
     }
     return this.translateGoogle(text, targetLang);
   }

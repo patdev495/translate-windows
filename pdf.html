@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Read PDFs and translate text or image regions with PolyTranslate." />
+    <title>PDF Viewer, PolyTranslate</title>
+    <link rel="stylesheet" href="/src/pdf-viewer/viewer.css" />
+  </head>
+  <body>
+    <!-- Toolbar -->
+    <div id="toolbar">
+      <div id="toolbar-left"><button type="button" id="open-pdf-file" title="Open PDF">Mở PDF</button>
+        <button type="button" id="btn-prev" title="Previous page">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <span id="page-info">
+          <input id="page-input" aria-label="Page number" type="number" min="1" value="1" />
+          <span id="page-total">/ …</span>
+        </span>
+        <button type="button" id="btn-next" title="Next page">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="toolbar-center">
+        <span id="pdf-title">Loading…</span>
+      </div>
+
+      <div id="toolbar-right">
+        <button type="button" id="btn-ocr-region" title="Select image region for OCR translation (Ctrl+Space)" aria-pressed="false">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 7V5a1 1 0 0 1 1-1h2"/>
+            <path d="M17 4h2a1 1 0 0 1 1 1v2"/>
+            <path d="M20 17v2a1 1 0 0 1-1 1h-2"/>
+            <path d="M7 20H5a1 1 0 0 1-1-1v-2"/>
+            <path d="M8 10h8"/>
+            <path d="M8 14h5"/>
+          </svg>
+        </button>
+        <button type="button" id="btn-zoom-out" title="Zoom out">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </button>
+        <span id="zoom-level">100%</span>
+        <button type="button" id="btn-zoom-in" title="Zoom in">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </button>
+        <button type="button" id="btn-zoom-fit" title="Fit to page width">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading state -->
+    <div id="loading-overlay">
+      <div class="spinner"></div>
+      <p id="loading-text">Loading PDF…</p>
+    </div>
+
+    <!-- Error state -->
+    <div id="error-overlay" hidden>
+      <div id="error-box">
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" id="error-icon">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p id="error-message">Could not load PDF.</p>
+        <button type="button" id="btn-enable-file-access" hidden>Enable file access</button>
+      </div>
+    </div>
+
+    <!-- Password dialog -->
+    <div id="password-overlay" hidden>
+      <div id="password-dialog" role="dialog" aria-modal="true" aria-labelledby="password-heading">
+        <h2 id="password-heading">Password protected PDF</h2>
+        <p>This document requires a password to open.</p>
+        <input id="password-input" aria-label="PDF password" aria-describedby="password-error" type="password" placeholder="Enter password…" autocomplete="current-password" />
+        <p id="password-error" hidden>Incorrect password. Please try again.</p>
+        <div id="password-actions">
+          <button type="button" id="btn-password-cancel">Cancel</button>
+          <button type="button" id="btn-password-submit">Open</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PDF pages container -->
+    <div id="viewer-container">
+      <div id="pages-container"></div>
+    </div>
+
+    <script type="module" src="/src/pdf-viewer/viewer.ts"></script>
+  <p id="pdf-translation-status" role="status" style="position:fixed;bottom:12px;left:12px"></p></body>
+</html>

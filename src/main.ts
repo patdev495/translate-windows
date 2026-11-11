@@ -3,9 +3,9 @@ import { OverlayController } from "./overlay-controller";
 import { CropSelector, type CropRect } from "./crop-selector";
 import { handleCompletedCrop, handleCropImageActions } from "./crop-completion";
 import { SettingsManager } from "./services/settings";
-import { initializeOcrModelLifecycle } from "./services/ocr-preload";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getScreenRectMapper } from "./screen-rect";
-import { recognizeWithBlocks } from "./services/ocr";
+import { requestOcr } from "./services/ocr-client";
 import { TranslationEngine } from "./services/translation";
 import { getDetectionTarget, getTranslationTargets } from "./services/translation-plan";
 import {
@@ -23,6 +23,22 @@ const windowApi = {
 const overlayController = new OverlayController(windowApi);
 
 window.addEventListener("DOMContentLoaded", async () => {
+  if ('__TAURI_INTERNALS__' in window && getCurrentWindow().label === 'main') {
+    document.getElementById('main-container')?.setAttribute('hidden', '');
+    try {
+      const { startDesktopHost } = await import('./services/desktop-host');
+      const stopHost = await startDesktopHost();
+      window.addEventListener('beforeunload', stopHost, { once: true });
+    } catch (error) { console.error('Failed to start desktop host:', error); }
+    try {
+      const { startOcrHost } = await import('./services/ocr-host');
+      const stop = await startOcrHost();
+      window.addEventListener('beforeunload', () => { void stop(); }, { once: true });
+    } catch (error) {
+      console.error('Failed to start the OCR host:', error);
+    }
+    return;
+  }
   const params = new URLSearchParams(window.location.search);
   const isOverlayWindow = params.get("overlay") === "1";
   const isRecordingWindow = params.get("recording") === "1";
@@ -63,8 +79,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   try {
     const imgUrl = await invoke<string | null>("get_capture_image");
     if (isOverlayWindow || imgUrl) {
-      // Preload OCR model in the overlay window
-      void initializeOcrModelLifecycle();
       // Switch DOM to overlay mode
       document.documentElement.classList.add("overlay-mode");
       document.body.classList.add("overlay-mode");
@@ -100,7 +114,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             );
             try {
               const settings = await SettingsManager.getSettings();
-              if (!settings.autoTranslate) {
+              if (!settings.autoTranslate || !settings.translationActive) {
                 await handleCropImageActions(dataUrl, rect, {
                   invoke,
                   toScreenRect,
@@ -141,7 +155,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── Standard main window (settings / greet placeholder) ─────────────────
-  void initializeOcrModelLifecycle();
   document.getElementById("main-container")?.setAttribute("hidden", "");
 });
 
@@ -394,8 +407,8 @@ async function runOverlayTranslation(
     ctx.drawImage(img, 0, 0);
 
     // 3. Recognize blocks
-    const { fullText, blocks } = await recognizeWithBlocks(
-      canvas,
+    const { fullText, blocks } = await requestOcr(
+      dataUrl,
       settings.ocrModelTier,
       settings.ocrLanguage
     );

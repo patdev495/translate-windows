@@ -13,6 +13,14 @@ type FieldName = keyof Pick<
   | 'secondaryTargetLang'
   | 'reverseTargetLang'
   | 'autoTranslate'
+  | 'autoSelectionTranslate'
+  | 'translationShortcut'
+  | 'inputReplacementShortcut'
+  | 'translationActive'
+  | 'inputReplacementEnabled'
+  | 'hanziStrokeSpeed'
+  | 'hanziBreakdownEnabled'
+  | 'hanziBreakdownLanguage'
   | 'ocrShortcut'
   | 'ocrModelTier'
   | 'ocrLanguage'
@@ -31,6 +39,14 @@ const FIELD_NAMES: FieldName[] = [
   'secondaryTargetLang',
   'reverseTargetLang',
   'autoTranslate',
+  'autoSelectionTranslate',
+  'translationShortcut',
+  'inputReplacementShortcut',
+  'translationActive',
+  'inputReplacementEnabled',
+  'hanziStrokeSpeed',
+  'hanziBreakdownEnabled',
+  'hanziBreakdownLanguage',
   'ocrShortcut',
   'ocrModelTier',
   'ocrLanguage',
@@ -76,7 +92,7 @@ export class SettingsPanelController {
 
     this.form.addEventListener('submit', (event) => {
       event.preventDefault();
-      void this.save();
+      void this.save().catch(error => { if (this.saveState) this.saveState.textContent = String(error); });
     });
   }
 
@@ -87,9 +103,14 @@ export class SettingsPanelController {
       if (element instanceof HTMLInputElement && element.type === 'checkbox') {
         element.checked = name === 'startWithWindows' ? autostartEnabled : Boolean(settings[name]);
       } else if (element instanceof HTMLInputElement || element instanceof HTMLSelectElement) {
-        element.value = String(settings[name]);
+        if (element instanceof HTMLInputElement && element.classList.contains('shortcut-capture')) {
+          element.dataset.shortcut = String(settings[name]);
+          element.value = String(settings[name]).replace(/Key|Digit/g,'');
+        } else element.value = String(settings[name]);
       }
     }
+    const replacement = this.form.elements.namedItem('inputReplacementShortcut');
+    if (replacement instanceof HTMLInputElement) replacement.disabled = !settings.inputReplacementEnabled;
   }
 
   async save(): Promise<void> {
@@ -100,11 +121,14 @@ export class SettingsPanelController {
       if (element instanceof HTMLInputElement && element.type === 'checkbox') {
         (partial as Record<string, unknown>)[name] = element.checked;
       } else if (element instanceof HTMLInputElement || element instanceof HTMLSelectElement) {
-        (partial as Record<string, unknown>)[name] = element.value;
+        (partial as Record<string, unknown>)[name] = name === 'hanziStrokeSpeed' ? Number(element.value)
+          : element instanceof HTMLInputElement && element.classList.contains('shortcut-capture')
+            ? element.dataset.shortcut ?? element.value : element.value;
       }
     }
 
     let autostartEnabled = Boolean(partial.startWithWindows);
+    if (partial.primaryTargetLang === 'none') partial.inputReplacementEnabled = false;
     try {
       await this.autostart.setEnabled(autostartEnabled);
     } catch {
@@ -169,7 +193,7 @@ export class SettingsPanelController {
       clearTimeout(this.saveTimer);
     }
     this.saveTimer = setTimeout(() => {
-      void this.save();
+      void this.save().catch(error => { if (this.saveState) this.saveState.textContent = String(error); });
     }, 120);
   }
 
@@ -178,6 +202,7 @@ export class SettingsPanelController {
     const container = document.getElementById('deepl-key-container');
     if (!provider || !container) return;
     container.hidden = provider.value !== 'deepl';
+    container.classList.toggle('hidden',provider.value !== 'deepl');
   }
 
   private bindSettingsSync(): void {

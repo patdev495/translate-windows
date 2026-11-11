@@ -1,8 +1,18 @@
 # Giữ Local OCR Engine trong cửa sổ chính
 
-Status: ready-for-agent
+Status: done
 Ngày lập: 2026-10-28
-Phạm vi hiện tại: lập kế hoạch; chưa thay đổi code ứng dụng.
+Đã triển khai trên snapshot `2bbe5ed` theo TDD ở ba giao diện người dùng đã xác nhận. Xem `VALIDATION.md` và `runtime-results.json` cùng thư mục để biết kiểm chứng và giới hạn thực tế.
+
+## Giao diện kiểm thử đã xác nhận
+
+Người dùng đã xác nhận cả ba giao diện ngày 2026-10-28 theo skill `tdd`:
+
+1. API OCR công khai: preload/recognize/unload, tái sử dụng và giải phóng model.
+2. Command Tauri: gửi việc, trả đúng kết quả, hủy và timeout.
+3. Luồng client ↔ main: tiến độ, lỗi và đóng/mở cửa sổ.
+
+Chỉ giả lập ranh giới hệ thống ONNX/Tauri và môi trường trình duyệt/storage khi cần; không mock module nội bộ. Mỗi lát triển khai phải có test thất bại trước khi thêm code làm nó vượt qua.
 
 ## Mục tiêu
 

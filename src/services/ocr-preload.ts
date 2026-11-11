@@ -5,55 +5,59 @@ import { SettingsManager, type Settings } from './settings';
 let currentSettings: Settings | null = null;
 let lifecycleBound = false;
 let transitionId = 0;
+let unlistenSettings: (() => void) | null = null;
+let appliedSettings: Settings | null = null;
+let transitionTail: Promise<void> = Promise.resolve();
 
 function shouldPreload(prev: Settings | null, next: Settings): boolean {
-  if (!next.autoTranslate) return false;
+  if (!next.autoTranslate || !next.translationActive) return false;
   if (!prev) return true;
   return (
-    !prev.autoTranslate ||
+    !prev.autoTranslate || !prev.translationActive ||
     prev.ocrModelTier !== next.ocrModelTier ||
     prev.ocrLanguage !== next.ocrLanguage
   );
 }
 
-function shouldUnload(prev: Settings | null, next: Settings): boolean {
-  return Boolean(prev?.autoTranslate && !next.autoTranslate);
-}
-
-export async function syncOcrModelForSettings(next: Settings): Promise<void> {
-  const prev = currentSettings;
+export function syncOcrModelForSettings(next: Settings): Promise<void> {
   currentSettings = next;
-  const id = transitionId + 1;
-  transitionId = id;
-
-  if (shouldUnload(prev, next)) {
-    await unloadOcrModel();
-    return;
-  }
-
-  if (shouldPreload(prev, next)) {
-    try {
+  const id = ++transitionId;
+  transitionTail = transitionTail.then(async () => {
+    if (id !== transitionId) return;
+    if (!next.autoTranslate || !next.translationActive) {
+      await unloadOcrModel();
+    } else if (shouldPreload(appliedSettings, next)) {
       await preloadOcrModel(next.ocrModelTier, next.ocrLanguage);
-      if (id !== transitionId || !currentSettings.autoTranslate) {
-        await unloadOcrModel();
-      }
-    } catch (err) {
-      if (id === transitionId && currentSettings.autoTranslate) {
-        console.error('Failed to preload OCR model:', err);
-      }
     }
-  }
+    appliedSettings = next;
+  }).catch((error) => console.error('Failed to update OCR model:', error));
+  return transitionTail;
 }
 
 export async function initializeOcrModelLifecycle(): Promise<void> {
   if (lifecycleBound) return;
   lifecycleBound = true;
 
+  const initialTransition = transitionId;
+  if (typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window) {
+    unlistenSettings = await listen<Settings>('settings-changed', (event) => {
+      void syncOcrModelForSettings(event.payload);
+    });
+  }
   const settings = await SettingsManager.getSettings();
-  await syncOcrModelForSettings(settings);
+  if (transitionId === initialTransition) await syncOcrModelForSettings(settings);
+  else await transitionTail;
+}
 
-  if (typeof window === 'undefined' || !('__TAURI_INTERNALS__' in window)) return;
-  void listen<Settings>('settings-changed', (event) => {
-    void syncOcrModelForSettings(event.payload);
-  });
+export function getOcrModelSettings(): Settings | null { return currentSettings; }
+
+export async function disposeOcrModelLifecycle(): Promise<void> {
+  unlistenSettings?.();
+  unlistenSettings = null;
+  lifecycleBound = false;
+  transitionId += 1;
+  currentSettings = null;
+  await transitionTail;
+  appliedSettings = null;
+  await unloadOcrModel();
 }

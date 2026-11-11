@@ -6,13 +6,21 @@ export interface Settings {
   secondaryTargetLang: TargetLanguage;
   reverseTargetLang: TargetLanguage;
   autoTranslate: boolean;
+  autoSelectionTranslate: boolean;
+  translationShortcut: string;
+  inputReplacementShortcut: string;
+  translationActive: boolean;
+  inputReplacementEnabled: boolean;
+  hanziStrokeSpeed: 0.5 | 1 | 1.5 | 2 | 3;
+  hanziBreakdownEnabled: boolean;
+  hanziBreakdownLanguage: 'vi' | 'en';
   ocrShortcut: 'disabled' | 'ctrl-3' | 'alt-space' | 'ctrl-space' | 'alt-o' | 'ctrl-shift-o';
   ocrModelTier: 'tiny' | 'small' | 'medium';
   ocrLanguage: 'ch' | 'latin';
   ttsEnabled: boolean;
-  provider: 'google' | 'deepl';
+  provider: 'google' | 'deepl' | 'deepl-free';
   deeplApiKey: string;
-  tooltipFontSize: '12' | '14' | '16' | '18' | '20' | '24' | '28' | '32' | '36' | '40';
+  tooltipFontSize: '12' | '14' | '16' | '18' | '20' | '24' | '28' | '32' | '36' | '40' | '48' | '56' | '64' | '72' | '80';
   phoneticsVisible: boolean;
   ocrPinImage: boolean;
   ocrCopyToClipboard: boolean;
@@ -28,6 +36,14 @@ export class SettingsManager {
     secondaryTargetLang: 'zh',
     reverseTargetLang: 'en',
     autoTranslate: true,
+    autoSelectionTranslate: true,
+    translationShortcut: 'Alt+KeyQ',
+    inputReplacementShortcut: 'Alt+KeyW',
+    translationActive: true,
+    inputReplacementEnabled: true,
+    hanziStrokeSpeed: 2,
+    hanziBreakdownEnabled: false,
+    hanziBreakdownLanguage: 'vi',
     ocrShortcut: 'ctrl-3',
     ocrModelTier: 'medium',
     ocrLanguage: 'ch',
@@ -68,6 +84,7 @@ export class SettingsManager {
         return { ...this.DEFAULT_SETTINGS, ...await invoke<Settings>('update_app_settings', { patch: settings }) };
       } catch (err) {
         console.error('Failed to update native settings:', err);
+        throw err;
       }
     }
 

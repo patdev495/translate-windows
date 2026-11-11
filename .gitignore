@@ -35,8 +35,17 @@ test-results/
 .vite/
 .worktrees/
 .scratch/tmp/
+/.codegraph/
+/.scratch/selected-text/startup-debug/
 *.tmp
 *.temp
+/public/hanzi-data/
+/public/hanzi-dictionary/
+/public/licenses/
+/public/pdf-assets/
+/public/pdf.worker.min.mjs
+/public/cmu-dict.json
+/public/.learning-assets-version
 
 # Editor directories and files
 .vscode/*

@@ -20,6 +20,92 @@ use image::{
 };
 use serde::{Deserialize, Serialize};
 
+pub mod ocr;
+pub mod selected_text;
+pub mod desktop;
+pub mod desktop_views;
+#[cfg(windows)]
+pub mod input_translation;
+
+#[derive(Default)]
+struct SelectedTextRuntimeState {
+    #[cfg(windows)]
+    runtime: Mutex<Option<selected_text::windows::WindowsInputRuntime>>,
+}
+
+#[derive(Default)]
+struct RegisteredTranslationShortcuts(Mutex<Vec<Shortcut>>, AtomicBool);
+
+#[tauri::command]
+fn set_shortcut_capture(state: tauri::State<'_, RegisteredTranslationShortcuts>, capturing: bool) { state.1.store(capturing,Ordering::Release); }
+
+fn ocr_hotkey(value: &str) -> Result<Option<Shortcut>, String> {
+    let key = match value {
+        "disabled" => return Ok(None), "ctrl-3" => "Ctrl+3", "alt-space" => "Alt+Space",
+        "ctrl-space" => "Ctrl+Space", "alt-o" => "Alt+O", "ctrl-shift-o" => "Ctrl+Shift+O",
+        _ => return Err("Unsupported OCR shortcut".into()),
+    };
+    key.parse::<Shortcut>().map(Some).map_err(|e| e.to_string())
+}
+
+fn translation_hotkey(value: &str) -> Result<Option<Shortcut>, String> {
+    if value == "disabled" || value.split('+').all(|part| matches!(part, "Ctrl" | "Alt" | "Shift" | "Meta" | "ControlLeft" | "ControlRight" | "AltLeft" | "AltRight" | "ShiftLeft" | "ShiftRight" | "MetaLeft" | "MetaRight")) { return Ok(None); }
+    value.replace("Key", "").replace("Digit", "").replace("Meta", "Super").parse::<Shortcut>().map(Some).map_err(|e| e.to_string())
+}
+
+fn install_translation_hotkeys(app: &tauri::AppHandle, settings: &AppSettings) -> Result<(), String> {
+    selected_text::DesktopTranslationInput::new(&settings.translation_shortcut, &settings.input_replacement_shortcut)?;
+    let mut desired = Vec::new();
+    if settings.translation_active {
+        if let Some(key) = translation_hotkey(&settings.translation_shortcut)? { desired.push(key); }
+        if settings.input_replacement_enabled {
+            if let Some(key) = translation_hotkey(&settings.input_replacement_shortcut)? { desired.push(key); }
+        }
+    }
+    if let Some(key) = ocr_hotkey(&settings.ocr_shortcut)? { desired.push(key); }
+    let reserved = [Shortcut::new(Some(Modifiers::CONTROL), Code::Digit4), Shortcut::new(Some(Modifiers::ALT), Code::KeyB)];
+    for (index, key) in desired.iter().enumerate() {
+        if reserved.iter().any(|other| other.id() == key.id()) || desired[..index].iter().any(|other| other.id() == key.id()) {
+            return Err("Phím dịch, OCR, quay màn hình và chụp ảnh phải khác nhau".into());
+        }
+    }
+    let state = app.state::<RegisteredTranslationShortcuts>();
+    let mut current = state.0.lock().unwrap();
+    let mut added = Vec::new();
+    for key in &desired {
+        if current.iter().any(|old| old.id() == key.id()) { continue; }
+        if let Err(error) = app.global_shortcut().on_shortcut(*key, |app, key, event| {
+            if event.state() != ShortcutState::Pressed { return; }
+            if app.state::<RegisteredTranslationShortcuts>().1.load(Ordering::Acquire) { return; }
+            let settings = app.state::<AppSettingsState>().0.lock().unwrap().clone();
+            if let Some(pdf) = app.get_webview_window("pdf").filter(|window| window.is_focused().unwrap_or(false)) {
+                let action = if ocr_hotkey(&settings.ocr_shortcut).ok().flatten().is_some_and(|value| value.id() == key.id()) { Some("ocr") }
+                    else if settings.translation_active && translation_hotkey(&settings.translation_shortcut).ok().flatten().is_some_and(|value| value.id() == key.id()) { Some("tooltip") } else { None };
+                if let Some(action) = action { let _ = pdf.emit("desktop-shortcut",serde_json::json!({"action":action})); }
+                return;
+            }
+            if ocr_hotkey(&settings.ocr_shortcut).ok().flatten().is_some_and(|ocr| ocr.id() == key.id()) { request_capture_and_overlay(app); }
+        }) {
+            for registered in added { let _ = app.global_shortcut().unregister(registered); }
+            return Err(format!("Không đăng ký được phím tắt; phím có thể đang được ứng dụng khác sử dụng: {error}"));
+        }
+        added.push(*key);
+    }
+    for key in current.iter() { if !desired.iter().any(|new| new.id() == key.id()) { let _ = app.global_shortcut().unregister(*key); } }
+    *current = desired;
+    Ok(())
+}
+
+#[cfg(windows)]
+fn native_input_settings(settings: &AppSettings) -> selected_text::windows::InputSettings {
+    selected_text::windows::InputSettings {
+        tooltip: settings.translation_shortcut.clone(),
+        replacement: if settings.input_replacement_enabled { settings.input_replacement_shortcut.clone() } else { "disabled".into() },
+        automatic: settings.auto_selection_translate,
+        active: settings.translation_active,
+    }
+}
+
 // ── Shared state types ────────────────────────────────────────────────────
 
 #[derive(Default)]
@@ -34,6 +120,12 @@ fn default_true() -> bool {
 #[serde(rename_all = "camelCase")]
 pub struct TooltipData {
     pub text: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub notice: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub translation_data: Option<serde_json::Value>,
     pub data_url: String,
     pub x: i32,
     pub y: i32,
@@ -76,12 +168,20 @@ impl Default for SnippetCounter {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(default, rename_all = "camelCase")]
 pub struct AppSettings {
     pub primary_target_lang: String,
     pub secondary_target_lang: String,
     pub reverse_target_lang: String,
     pub auto_translate: bool,
+    pub auto_selection_translate: bool,
+    pub translation_shortcut: String,
+    pub input_replacement_shortcut: String,
+    pub translation_active: bool,
+    pub input_replacement_enabled: bool,
+    pub hanzi_stroke_speed: f64,
+    pub hanzi_breakdown_enabled: bool,
+    pub hanzi_breakdown_language: String,
     pub ocr_shortcut: String,
     pub ocr_model_tier: String,
     pub ocr_language: String,
@@ -103,6 +203,14 @@ impl Default for AppSettings {
             secondary_target_lang: "zh".to_string(),
             reverse_target_lang: "en".to_string(),
             auto_translate: true,
+            auto_selection_translate: true,
+            translation_shortcut: "Alt+KeyQ".into(),
+            input_replacement_shortcut: "Alt+KeyW".into(),
+            translation_active: true,
+            input_replacement_enabled: true,
+            hanzi_stroke_speed: 2.0,
+            hanzi_breakdown_enabled: false,
+            hanzi_breakdown_language: "vi".into(),
             ocr_shortcut: "ctrl-3".to_string(),
             ocr_model_tier: "medium".to_string(),
             ocr_language: "ch".to_string(),
@@ -123,6 +231,7 @@ pub struct AppSettingsState(pub Mutex<AppSettings>);
 
 #[derive(Default)]
 pub struct TraySettingsItems {
+    pub capture_ocr: Mutex<Option<MenuItem<tauri::Wry>>>,
     pub auto_translate: Mutex<Option<CheckMenuItem<tauri::Wry>>>,
     pub ocr_pin_image: Mutex<Option<CheckMenuItem<tauri::Wry>>>,
 }
@@ -227,6 +336,10 @@ fn save_settings_to_disk(app_handle: &tauri::AppHandle, settings: &AppSettings) 
 
 fn update_tray_setting_checks(app_handle: &tauri::AppHandle, settings: &AppSettings) {
     let items: tauri::State<TraySettingsItems> = app_handle.state();
+    if let Some(item) = items.capture_ocr.lock().unwrap().as_ref() {
+        let label = match settings.ocr_shortcut.as_str() { "ctrl-3" => "Ctrl+3", "alt-space" => "Alt+Space", "ctrl-space" => "Ctrl+Space", "alt-o" => "Alt+O", "ctrl-shift-o" => "Ctrl+Shift+O", _ => "Disabled" };
+        let _ = item.set_text(format!("Capture OCR ({label})"));
+    }
     let auto_translate_item = items.auto_translate.lock().unwrap().clone();
     let ocr_pin_image_item = items.ocr_pin_image.lock().unwrap().clone();
     if let Some(item) = auto_translate_item.as_ref() {
@@ -262,13 +375,25 @@ fn persist_and_broadcast_settings(
     app_handle: &tauri::AppHandle,
     settings: AppSettings,
 ) -> Result<AppSettings, String> {
-    save_settings_to_disk(app_handle, &settings)?;
+    let previous = app_handle.state::<AppSettingsState>().0.lock().unwrap().clone();
+    install_translation_hotkeys(app_handle, &settings)?;
+    if let Err(error) = save_settings_to_disk(app_handle, &settings) {
+        let _ = install_translation_hotkeys(app_handle, &previous);
+        return Err(error);
+    }
     {
         let state: tauri::State<AppSettingsState> = app_handle.state();
         let mut lock = state.0.lock().unwrap();
         *lock = settings.clone();
     }
     update_tray_setting_checks(app_handle, &settings);
+    #[cfg(windows)]
+    if let Some(runtime) = app_handle.state::<SelectedTextRuntimeState>().runtime.lock().unwrap().as_ref() {
+        runtime.configure(native_input_settings(&settings))?;
+    }
+    app_handle.state::<ocr::OcrState>().0.lock().unwrap().configure(
+        settings.auto_translate && settings.translation_active, &settings.ocr_model_tier, &settings.ocr_language,
+    );
     if let Err(err) = app_handle.emit("settings-changed", settings.clone()) {
         eprintln!("Failed to emit settings changed event: {err}");
     }
@@ -1005,11 +1130,13 @@ async fn process_crop(
         let mut lock = state.0.lock().unwrap();
         *lock = Some(TooltipData {
             text: String::new(),
+            error: None,
             data_url: data_url.clone(),
             x,
             y,
             width,
             height,
+            ..Default::default()
         });
     }
 
@@ -1061,11 +1188,13 @@ async fn process_crop_area(
         let mut lock = state.0.lock().unwrap();
         *lock = Some(TooltipData {
             text: String::new(),
+            error: None,
             data_url: data_url.clone(),
             x,
             y,
             width,
             height,
+            ..Default::default()
         });
     }
 
@@ -1128,9 +1257,12 @@ fn open_tooltip_window_inner(
     .title("PolyTranslate Tooltip")
     .inner_size(420.0, 280.0)
     .decorations(false)
+    .shadow(false)
     .transparent(true)
     .always_on_top(true)
-    .resizable(false);
+    .resizable(false)
+    .skip_taskbar(true)
+    .focused(false);
 
     if use_tauri_center {
         builder = builder.center();
@@ -1157,7 +1289,7 @@ async fn open_tooltip_window(
     {
         let state: tauri::State<TooltipState> = app_handle.state();
         let mut lock = state.0.lock().unwrap();
-        *lock = Some(TooltipData { text, data_url: String::new(), x, y, width, height });
+        *lock = Some(TooltipData { text, data_url: String::new(), x, y, width, height, error: None, ..Default::default() });
     }
     open_tooltip_window_inner(&app_handle, x, y, height)
         .map_err(|e| e.to_string())
@@ -1168,6 +1300,12 @@ fn close_tooltip_window(app_handle: tauri::AppHandle) {
     if let Some(win) = app_handle.get_webview_window("tooltip") {
         let _ = win.destroy();
     }
+}
+
+#[tauri::command]
+fn dismiss_tooltip_if_external(app_handle: tauri::AppHandle) {
+    if app_handle.webview_windows().values().any(|window| window.is_focused().unwrap_or(false)) { return; }
+    close_tooltip_window(app_handle);
 }
 
 #[tauri::command]
@@ -1252,6 +1390,19 @@ fn get_snippet_data(state: tauri::State<'_, SnippetStore>, label: String) -> ser
 #[tauri::command]
 fn get_app_settings(state: tauri::State<'_, AppSettingsState>) -> AppSettings {
     state.0.lock().unwrap().clone()
+}
+
+#[tauri::command]
+fn copy_text_to_clipboard(text: String) -> Result<(),String> {
+    Clipboard::new().and_then(|mut clipboard| clipboard.set_text(text)).map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+async fn complete_input_replacement(window: tauri::WebviewWindow, app: tauri::AppHandle, id: String, data: Option<serde_json::Value>, error: Option<String>) -> Result<(), String> {
+    #[cfg(windows)]
+    { return input_translation::complete_input_replacement(window, app.clone(), app.state::<input_translation::InputTranslationState>(), id, data, error).await; }
+    #[cfg(not(windows))]
+    { let _ = (window, app, id, data, error); Err("Input replacement is available on Windows".into()) }
 }
 
 #[tauri::command]
@@ -1383,7 +1534,7 @@ async fn translate_deepl(
 }
 
 #[tauri::command]
-fn open_settings_window(app_handle: tauri::AppHandle) -> Result<(), String> {
+async fn open_settings_window(app_handle: tauri::AppHandle) -> Result<(), String> {
     open_settings_window_inner(&app_handle).map_err(|e| e.to_string())
 }
 
@@ -1435,6 +1586,13 @@ fn open_settings_window_inner(app_handle: &tauri::AppHandle) -> Result<(), Box<d
     Ok(())
 }
 
+fn spawn_settings_window(app: &tauri::AppHandle) {
+    let app = app.clone();
+    tauri::async_runtime::spawn_blocking(move || {
+        if let Err(error) = open_settings_window_inner(&app) { eprintln!("Cannot open settings: {error}"); }
+    });
+}
+
 fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let specs = tray_menu_specs();
     let capture_item = MenuItem::with_id(app, specs[0].id, specs[0].label, true, None::<&str>)?;
@@ -1472,6 +1630,7 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         None::<&str>,
     )?;
     let settings_item = MenuItem::with_id(app, specs[5].id, specs[5].label, true, None::<&str>)?;
+    let pdf_item = MenuItem::with_id(app, "open_pdf", "Read PDF…", true, None::<&str>)?;
     let exit_item = MenuItem::with_id(app, specs[7].id, specs[7].label, true, None::<&str>)?;
     let menu = Menu::with_items(
         app,
@@ -1482,12 +1641,14 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
             &auto_translate_item,
             &pin_image_item,
             &settings_item,
+            &pdf_item,
             &autostart_item,
             &exit_item,
         ],
     )?;
     {
         let tray_items: tauri::State<TraySettingsItems> = app.handle().state();
+        *tray_items.capture_ocr.lock().unwrap() = Some(capture_item.clone());
         *tray_items.auto_translate.lock().unwrap() = Some(auto_translate_item.clone());
         *tray_items.ocr_pin_image.lock().unwrap() = Some(pin_image_item.clone());
     }
@@ -1508,9 +1669,11 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
                 spawn_copy_full_screen_to_clipboard(app_handle.clone());
             }
             "settings" => {
-                if let Err(err) = open_settings_window_inner(app_handle) {
-                    eprintln!("Failed to open settings window: {err}");
-                }
+                spawn_settings_window(app_handle);
+            }
+            "open_pdf" => {
+                let handle=app_handle.clone();
+                tauri::async_runtime::spawn(async move { if let Err(error) = desktop_views::open_pdf_window(handle).await { eprintln!("Cannot open PDF Reader: {error}"); } });
             }
             "auto_translate" => {
                 let state: tauri::State<AppSettingsState> = app_handle.state();
@@ -1563,9 +1726,7 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
                 ..
             } = event
             {
-                if let Err(err) = open_settings_window_inner(tray.app_handle()) {
-                    eprintln!("Failed to open settings window: {err}");
-                }
+                spawn_settings_window(tray.app_handle());
             }
         });
 
@@ -1574,6 +1735,7 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     }
 
     builder.build(app)?;
+    update_tray_setting_checks(app.handle(),&current_settings);
     Ok(())
 }
 
@@ -1598,16 +1760,70 @@ pub fn run() {
         .manage(CaptureRequestState::default())
         .manage(RecordingState::default())
         .manage(RecordingRequestState::default())
+        .manage(ocr::OcrState::default())
+        .manage(SelectedTextRuntimeState::default())
+        .manage(RegisteredTranslationShortcuts::default())
+        .manage(desktop::DesktopDataState::default())
+        .manage(desktop::DesktopServiceState::default())
+        .manage(desktop_views::DesktopViewState::default())
+        .on_window_event(|window, event| {
+            if matches!(event, tauri::WindowEvent::Destroyed) {
+                if window.label() == "settings" { window.state::<RegisteredTranslationShortcuts>().1.store(false,Ordering::Release); }
+                window.state::<ocr::OcrState>().0.lock().unwrap().window_closed(window.label());
+                window.state::<desktop::DesktopServiceState>().window_closed(window.label());
+                desktop_views::close_for_owner(window.app_handle(),window.label());
+            }
+        })
+        .on_page_load(|webview, payload| {
+            if webview.label() == "main" && payload.event() == tauri::webview::PageLoadEvent::Started {
+                webview.state::<ocr::OcrState>().0.lock().unwrap().main_reloading();
+                webview.state::<desktop::DesktopServiceState>().disconnected();
+                #[cfg(windows)]
+                if let Some(state) = webview.try_state::<input_translation::InputTranslationState>() { state.cancel_all(); }
+            }
+        })
         .setup(|app| {
             cleanup_unsupported_autostart(app.handle());
             let settings = load_settings_from_disk(app.handle());
             {
                 let state: tauri::State<AppSettingsState> = app.handle().state();
                 let mut lock = state.0.lock().unwrap();
-                *lock = settings;
+                *lock = settings.clone();
             }
+            app.state::<ocr::OcrState>().0.lock().unwrap().configure(
+                settings.auto_translate && settings.translation_active, &settings.ocr_model_tier, &settings.ocr_language,
+            );
             setup_tray(app)?;
+            #[cfg(windows)]
+            {
+                app.manage(input_translation::InputTranslationState::default());
+                let handle = app.handle().clone();
+                let runtime = selected_text::windows::WindowsInputRuntime::start_with_settings(native_input_settings(&settings), move |result, context| {
+                    let ui_handle = handle.clone();
+                    tauri::async_runtime::spawn_blocking(move || {
+                        if !context.is_current() { return; }
+                        if context.action == selected_text::TranslationAction::Dismiss { close_tooltip_window(ui_handle); return; }
+                        let (text, error) = match result {
+                            Ok(selected) => (selected.text, None),
+                            Err(selected_text::SelectionError::SourceChanged) => return,
+                            Err(selected_text::SelectionError::NoText) => (String::new(), Some("Không lấy được văn bản".to_string())),
+                        };
+                        if context.action == selected_text::TranslationAction::Replace && error.is_none() {
+                            if let Err(error) = input_translation::request(&ui_handle, text, context) { eprintln!("Input translation failed: {error}"); }
+                            return;
+                        }
+                        *ui_handle.state::<TooltipState>().0.lock().unwrap() = Some(TooltipData {
+                            text, error, x: context.x, y: context.y, ..Default::default()
+                        });
+                        if let Err(error) = open_tooltip_window_inner(&ui_handle, context.x, context.y, 0) {
+                            eprintln!("Cannot open Selected Text tooltip: {error}");
+                        }
+                    });
+                })?;
+                *app.state::<SelectedTextRuntimeState>().runtime.lock().unwrap() = Some(runtime);
+            }
             for spec in global_shortcut_specs() {
+                if spec.id == "capture_ocr" { continue; }
                 let modifiers = match spec.id {
                     "capture_ocr" | "record_screen" => Modifiers::CONTROL,
                     "copy_full_screen" => Modifiers::ALT,
@@ -1618,6 +1834,7 @@ pub fn run() {
                     if event.state() != ShortcutState::Pressed {
                         return;
                     }
+                    if app_handle.state::<RegisteredTranslationShortcuts>().1.load(Ordering::Acquire) { return; }
 
                     match spec.id {
                         "capture_ocr" => {
@@ -1633,9 +1850,27 @@ pub fn run() {
                     }
                 })?;
             }
+            install_translation_hotkeys(app.handle(), &settings)?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            desktop::get_desktop_values,
+            desktop::set_desktop_values,
+            desktop::desktop_request,
+            desktop::desktop_reply,
+            desktop::desktop_service_ready,
+            desktop::desktop_http,
+            desktop_views::open_pdf_window,
+            desktop_views::open_hanzi_breakdown,
+            desktop_views::get_hanzi_breakdown_data,
+            desktop_views::close_hanzi_breakdown,
+            desktop_views::pick_pdf_file,
+            desktop_views::save_hanzi_backup,
+            ocr::request_ocr,
+            ocr::ocr_host_ready,
+            ocr::complete_ocr,
+            ocr::cancel_ocr,
+            ocr::ocr_progress,
             get_capture_image,
             close_overlay,
             close_recording_overlay_controls,
@@ -1649,11 +1884,15 @@ pub fn run() {
             process_crop_image_actions,
             open_tooltip_window,
             close_tooltip_window,
+            dismiss_tooltip_if_external,
             get_tooltip_data,
             open_snippet_window,
             close_snippet_window,
             get_snippet_data,
             copy_image_to_clipboard,
+            complete_input_replacement,
+            set_shortcut_capture,
+            copy_text_to_clipboard,
             get_app_settings,
             update_app_settings,
             open_settings_window,
@@ -1662,8 +1901,16 @@ pub fn run() {
             translate_deepl,
             verify_deepl_api_key,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app, event| {
+            if matches!(event, tauri::RunEvent::Exit) {
+                #[cfg(windows)]
+                { app.state::<SelectedTextRuntimeState>().runtime.lock().unwrap().take(); }
+                #[cfg(not(windows))]
+                let _ = app;
+            }
+        });
 }
 
 #[cfg(test)]
@@ -1681,11 +1928,13 @@ mod tests {
     fn tooltip_data_serializes_for_frontend_contract() {
         let data = TooltipData {
             text: String::new(),
+            error: None,
             data_url: "data:image/png;base64,AAAA".to_string(),
             x: 10,
             y: 20,
             width: 30,
             height: 40,
+            ..Default::default()
         };
 
         let json = serde_json::to_value(data).expect("tooltip data should serialize");

@@ -37,6 +37,15 @@ mod harness {
     }
 
     #[tauri::command]
+    async fn latency_destroy_tooltip(app: tauri::AppHandle) -> Result<(), String> {
+        if let Some(window) = app.get_webview_window("tooltip") { window.destroy().map_err(|e|e.to_string())?; }
+        for _ in 0..100 {
+            if app.get_webview_window("tooltip").is_none() { return Ok(()); }
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        }
+        Err("Tooltip was not destroyed".into())
+    }
+    #[tauri::command]
     fn latency_reload_host(app: tauri::AppHandle) -> Result<(), String> {
         app.get_webview_window("main")
             .ok_or("Main is missing")?
@@ -53,9 +62,7 @@ mod harness {
     }
     #[tauri::command]
     async fn latency_next(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
-        if let Some(window) = app.get_webview_window("tooltip") {
-            window.destroy().map_err(|e| e.to_string())?;
-        }
+        translation_desktop_lib::tooltip_commands::close_tooltip_window(app.clone(), None);
         let state = app.state::<LatencyState>();
         let events = std::mem::take(&mut *state.samples.lock().unwrap());
         state.trace_id.fetch_add(1, Ordering::AcqRel);
@@ -89,6 +96,7 @@ mod harness {
             .manage(translation_desktop_lib::http_clients::HttpClients::default())
             .manage(AppSettingsState::default())
             .manage(TooltipState::default())
+            .manage(translation_desktop_lib::desktop_views::DesktopViewState::default())
             .manage(desktop::DesktopDataState(Mutex::new(Some(data))))
             .manage(desktop::DesktopServiceState::default())
             .manage(ocr::OcrState::default())
@@ -106,6 +114,7 @@ mod harness {
             .on_page_load(|view, event| {
                 if view.label() == "main" && event.event() == tauri::webview::PageLoadEvent::Started
                 {
+                    translation_desktop_lib::tooltip_commands::close_tooltip_window(view.app_handle().clone(), None);
                     view.state::<desktop::DesktopServiceState>().disconnected();
                     view.state::<ocr::OcrState>()
                         .0
@@ -164,14 +173,18 @@ mod harness {
             .invoke_handler(tauri::generate_handler![
                 get_app_settings,
                 latency_reload_host,
+                latency_destroy_tooltip,
                 latency_next,
                 latency_done,
                 latency_memory,
                 pick_pdf_file,
                 translation_desktop_lib::desktop_views::open_pdf_window,
                 latency::latency_event,
+                latency::latency_resources,
                 translation_desktop_lib::tooltip_commands::open_tooltip_window,
                 translation_desktop_lib::tooltip_commands::get_tooltip_data,
+                translation_desktop_lib::tooltip_commands::layout_tooltip_window,
+                translation_desktop_lib::tooltip_commands::translate_tooltip_request,
                 translation_desktop_lib::tooltip_commands::close_tooltip_window,
                 translation_desktop_lib::tooltip_commands::dismiss_tooltip_if_external,
                 desktop::desktop_http,

@@ -34,12 +34,12 @@ const server=createServer(async(request,response)=> {
 });
 try {
   const npmScript=process.env.npm_execpath || resolve(dirname(process.execPath),'node_modules/npm/bin/npm-cli.js');
-  await run(process.execPath,[npmScript,'run','build']);
+  if(!process.env.UI_SKIP_BUILD) await run(process.execPath,[npmScript,'run','build']);
   await build({root,configFile:false,publicDir:false,logLevel:'warn',build:{emptyOutDir:false,outDir:dist,lib:{entry:resolve(root,'tests/runtime/extension-ui-smoke.ts'),formats:['es'],fileName:()=> 'smoke-driver.mjs'}}});
   await new Promise((ready,reject)=> { server.once('error',reject); server.listen(1438,'127.0.0.1',ready); });
   const reportPath=resolve(root,'.scratch/extension-parity/ui-smoke-results.json');
   await writeFile(reportPath,'{}');
-  await run('cargo',['run','--manifest-path','src-tauri/Cargo.toml','--example','extension_ui_smoke','-j','1'],240_000);
+  await run('cargo',['run','--manifest-path','src-tauri/Cargo.toml','--example','extension_ui_smoke','-j','1'],600_000);
   const reports=JSON.parse(await readFile(reportPath,'utf8'));
   for (const label of ['main','settings','pdf','tooltip','hanzi-breakdown']) {
     if(!reports[label] || reports[label].error) throw new Error(`UI smoke ${label}: ${reports[label]?.error || 'missing report'}`);

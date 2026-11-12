@@ -5,7 +5,7 @@ Date: 2026-11-12
 
 ## Context
 
-Native Tooltip Windows are disposable WebViews. Each previously ran its own
+Native Tooltip Windows were disposable WebViews. Each previously ran its own
 TranslationCoordinator and fetched/parsed the English IPA dictionary again.
 The Desktop PDF Reader also translated locally. A file/HTTP cache does not
 preserve the parsed dictionary when a JavaScript context is destroyed.
@@ -43,8 +43,8 @@ Closing a tooltip or PDF preserves the parsed dictionary in main. Reloading
 main creates a fresh dictionary lifetime. This retains dictionary memory while
 the app is running; measurements include process-tree memory.
 
-Tooltip WebView reuse is a separate lifecycle change (latency issue 04).
-This decision does not change normal tooltip creation/destruction.
+ADR-0006 extends this decision with retained tooltip WebViews and request-scoped
+presentation cleanup (latency issue 04).
 
 Public HTTP tests observe TCP reuse at a real loopback server. Native WebView2
 validation uses production tooltip/PDF commands and synthetic profiles; reports

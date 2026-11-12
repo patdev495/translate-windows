@@ -17,6 +17,30 @@ pub struct LatencyState {
     pub started: Mutex<Instant>,
 }
 
+// Diagnostic-only IPC instrumentation. Observe real registrations, not constants
+// maintained by the tooltip implementation. No callback or payload is retained.
+pub const LISTENER_PROBE: &str = r#"
+(() => {
+ const registered = new Set(); globalThis.__LATENCY_LISTENERS__ = registered;
+ const original = window.__TAURI_INTERNALS__.invoke;
+ window.__TAURI_INTERNALS__.invoke = async (command, args, options) => {
+   const result = await original(command, args, options);
+   if (command === 'plugin:event|listen') registered.add(result);
+   if (command === 'plugin:event|unlisten') registered.delete(args.eventId);
+   return result;
+ };
+})();
+"#;
+
+#[tauri::command]
+pub fn latency_resources(app: tauri::AppHandle, listeners: usize, trace_id: String) {
+    let state = app.state::<LatencyState>();
+    let rpc = app.state::<crate::desktop::DesktopServiceState>().pending_count();
+    let ocr = app.state::<crate::ocr::OcrState>().0.lock().unwrap().pending_count();
+    let mailbox = usize::from(app.state::<crate::TooltipState>().1.lock().unwrap().is_some());
+    state.samples.lock().unwrap().push(serde_json::json!({"stage":"resources","traceId":trace_id,"listeners":listeners,"pendingRpc":rpc,"ocrJobs":ocr,"tooltipMailbox":mailbox}));
+}
+
 #[tauri::command]
 pub fn latency_event(
     app: tauri::AppHandle,

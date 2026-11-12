@@ -49,7 +49,7 @@ server.on('connection',()=>connections++);
 try {
   const npmScript=process.env.npm_execpath || resolve(dirname(process.execPath),'node_modules/npm/bin/npm-cli.js');
   if(!process.env.LATENCY_SKIP_BUILD) await run(process.execPath,[npmScript,'run','build']);
-  await build({root,configFile:false,publicDir:false,logLevel:'warn',define:{__LATENCY_SAMPLE_COUNT__:process.env.LATENCY_SHARED_TEST ? '2' : process.env.LATENCY_REAL ? '6' : '21',__LATENCY_SHARED_TEST__:String(!!process.env.LATENCY_SHARED_TEST),__LATENCY_RESTART_TEST__:String(!!process.env.LATENCY_RESTART_TEST),__LATENCY_SOURCE__:JSON.stringify(process.env.LATENCY_SOURCE || 'en'),__LATENCY_OCR__:String(!!process.env.LATENCY_OCR)},build:{emptyOutDir:false,outDir:dist,lib:{entry:resolve(root,'tests/runtime/translation-latency.ts'),formats:['es'],fileName:()=> 'latency-driver.mjs'}}});
+  await build({root,configFile:false,publicDir:false,logLevel:'warn',define:{__LATENCY_SAMPLE_COUNT__:process.env.LATENCY_SAMPLES || (process.env.LATENCY_SHARED_TEST ? '2' : process.env.LATENCY_REAL ? '6' : '21'),__LATENCY_RECOVERY__:String(!!process.env.LATENCY_RECOVERY),__LATENCY_SHARED_TEST__:String(!!process.env.LATENCY_SHARED_TEST),__LATENCY_RESTART_TEST__:String(!!process.env.LATENCY_RESTART_TEST),__LATENCY_SOURCE__:JSON.stringify(process.env.LATENCY_SOURCE || 'en'),__LATENCY_OCR__:String(!!process.env.LATENCY_OCR)},build:{emptyOutDir:false,outDir:dist,lib:{entry:resolve(root,'tests/runtime/translation-latency.ts'),formats:['es'],fileName:()=> 'latency-driver.mjs'}}});
   await new Promise((ready,reject)=> { server.once('error',reject); server.listen(1438,'127.0.0.1',ready); });
   const reportPath=resolve(root,process.env.LATENCY_REPORT || '.scratch/translation-latency/baseline.json');
   process.env.LATENCY_REPORT=reportPath;
@@ -79,6 +79,16 @@ try {
   }
   await writeFile(reportPath,JSON.stringify(report,null,2));
   console.log(JSON.stringify({cold:report.cold,warm:report.warm}));
+  if(process.env.LATENCY_EXPECT_REUSE && runs.some(run=>run.samples.flatMap(sample=>sample.events).filter(event=>event.stage==='view-ready').length!==(process.env.LATENCY_RECOVERY ? 2 : 1))) throw new Error('Expected one tooltip WebView per process, plus explicit recovery');
+  if(process.env.LATENCY_EXPECT_REUSE && runs.some(run=> {
+    const events=run.samples[0].events;
+    return !(events.find(event=>event.stage==='host-start')?.elapsedMs < events.find(event=>event.stage==='view-ready')?.elapsedMs);
+  })) throw new Error('Translation must start before cold WebView ready');
+  if(process.env.LATENCY_EXPECT_REUSE && runs.some(run=> {
+    const resources=run.samples.map(sample=>sample.events.find(event=>event.stage==='resources'));
+    return resources.some(value=>!value || value.listeners<=0 || value.listeners!==resources[0]?.listeners || value.pendingRpc!==0 || (!process.env.LATENCY_OCR && value.ocrJobs!==0) || value.tooltipMailbox>1);
+  })) throw new Error('Tooltip listeners or jobs grew across presentations');
+  if(!process.env.LATENCY_REAL && !process.env.LATENCY_SHARED_TEST && requests!==report.samples.length*2) throw new Error('Provider request count changed');
   if(process.env.LATENCY_EXPECT_SHARED_IPA && (dictionaryRequests!==runs.length*(process.env.LATENCY_RESTART_TEST ? 2 : 1) || report.samples.flatMap(sample=>sample.events).filter(event=>event.stage==='dictionary-parse').length!==runs.length*(process.env.LATENCY_RESTART_TEST ? 2 : 1))) throw new Error(`Expected one dictionary load per host, observed ${dictionaryRequests} for ${runs.length} hosts`);
   if(process.env.LATENCY_RESTART_TEST && requests!==runs.length*10) throw new Error(`Reload issued ${requests} provider requests; expected ${runs.length*10}`);
   if(report.error || report.samples.some(s=>s.error)) throw new Error('Latency samples failed');

@@ -127,6 +127,8 @@ pub struct DesktopServiceState {
     pending: Mutex<HashMap<String, (String, tauri::async_runtime::Sender<Value>)>>,
 }
 impl DesktopServiceState {
+    #[cfg(feature = "latency-harness")]
+    pub fn pending_count(&self) -> usize { self.pending.lock().unwrap().len() }
     pub fn disconnected(&self) {
         self.ready.store(false, Ordering::Release);
         self.generation.fetch_add(1, Ordering::AcqRel);

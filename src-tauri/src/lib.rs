@@ -122,6 +122,12 @@ fn default_true() -> bool {
 #[derive(Default, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TooltipData {
+    #[serde(default)]
+    pub translation_pending: bool,
+    #[serde(default)]
+    pub request_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub trace_id: Option<String>,
     pub text: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
@@ -136,11 +142,16 @@ pub struct TooltipData {
     pub height: u32,
 }
 
-pub struct TooltipState(pub Mutex<Option<TooltipData>>);
+pub struct TooltipState(
+    pub Mutex<Option<TooltipData>>,
+    Mutex<Option<(String, Result<serde_json::Value, String>)>>,
+    tokio::sync::Notify,
+    AtomicBool,
+);
 
 impl Default for TooltipState {
     fn default() -> Self {
-        TooltipState(Mutex::new(None))
+        TooltipState(Mutex::new(None), Mutex::new(None), tokio::sync::Notify::new(), AtomicBool::new(false))
     }
 }
 
@@ -397,6 +408,11 @@ fn persist_and_broadcast_settings(
     app_handle.state::<ocr::OcrState>().0.lock().unwrap().configure(
         settings.auto_translate && settings.translation_active, &settings.ocr_model_tier, &settings.ocr_language,
     );
+    if previous.translation_active != settings.translation_active || previous.provider != settings.provider
+        || previous.deepl_api_key != settings.deepl_api_key || previous.primary_target_lang != settings.primary_target_lang
+        || previous.secondary_target_lang != settings.secondary_target_lang || previous.reverse_target_lang != settings.reverse_target_lang {
+        close_tooltip_window(app_handle.clone(), None);
+    }
     if let Err(err) = app_handle.emit("settings-changed", settings.clone()) {
         eprintln!("Failed to emit settings changed event: {err}");
     }
@@ -1127,11 +1143,7 @@ async fn process_crop(
     // Console-style debug log to confirm crop was received
     println!("[PolyTranslate] Crop received: x={} y={} height={} dataUrl_len={}", x, y, height, data_url.len());
 
-    // Store tooltip data (OCR text will be filled by the tooltip frontend via get_tooltip_data)
-    {
-        let state: tauri::State<TooltipState> = app_handle.state();
-        let mut lock = state.0.lock().unwrap();
-        *lock = Some(TooltipData {
+    let payload = TooltipData {
             text: String::new(),
             error: None,
             data_url: data_url.clone(),
@@ -1140,11 +1152,8 @@ async fn process_crop(
             width,
             height,
             ..Default::default()
-        });
-    }
-
-    // Open tooltip window
-    open_tooltip_window_inner(&app_handle, x, y, height)
+        };
+    open_tooltip_window_inner(&app_handle, payload)
         .map_err(|e| e.to_string())?;
 
     run_crop_image_actions(
@@ -1186,10 +1195,7 @@ async fn process_crop_area(
     std::thread::sleep(Duration::from_millis(80));
     let data_url = capture_area_data_url(x, y, width, height)?;
 
-    {
-        let state: tauri::State<TooltipState> = app_handle.state();
-        let mut lock = state.0.lock().unwrap();
-        *lock = Some(TooltipData {
+    let payload = TooltipData {
             text: String::new(),
             error: None,
             data_url: data_url.clone(),
@@ -1198,10 +1204,9 @@ async fn process_crop_area(
             width,
             height,
             ..Default::default()
-        });
-    }
+        };
 
-    open_tooltip_window_inner(&app_handle, x, y, height)
+    open_tooltip_window_inner(&app_handle, payload)
         .map_err(|e| e.to_string())?;
 
     run_crop_image_actions(
@@ -1218,16 +1223,75 @@ async fn process_crop_area(
     Ok(data_url)
 }
 
+fn prepare_tooltip_request(
+    app_handle: &tauri::AppHandle,
+    mut payload: TooltipData,
+) -> Result<Option<TooltipData>, Box<dyn std::error::Error>> {
+    static SEQUENCE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    let payload = {
+        let state = app_handle.state::<TooltipState>();
+        let mut current = state.0.lock().unwrap();
+        let data = &mut payload;
+        data.request_id = (SEQUENCE.fetch_add(1, Ordering::AcqRel) + 1).to_string();
+        #[cfg(feature = "latency-harness")]
+        if let Some(diagnostics) = app_handle.try_state::<latency::LatencyState>() {
+            data.trace_id = Some(diagnostics.trace_id.load(Ordering::Acquire).to_string());
+        }
+        data.translation_pending = !data.text.trim().is_empty() && data.translation_data.is_none() && data.error.is_none();
+        *state.1.lock().unwrap() = None;
+        *current = Some(data.clone());
+        data.clone()
+    };
+    app_handle.state::<TooltipState>().2.notify_waiters();
+    if payload.translation_pending {
+        let app = app_handle.clone();
+        let data = payload.clone();
+        tauri::async_runtime::spawn(async move {
+            let response = if let Some(main) = app.get_webview_window("main") {
+                desktop::desktop_request(main, app.clone(), app.state::<desktop::DesktopServiceState>(),
+                    serde_json::json!({"type":"TRANSLATE","text":data.text,"traceId":data.trace_id})).await
+                    .and_then(|reply| if reply["success"] == true { Ok(reply["data"].clone()) } else { Err(reply["error"].as_str().unwrap_or("Translation failed").to_string()) })
+            } else { Err("Desktop host unavailable".into()) };
+            let state = app.state::<TooltipState>();
+            {
+                let current = state.0.lock().unwrap();
+                if current.as_ref().is_some_and(|current|current.request_id == data.request_id) {
+                    *state.1.lock().unwrap() = Some((data.request_id, response));
+                }
+            }
+            state.2.notify_waiters();
+        });
+    }
+    desktop_views::close_for_owner(app_handle, "tooltip");
+    if let Some(existing) = app_handle.get_webview_window("tooltip") {
+        let _ = existing.hide();
+        existing.emit("tooltip-request", payload)?;
+        return Ok(None);
+    }
+
+    // Concurrent requests share the booting WebView; its ready snapshot takes the latest payload.
+    let state = app_handle.state::<TooltipState>();
+    if state.3.swap(true, Ordering::AcqRel) { return Ok(None); }
+    Ok(Some(payload))
+}
+
 fn open_tooltip_window_inner(
     app_handle: &tauri::AppHandle,
-    x: i32,
-    y: i32,
-    height: u32,
+    payload: TooltipData,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // Destroy any existing tooltip
-    if let Some(existing) = app_handle.get_webview_window("tooltip") {
-        let _ = existing.destroy();
-    }
+    // Serialize publication/hide with layout/dismiss on the UI thread, but keep
+    // WebView2 creation on the async caller to avoid its main-thread deadlock.
+    let (send, receive) = std::sync::mpsc::sync_channel(1);
+    let app = app_handle.clone();
+    app_handle.run_on_main_thread(move || {
+        let _ = send.send(prepare_tooltip_request(&app, payload).map_err(|e|e.to_string()));
+    })?;
+    let Some(payload) = receive.recv()?? else { return Ok(()); };
+    let (x,y,height) = (payload.x,payload.y,payload.height);
+    let state = app_handle.state::<TooltipState>();
+    struct Creating<'a>(&'a AtomicBool);
+    impl Drop for Creating<'_> { fn drop(&mut self) { self.0.store(false, Ordering::Release); } }
+    let _creating = Creating(&state.3);
 
     // Default coordinates in case screen detection fails
     let mut tooltip_x = x as f64;
@@ -1258,6 +1322,7 @@ fn open_tooltip_window_inner(
         tauri::WebviewUrl::App("tooltip.html".into()),
     )
     .title("PolyTranslate Tooltip")
+    .visible(false)
     .inner_size(420.0, 280.0)
     .decorations(false)
     .shadow(false)
@@ -1275,7 +1340,7 @@ fn open_tooltip_window_inner(
 
     #[cfg(feature = "latency-harness")]
     if let Some(diagnostics) = app_handle.try_state::<latency::LatencyState>() {
-        builder = builder.data_directory(diagnostics.profile.clone())
+        builder = builder.data_directory(diagnostics.profile.clone()).initialization_script(latency::LISTENER_PROBE)
             .initialization_script(format!("globalThis.__TRANSLATION_DIAGNOSTICS__=true;globalThis.__TRANSLATION_TRACE_ID__={:?};", diagnostics.trace_id.load(std::sync::atomic::Ordering::Acquire).to_string()));
     }
     let _tooltip_win = builder.build()?;
@@ -1283,7 +1348,7 @@ fn open_tooltip_window_inner(
     Ok(())
 }
 
-pub use tooltip_commands::{open_tooltip_window, close_tooltip_window, dismiss_tooltip_if_external, get_tooltip_data};
+pub use tooltip_commands::{open_tooltip_window, close_tooltip_window, dismiss_tooltip_if_external, get_tooltip_data, layout_tooltip_window, translate_tooltip_request};
 pub mod tooltip_commands {
 use super::*;
 /// Command: spawn the tooltip window explicitly (called by the overlay frontend
@@ -1297,26 +1362,81 @@ pub async fn open_tooltip_window(
     width: u32,
     height: u32,
 ) -> Result<(), String> {
-    {
-        let state: tauri::State<TooltipState> = app_handle.state();
-        let mut lock = state.0.lock().unwrap();
-        *lock = Some(TooltipData { text, data_url: String::new(), x, y, width, height, error: None, ..Default::default() });
-    }
-    open_tooltip_window_inner(&app_handle, x, y, height)
+    open_tooltip_window_inner(&app_handle, TooltipData { text, x, y, width, height, ..Default::default() })
         .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn close_tooltip_window(app_handle: tauri::AppHandle) {
+pub fn close_tooltip_window(app_handle: tauri::AppHandle, request_id: Option<String>) {
+    let app = app_handle.clone();
+    let _ = app_handle.run_on_main_thread(move || dismiss_tooltip_request(app, request_id));
+}
+
+fn dismiss_tooltip_request(app_handle: tauri::AppHandle, request_id: Option<String>) {
+    let dismissed = {
+        let state = app_handle.state::<TooltipState>();
+        let mut current = state.0.lock().unwrap();
+        if request_id.as_ref().is_some_and(|id| current.as_ref().is_none_or(|data| &data.request_id != id)) { return; }
+        current.take()
+    };
+    *app_handle.state::<TooltipState>().1.lock().unwrap() = None;
+    app_handle.state::<TooltipState>().2.notify_waiters();
     if let Some(win) = app_handle.get_webview_window("tooltip") {
-        let _ = win.destroy();
+        let _ = win.hide();
+        if let Some(data) = dismissed {
+            let _ = win.emit("tooltip-dismissed", serde_json::json!({"requestId":data.request_id}));
+        }
     }
+    desktop_views::close_for_owner(&app_handle, "tooltip");
+}
+
+/// Await the work started in parallel with cold WebView creation. One bounded mailbox.
+#[tauri::command]
+pub async fn translate_tooltip_request(state: tauri::State<'_, TooltipState>, request_id: String) -> Result<serde_json::Value, String> {
+    tokio::time::timeout(Duration::from_secs(35), async {
+        loop {
+            let notified = state.2.notified();
+            tokio::pin!(notified);
+            notified.as_mut().enable();
+            {
+                let current = state.0.lock().unwrap();
+                if current.as_ref().is_none_or(|data|data.request_id != request_id) { return Err("Tooltip request dismissed".into()); }
+                if let Some((id, result)) = state.1.lock().unwrap().as_ref() {
+                    if id == &request_id { return result.clone(); }
+                }
+            }
+            notified.await;
+        }
+    }).await.map_err(|_|"Tooltip translation timed out".to_string())?
+}
+
+/// Only the current presentation may resize or reveal the retained WebView.
+#[tauri::command]
+pub fn layout_tooltip_window(app_handle: tauri::AppHandle, request_id: String, width: f64, height: f64, x: f64, y: f64, center: bool, scale: Option<f64>) -> Result<(), String> {
+    let current = app_handle.state::<TooltipState>().0.lock().unwrap().as_ref().is_some_and(|data|data.request_id == request_id);
+    if !current { return Ok(()); }
+    let scale = scale.unwrap_or(1.0);
+    if ![width,height,x,y,scale].iter().all(|n|n.is_finite()) || width <= 0.0 || height <= 0.0 || scale <= 0.0 { return Err("Invalid tooltip layout".into()); }
+    let Some(win) = app_handle.get_webview_window("tooltip") else { return Ok(()); };
+    // The retained window can still be on another DPI monitor. LogicalPosition
+    // would use that old scale. Place and size explicitly in source-monitor pixels.
+    if center { win.set_position(tauri::PhysicalPosition::new((x*scale).round() as i32,(y*scale).round() as i32)).map_err(|e|e.to_string())?; }
+    win.set_size(tauri::PhysicalSize::new((width*scale).ceil() as u32,(height*scale).ceil() as u32)).map_err(|e|e.to_string())?;
+    #[cfg(windows)]
+    {
+        use windows_sys::Win32::UI::WindowsAndMessaging::{ShowWindow, SW_SHOWNOACTIVATE};
+        let hwnd = win.hwnd().map_err(|e|e.to_string())?;
+        unsafe { ShowWindow(hwnd.0 as _, SW_SHOWNOACTIVATE); }
+    }
+    #[cfg(not(windows))]
+    win.show().map_err(|e|e.to_string())?;
+    Ok(())
 }
 
 #[tauri::command]
-pub fn dismiss_tooltip_if_external(app_handle: tauri::AppHandle) {
+pub fn dismiss_tooltip_if_external(app_handle: tauri::AppHandle, request_id: Option<String>) {
     if app_handle.webview_windows().values().any(|window| window.is_focused().unwrap_or(false)) { return; }
-    close_tooltip_window(app_handle);
+    close_tooltip_window(app_handle, request_id);
 }
 
 #[tauri::command]
@@ -1792,6 +1912,7 @@ pub fn run() {
         })
         .on_page_load(|webview, payload| {
             if webview.label() == "main" && payload.event() == tauri::webview::PageLoadEvent::Started {
+                close_tooltip_window(webview.app_handle().clone(), None);
                 webview.state::<ocr::OcrState>().0.lock().unwrap().main_reloading();
                 webview.state::<desktop::DesktopServiceState>().disconnected();
                 #[cfg(windows)]
@@ -1818,7 +1939,7 @@ pub fn run() {
                     let ui_handle = handle.clone();
                     tauri::async_runtime::spawn_blocking(move || {
                         if !context.is_current() { return; }
-                        if context.action == selected_text::TranslationAction::Dismiss { close_tooltip_window(ui_handle); return; }
+                        if context.action == selected_text::TranslationAction::Dismiss { close_tooltip_window(ui_handle, None); return; }
                         let (text, error) = match result {
                             Ok(selected) => (selected.text, None),
                             Err(selected_text::SelectionError::SourceChanged) => return,
@@ -1828,10 +1949,9 @@ pub fn run() {
                             if let Err(error) = input_translation::request(&ui_handle, text, context) { eprintln!("Input translation failed: {error}"); }
                             return;
                         }
-                        *ui_handle.state::<TooltipState>().0.lock().unwrap() = Some(TooltipData {
+                        if let Err(error) = open_tooltip_window_inner(&ui_handle, TooltipData {
                             text, error, x: context.x, y: context.y, ..Default::default()
-                        });
-                        if let Err(error) = open_tooltip_window_inner(&ui_handle, context.x, context.y, 0) {
+                        }) {
                             eprintln!("Cannot open Selected Text tooltip: {error}");
                         }
                     });
@@ -1902,6 +2022,8 @@ pub fn run() {
             close_tooltip_window,
             dismiss_tooltip_if_external,
             get_tooltip_data,
+            layout_tooltip_window,
+            translate_tooltip_request,
             open_snippet_window,
             close_snippet_window,
             get_snippet_data,

@@ -65,6 +65,7 @@ export class TranslationTooltip {
   private readingFocusSection: Element | null = null;
   private readingFocusKey: string | null = null;
   private selectionGlossRequest = 0;
+  private presentation = 0;
 
   constructor() {
     this.init();
@@ -706,6 +707,8 @@ export class TranslationTooltip {
 
   show(_x: number, _y: number, sourceText: string, data: any, ttsEnabled: boolean = true, phoneticsVisible: boolean = true, ocrWidth?: number, viewport?: { width: number; height: number }) {
     if (!this.tooltipEl || !this.shadow) return;
+    const presentation = ++this.presentation;
+    this.tooltipEl.style.cssText = '';
     this.clearSelectionGloss();
     this.stopHanziAnimations();
     this.saveSection = null;
@@ -888,12 +891,13 @@ export class TranslationTooltip {
     }
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        this.tooltipEl!.classList.add('visible');
+        if (presentation === this.presentation) this.tooltipEl!.classList.add('visible');
       });
     });
   }
 
-  hide() {
+  reset() {
+    this.presentation++;
     if (this.tooltipEl) {
       this.clearSelectionGloss();
       this.closeHanziBreakdown();
@@ -902,8 +906,17 @@ export class TranslationTooltip {
       this.readingFocusKey = null;
       this.tooltipEl.classList.remove('visible');
       this.tooltipEl.style.display = 'none';
-      window.dispatchEvent(new CustomEvent('translation-tooltip-hidden'));
+      this.tooltipEl.replaceChildren();
+      this.saveSection = null;
+      this.saveSelection = '';
+      this.saveSentence = '';
+      this.saveSelectionOffset = -1;
     }
+  }
+
+  hide() {
+    this.reset();
+    window.dispatchEvent(new CustomEvent('translation-tooltip-hidden'));
   }
 
   private showHanziChoices(section: Element, characters: string[], text: string, start: number): void {

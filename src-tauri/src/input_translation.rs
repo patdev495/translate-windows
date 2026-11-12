@@ -1,6 +1,6 @@
 use crate::{
     selected_text::{windows::DeliveryContext, ReplacementOutcome},
-    TooltipData, TooltipState,
+    TooltipData,
 };
 use serde_json::Value;
 use std::{
@@ -111,7 +111,7 @@ pub async fn complete_input_replacement(
         if !pending.context.is_current() {
             return;
         }
-        *handle.state::<TooltipState>().0.lock().unwrap() = Some(TooltipData {
+        let payload = TooltipData {
             text: if failure.is_some() {
                 String::new()
             } else {
@@ -123,9 +123,9 @@ pub async fn complete_input_replacement(
             x: pending.context.x,
             y: pending.context.y,
             ..Default::default()
-        });
+        };
         if let Err(error) =
-            crate::open_tooltip_window_inner(&handle, pending.context.x, pending.context.y, 0)
+            crate::open_tooltip_window_inner(&handle, payload)
         {
             eprintln!("Cannot show replacement fallback: {error}");
         }

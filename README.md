@@ -69,7 +69,9 @@ profile tổng hợp riêng, native debug/frontend production và HTTP loopback 
 Mặc định thu 5 lượt cold + 100 lượt warm; đây là phép đo từ lúc có text đến paint,
 không gồm lấy vùng chọn Windows. Không suy ra tốc độ provider thật từ server giả.
 
-Main host dùng chung dịch/IPA giữa tooltip và PDF; Rust dùng lại HTTP client
+Tooltip tạo lazy, dùng lại WebView sau khi đóng; lượt mới reset nội dung/học chữ,
+hủy riêng OCR của lượt cũ. Dịch bắt đầu song song với khởi tạo cửa sổ; kết quả
+hết hiệu lực không mở lại tooltip. Main host dùng chung dịch/IPA giữa tooltip và PDF; Rust dùng lại HTTP client
 đúng transport policy. Lệnh đo các nhóm provider thật, OCR đồng thời, reload
 host và JSON trước/sau nằm trong
 [MEASUREMENT.md](.scratch/translation-latency/MEASUREMENT.md).

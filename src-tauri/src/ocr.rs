@@ -214,6 +214,8 @@ pub struct OcrBroker {
 }
 
 impl OcrBroker {
+    #[cfg(feature = "latency-harness")]
+    pub fn pending_count(&self) -> usize { self.waiting.len() + usize::from(self.active.is_some()) }
     pub fn request(
         &mut self,
         caller: &str,

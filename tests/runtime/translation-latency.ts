@@ -3,12 +3,17 @@ declare const __LATENCY_SOURCE__: string;
 declare const __LATENCY_OCR__: boolean;
 declare const __LATENCY_SHARED_TEST__: boolean;
 declare const __LATENCY_RESTART_TEST__: boolean;
+declare const __LATENCY_RECOVERY__: boolean;
 import { requestOcr } from '../../src/services/ocr-client';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 
 export async function run(label: string): Promise<void> {
   if(label==='tooltip') {
+    if (!(globalThis as any).__LATENCY_TOOLTIP_LISTENING__) {
+      (globalThis as any).__LATENCY_TOOLTIP_LISTENING__ = true;
+      await listen('tooltip-request', () => { void run('tooltip'); });
+    }
     try {
       const payload=await invoke<{text:string}>('get_tooltip_data');
       const deadline=Date.now()+30_000;
@@ -16,6 +21,7 @@ export async function run(label: string): Promise<void> {
         const root=document.getElementById('translation-extension-root')?.shadowRoot;
         const translations=[...root?.querySelectorAll('.tt-translation-text') || []];
         if(root?.querySelector('.tt-source-text')?.textContent===payload.text && translations.length===2 && translations.every(node=>node.textContent?.trim())) {
+          await invoke('latency_resources',{listeners:(globalThis as any).__LATENCY_LISTENERS__?.size || 0,traceId:(globalThis as any).__TRANSLATION_TRACE_ID__});
           await invoke('latency_event',{stage:'content-verified',durationMs:0,traceId:(globalThis as any).__TRANSLATION_TRACE_ID__});
           return;
         }
@@ -74,6 +80,7 @@ export async function run(label: string): Promise<void> {
     sessionStorage.setItem('latency-running','1');
   }
   const samples: unknown[] = [];
+  const memoryCheckpoints: unknown[] = [];
   try {
     // Readiness uses the production RPC and host, not a timer assumption.
     const ready = await invoke<any>('desktop_request', { message: { type: 'GET_ACCOUNT_LINK_STATUS' } });
@@ -90,12 +97,17 @@ export async function run(label: string): Promise<void> {
     }
     await invoke('latency_next');
     for (let index = 0; index < __LATENCY_SAMPLE_COUNT__; index++) {
+      if (__LATENCY_RECOVERY__ && index === __LATENCY_SAMPLE_COUNT__ - 1) await invoke('latency_destroy_tooltip');
       painted = false; failed=false; contentVerified=false;
       await invoke('open_tooltip_window', { text: __LATENCY_SOURCE__==='zh' ? (index%2 ? '你好世界。' : `你好世界 ${index}。`) : index % 2 ? 'Hello world.' : `Hello world ${index}.`, x: 100, y: 100, width: 0, height: 0 });
       const deadline = Date.now() + 30_000;
       while ((!painted || !contentVerified) && !failed && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 25));
       const sample = await invoke<any>('latency_next');
       samples.push({ id: index, temperature: index ? 'warm' : 'cold', content: index % 2 ? 'repeated' : 'new', ...sample, contentVerified, error: !painted || !contentVerified || failed });
+      if (__LATENCY_SAMPLE_COUNT__ > 30 && [9,24,49].includes(index)) {
+        memoryCheckpoints.push({ cycle: index+1, ...await invoke<any>('latency_memory') });
+        await invoke('latency_next'); // Memory collection is outside the next timed sample.
+      }
     }
     if(__LATENCY_SHARED_TEST__) {
       painted=false;failed=false;contentVerified=false;
@@ -107,6 +119,6 @@ export async function run(label: string): Promise<void> {
       samples.push({id:'pdf',temperature:'warm',content:'PDF selection',...await invoke<any>('latency_next'),contentVerified,error:!painted||!contentVerified||failed});
     }
     stop();stopContent();
-    await invoke('latency_done', { result: { metric: 'text-ready-to-correct-paint', acquisition: 'excluded', ocr: __LATENCY_OCR__ ? 'concurrent-explicit-recognition' : 'off', ocrResult: await ocrResult, sourceLanguage: __LATENCY_SOURCE__, targets: 2, memoryBefore, memoryAfter: await invoke('latency_memory'), samples } });
+    await invoke('latency_done', { result: { metric: 'text-ready-to-correct-paint', acquisition: 'excluded', ocr: __LATENCY_OCR__ ? 'concurrent-explicit-recognition' : 'off', ocrResult: await ocrResult, sourceLanguage: __LATENCY_SOURCE__, targets: 2, memoryBefore, memoryCheckpoints, recovery: __LATENCY_RECOVERY__, memoryAfter: await invoke('latency_memory'), samples } });
   } catch { await invoke('latency_done', { result: { error: 'Harness failed', samples } }); }
 }

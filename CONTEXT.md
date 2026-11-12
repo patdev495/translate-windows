@@ -58,6 +58,11 @@ The full-screen transparent web view window that renders the desktop capture, al
 
 **Native Tooltip Window**:
 The frameless, borderless, transparent, always-on-top window created by Tauri to display translations and pinyin/IPA phonetic details.
+Created lazily, then retained across show/hide cycles. Each presentation has a
+native request ID; only that request may render, lay out, show or dismiss it.
+New presentations reset learning UI, speech and view-owned OCR work. Main-owned
+models, IPA and accepted Learning Saves survive hide. Source coordinates select
+the monitor on every presentation; warm show preserves source focus. See ADR-0006.
 
 **Translation Host**:
 The persistent service in the hidden `main` WebView that owns translation and

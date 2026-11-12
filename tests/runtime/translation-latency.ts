@@ -131,7 +131,7 @@ export async function run(label: string): Promise<void> {
       const sample = await invoke<any>('latency_next');
       samples.push({ id: index, temperature: index ? 'warm' : 'cold', content: index % 2 ? 'repeated' : 'new', ...sample, contentVerified, validationError, error: !painted || !contentVerified || failed });
       if (__LATENCY_RECOVERY__ && await (await NativeWindow.getByLabel('tooltip'))!.isVisible()) throw new Error('Dismiss did not hide the retained window');
-      if (__LATENCY_SAMPLE_COUNT__ > 30 && [9,24,49].includes(index)) {
+      if (__LATENCY_SAMPLE_COUNT__ > 30 && [9,24,49,99,199,499,749].includes(index)) {
         memoryCheckpoints.push({ cycle: index+1, ...await invoke<any>('latency_memory') });
         await invoke('latency_next'); // Memory collection is outside the next timed sample.
       }

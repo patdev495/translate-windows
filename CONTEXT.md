@@ -13,7 +13,9 @@ graph TD
     C -->|Sends cropped image through Tauri IPC| D[Local OCR Engine in hidden main WebView]
     D -->|Recognizes text| E[Native Tooltip Window]
     D -->|Saves image| F[Draggable Pinned Snippets]
-    E -->|Translates text| G[Translation Service API]
+    E -->|Translation RPC| H[Translation Host in hidden main WebView]
+    P[Desktop PDF Reader] -->|Translation RPC| H
+    H --> G[Translation Service API]
 ```
 
 ---
@@ -56,6 +58,15 @@ The full-screen transparent web view window that renders the desktop capture, al
 
 **Native Tooltip Window**:
 The frameless, borderless, transparent, always-on-top window created by Tauri to display translations and pinyin/IPA phonetic details.
+
+**Translation Host**:
+The persistent service in the hidden `main` WebView that owns translation and
+the parsed English IPA dictionary. Tooltip, PDF, post-recognition OCR blocks,
+selection gloss, meaning suggestions and Input Replacement share this service.
+Concurrent dictionary loads are coalesced; failures allow retry. Closing a view
+preserves the dictionary; reloading main starts a new lifetime. Settings revisions
+and host generations reject superseded results. Translation does not join the
+Local OCR Engine's serial queue. See ADR-0005.
 
 **Readable Tooltip Width**:
 The extension's content-sized reading card: at least 350 logical pixels of reading content, or the OCR crop width when larger, plus its existing card padding. Clamp to the usable viewport and lock the initially measured width; the native window fits the card without another inset. Native OCR crop dimensions are converted from physical pixels for the monitor's scale factor.

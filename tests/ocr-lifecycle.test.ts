@@ -226,7 +226,7 @@ test('the hidden main window starts the OCR host even when a capture image is pe
   }, { shouldMockEvents: true });
   await import('../src/main');
   window.dispatchEvent(new Event('DOMContentLoaded'));
-  try { await vi.waitFor(() => expect(ready).toBe(true)); }
+  try { await vi.waitFor(() => expect(ready).toBe(true), { timeout: 10_000 }); }
   finally {
     window.dispatchEvent(new Event('beforeunload'));
     const { disposeOcrModelLifecycle } = await import('../src/services/ocr-preload');

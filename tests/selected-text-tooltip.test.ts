@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { handleDesktopRequest } from '../src/services/desktop-host';
 import { readFileSync } from 'node:fs';
 import { beforeAll, beforeEach, afterEach, expect, test, vi } from 'vitest';
 import { mockIPC, mockWindows, clearMocks } from '@tauri-apps/api/mocks';
@@ -25,8 +26,9 @@ beforeEach(() => {
 afterEach(() => { clearMocks(); vi.unstubAllGlobals(); });
 
 async function open(payload: unknown) {
-  mockIPC((command) => {
+  mockIPC((command,args: any) => {
     commands.push(command);
+    if (command === 'desktop_request') return handleDesktopRequest(args.message);
     if (command === 'get_tooltip_data') return payload;
     if (command === 'get_app_settings') return { secondaryTargetLang: 'none', ttsEnabled: false };
     if (command === 'plugin:window|current_monitor') return null;

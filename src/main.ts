@@ -6,8 +6,7 @@ import { SettingsManager } from "./services/settings";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getScreenRectMapper } from "./screen-rect";
 import { requestOcr } from "./services/ocr-client";
-import { TranslationEngine } from "./services/translation";
-import { getDetectionTarget, getTranslationTargets } from "./services/translation-plan";
+import { requestOcrBlockTranslation } from "./services/translation-client";
 import {
   getRecordingControlPosition,
   RecordingOverlayController,
@@ -427,23 +426,7 @@ async function runOverlayTranslation(
 
     for (const block of blocks) {
       try {
-        const detectionTarget = getDetectionTarget(settings);
-        const detectionResult = detectionTarget
-          ? await TranslationEngine.translateWithSettings(block.text, detectionTarget, settings)
-          : { translation: block.text, detectedLang: "auto" };
-        const detectedLang = detectionResult.detectedLang || "auto";
-        const targets = getTranslationTargets(settings, detectedLang);
-
-        let translatedText = block.text;
-        if (targets.length > 0) {
-          const target = targets[0];
-          if (target.lang === detectionTarget) {
-            translatedText = detectionResult.translation;
-          } else {
-            const res = await TranslationEngine.translateWithSettings(block.text, target.lang, settings);
-            translatedText = res.translation;
-          }
-        }
+        const { translation: translatedText } = await requestOcrBlockTranslation(block.text);
 
         const bgColor = sampleBackgroundColor(ctx, canvas.width, canvas.height, block.bbox);
         const textColor = getContrastColor(bgColor);

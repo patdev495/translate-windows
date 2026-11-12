@@ -119,7 +119,7 @@ export class TranslationCoordinator {
     return TranslationEngine.translateWithSettings(text, settings.primaryTargetLang, settings);
   }
 
-  static async translate(text: string, settings: Settings): Promise<TranslationCoordinatorResult> {
+  static async translate(text: string, settings: Settings & { latencyTraceId?: string }): Promise<TranslationCoordinatorResult> {
     let detectedLang: string;
     let firstRes = null;
     let targetLangs;
@@ -146,7 +146,7 @@ export class TranslationCoordinator {
 
         let phonetics = '';
         if (lang === 'en') {
-          phonetics = await PhoneticEngine.getEnglishIPA(result.translation);
+          phonetics = await PhoneticEngine.getEnglishIPA(result.translation, settings.latencyTraceId);
         } else if (lang === 'zh') {
           phonetics = PhoneticEngine.getPinyin(result.translation);
         }
@@ -165,7 +165,7 @@ export class TranslationCoordinator {
     const isSourceEnglish = detectedLang === 'en';
 
     if (isSourceEnglish) {
-      sourcePhonetics = await PhoneticEngine.getEnglishIPA(text);
+      sourcePhonetics = await PhoneticEngine.getEnglishIPA(text, settings.latencyTraceId);
     } else if (isSourceChinese) {
       sourcePhonetics = PhoneticEngine.getPinyin(text);
     }

@@ -61,3 +61,15 @@ npm run test:ui
 `test:ui` build frontend rồi chạy các trang thật trong WebView2 với profile riêng tại `.scratch/tmp/extension-ui-smoke-*`. Kiểm tra Settings, PDF render/chọn chữ, nét và thành phần Hanzi, ghi chú và thao tác Copy qua ranh giới native giả lập; không dùng tài khoản hay clipboard thật. Kết quả ở `.scratch/extension-parity/ui-smoke-results.json`. Cổng 1438 phải đang trống. Ba test nguồn Windows cần tương tác desktop vẫn được đánh dấu ignored trong bộ Rust mặc định.
 
 Đặc tả, các ranh giới TDD và bằng chứng kiểm tra nằm trong `.scratch/extension-parity/`.
+
+## Đo độ trễ dịch
+
+`npm run bench:translation` chạy command tooltip production trong WebView2,
+profile tổng hợp riêng, native debug/frontend production và HTTP loopback 40 ms.
+Mặc định thu 5 lượt cold + 100 lượt warm; đây là phép đo từ lúc có text đến paint,
+không gồm lấy vùng chọn Windows. Không suy ra tốc độ provider thật từ server giả.
+
+Main host dùng chung dịch/IPA giữa tooltip và PDF; Rust dùng lại HTTP client
+đúng transport policy. Lệnh đo các nhóm provider thật, OCR đồng thời, reload
+host và JSON trước/sau nằm trong
+[MEASUREMENT.md](.scratch/translation-latency/MEASUREMENT.md).

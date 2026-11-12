@@ -1,0 +1,543 @@
+{
+  "acquisition": "excluded",
+  "memoryAfter": {
+    "privateBytes": 235200512,
+    "processCount": 7,
+    "workingSetBytes": 445542400
+  },
+  "memoryBefore": {
+    "privateBytes": 161832960,
+    "processCount": 7,
+    "workingSetBytes": 358735872
+  },
+  "metric": "text-ready-to-correct-paint",
+  "ocr": "off",
+  "samples": [
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 829.2175000000001,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 866.9314999999999,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 338.80000001192093,
+          "elapsedMs": 1208.4843999999998,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 370.2000000178814,
+          "elapsedMs": 1240.6151,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1285.8174,
+          "stage": "dictionary-miss",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 9.700000017881392,
+          "elapsedMs": 1296.7174,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 249,
+          "elapsedMs": 1547.1351,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 263.40000000596046,
+          "elapsedMs": 1548.6931,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 265.2999999821186,
+          "elapsedMs": 1550.3559,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 714.5999999940395,
+          "elapsedMs": 1568.7951999999998,
+          "stage": "host-rpc",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1750.2229,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1760.5277,
+          "stage": "content-verified",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1860.0516,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "0-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 678.0475,
+          "stage": "view-ready",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 743.7016,
+          "stage": "host-start",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 210.5999999940395,
+          "elapsedMs": 960.7731,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 246.7000000178814,
+          "elapsedMs": 991.6524,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 993.1657,
+          "stage": "dictionary-hit",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0.7999999821186066,
+          "elapsedMs": 994.828,
+          "stage": "dictionary-load",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 2.0999999940395355,
+          "elapsedMs": 996.7087,
+          "stage": "ipa",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 310.90000000596046,
+          "elapsedMs": 1036.2701000000002,
+          "stage": "host-rpc",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1205.9544,
+          "stage": "result-ready",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1226.8039,
+          "stage": "content-verified",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1281.9709,
+          "stage": "correct-paint",
+          "traceId": "2"
+        }
+      ],
+      "id": "0-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 739.1071000000001,
+          "stage": "view-ready",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 785.7417,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 78.59999999403954,
+          "elapsedMs": 869.0358,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 86.2999999821186,
+          "elapsedMs": 873.1473,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 874.653,
+          "stage": "dictionary-hit",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 876.0055,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 2.100000023841858,
+          "elapsedMs": 877.2108,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 122.40000000596046,
+          "elapsedMs": 896.0545,
+          "stage": "host-rpc",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1036.2343,
+          "stage": "result-ready",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1054.7758,
+          "stage": "content-verified",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1134.7337,
+          "stage": "correct-paint",
+          "traceId": "3"
+        }
+      ],
+      "id": "0-2",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 729.4698,
+          "stage": "view-ready",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 777.6688,
+          "stage": "host-start",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 77.7999999821186,
+          "elapsedMs": 857.0210999999999,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 89.89999997615814,
+          "elapsedMs": 869.3819000000001,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 871.264,
+          "stage": "dictionary-hit",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 1.5,
+          "elapsedMs": 873.348,
+          "stage": "dictionary-load",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 2.800000011920929,
+          "elapsedMs": 874.8458,
+          "stage": "ipa",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 131.89999997615814,
+          "elapsedMs": 894.0334,
+          "stage": "host-rpc",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1104.2813,
+          "stage": "result-ready",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1125.7299999999998,
+          "stage": "content-verified",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1178.1137,
+          "stage": "correct-paint",
+          "traceId": "4"
+        }
+      ],
+      "id": "0-3",
+      "temperature": "warm",
+      "traceId": "4",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 713.9258000000001,
+          "stage": "view-ready",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 756.5543,
+          "stage": "host-start",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 93.10000002384186,
+          "elapsedMs": 850.6283999999999,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 103.59999999403954,
+          "elapsedMs": 859.4956999999999,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 861.1501999999999,
+          "stage": "dictionary-hit",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0.8999999761581421,
+          "elapsedMs": 862.0902,
+          "stage": "dictionary-load",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 1.7999999821186066,
+          "elapsedMs": 863.2438999999999,
+          "stage": "ipa",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 146.09999999403954,
+          "elapsedMs": 887.6985,
+          "stage": "host-rpc",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1065.9938,
+          "stage": "result-ready",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1087.0662,
+          "stage": "content-verified",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1159.069,
+          "stage": "correct-paint",
+          "traceId": "5"
+        }
+      ],
+      "id": "0-4",
+      "temperature": "warm",
+      "traceId": "5",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 790.267,
+          "stage": "view-ready",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 839.8904,
+          "stage": "host-start",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 83.2999999821186,
+          "elapsedMs": 924.8571,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 84.7999999821186,
+          "elapsedMs": 926.7294,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 928.6802,
+          "stage": "dictionary-hit",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 1.5,
+          "elapsedMs": 931.6252,
+          "stage": "dictionary-load",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 2.9000000059604645,
+          "elapsedMs": 933.4186,
+          "stage": "ipa",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 135,
+          "elapsedMs": 961.2299,
+          "stage": "host-rpc",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1118.046,
+          "stage": "result-ready",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1144.8732,
+          "stage": "content-verified",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1197.6813,
+          "stage": "correct-paint",
+          "traceId": "6"
+        }
+      ],
+      "id": "0-5",
+      "temperature": "warm",
+      "traceId": "6",
+      "windows": 2
+    }
+  ],
+  "sourceLanguage": "en",
+  "targets": 2,
+  "runs": [
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 235200512,
+        "processCount": 7,
+        "workingSetBytes": 445542400
+      },
+      "memoryBefore": {
+        "privateBytes": 161832960,
+        "processCount": 7,
+        "workingSetBytes": 358735872
+      },
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "sourceLanguage": "en",
+      "targets": 2
+    }
+  ],
+  "errors": 0,
+  "cancellations": 0,
+  "server": {
+    "connections": 13,
+    "requests": 0,
+    "dictionaryRequests": 1,
+    "providerConnections": 0
+  },
+  "source": "615916b010b419bd988d3238e4beaa91c6c08a92",
+  "sourceDiffSha256": "b69c4cf32f95f85e2fb70c83ddb6dee5080393bf80bbe63e40ddffe73e8f90f1",
+  "instrumentedWorkingTree": true,
+  "build": "native-debug/frontend-production",
+  "provider": "google",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-1235U",
+    "logicalCpus": 12,
+    "totalMemoryBytes": 16849293312,
+    "osRelease": "10.0.26200"
+  },
+  "cold": {
+    "count": 1,
+    "p50": 1860.0516,
+    "p95": 1860.0516
+  },
+  "warm": {
+    "count": 5,
+    "p50": 1178.1137,
+    "p95": 1281.9709
+  }
+}

@@ -1,24 +1,32 @@
-import { latencySpan } from './latency';
+import { latencyEvent, latencySpan } from './latency';
 import { desktopRuntime as chrome } from '../platform/runtime';
 import { OutputFormat, pinyin, segment } from 'pinyin-pro';
 
 let cmuDictCache: Record<string, string> | null = null;
+let cmuDictLoadPromise: Promise<Record<string, string>> | null = null;
 
 const zhRunPattern = /[\u3400-\u9fff\uf900-\ufaff]+/g;
 const zhCharPattern = /[\u3400-\u9fff\uf900-\ufaff]/;
 
 async function getCmuDict(traceId?: string): Promise<Record<string, string>> {
-  if (cmuDictCache) return cmuDictCache;
+  if (cmuDictCache) { latencyEvent('dictionary-hit', 0, traceId); return cmuDictCache; }
+  if (cmuDictLoadPromise) { latencyEvent('dictionary-wait', 0, traceId); return cmuDictLoadPromise; }
 
-  try {
-    const url = chrome.runtime.getURL('cmu-dict.json');
-    const response = await latencySpan('dictionary-fetch', () => fetch(url), traceId);
-    cmuDictCache = await latencySpan('dictionary-parse', () => response.json(), traceId);
-  } catch (err) {
-    console.error('Failed to load CMU dictionary:', err);
+  if (!cmuDictLoadPromise) {
+    latencyEvent('dictionary-miss', 0, traceId);
+    cmuDictLoadPromise = (async () => {
+      try {
+        const url = chrome.runtime.getURL('cmu-dict.json');
+        const response = await latencySpan('dictionary-fetch', () => fetch(url), traceId);
+        if (!response.ok) throw new Error(`CMU dictionary HTTP ${response.status}`);
+        cmuDictCache = await latencySpan('dictionary-parse', () => response.json(), traceId);
+      } catch (err) {
+        console.error('Failed to load CMU dictionary:', err);
+      }
+      return cmuDictCache || {};
+    })().finally(() => { cmuDictLoadPromise = null; });
   }
-
-  return cmuDictCache || {};
+  return cmuDictLoadPromise;
 }
 
 export class PhoneticEngine {

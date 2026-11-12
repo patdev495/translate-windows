@@ -12,11 +12,18 @@ pub async fn open_pdf_window<R: Runtime>(app: tauri::AppHandle<R>) -> Result<(),
         window.show().map_err(|e| e.to_string())?;
         return window.set_focus().map_err(|e| e.to_string());
     }
-    WebviewWindowBuilder::new(&app, "pdf", tauri::WebviewUrl::App("pdf.html".into()))
+    #[allow(unused_mut)]
+    let mut builder = WebviewWindowBuilder::new(&app, "pdf", tauri::WebviewUrl::App("pdf.html".into()))
         .title("PolyTranslate PDF")
         .inner_size(1080.0, 780.0)
-        .min_inner_size(620.0, 400.0)
-        .build()
+        .min_inner_size(620.0, 400.0);
+    #[cfg(feature = "latency-harness")]
+    if let Some(diagnostics) = app.try_state::<crate::latency::LatencyState>() {
+        builder = builder.data_directory(diagnostics.profile.clone()).initialization_script(format!(
+            "globalThis.__TRANSLATION_DIAGNOSTICS__=true;globalThis.__TRANSLATION_TRACE_ID__={:?};",
+            diagnostics.trace_id.load(std::sync::atomic::Ordering::Acquire).to_string()));
+    }
+    builder.build()
         .map_err(|e| e.to_string())?;
     Ok(())
 }

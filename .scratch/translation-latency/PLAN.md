@@ -197,8 +197,10 @@ Test qua API/DOM/native event hoặc server mạng thật của harness; không 
 - Tái sử dụng main host hiện có và lazy tooltip; không thêm một service nền thứ hai hoặc setting performance mới.
 - Tập trung ba chi phí đã xác định; cache kết quả dịch mới, streaming từng target, bỏ/defer IPA và tối ưu UIA là các đề xuất riêng sau khi có trace.
 - Không cần duyệt lại S1–S6 cho các test vẫn thuộc ranh giới đã thống nhất. Nếu phát sinh seam thực sự mới, ghi rõ giao diện đó trước khi viết test tại seam mới.
-- Lượt hiện tại chỉ tạo PRD/PLAN/issues. Chưa thay production code, chưa tuyên bố mức tăng tốc và chưa build bản tối ưu.
+- Lượt lập kế hoạch ban đầu chỉ tạo PRD/PLAN/issues. Hiện issues 01–03 đã triển khai và kiểm chứng; xem VALIDATION.md. Issues 04–06 tiếp tục theo kế hoạch, chưa có bản NSIS tối ưu mới.
 
 ## Comments
 
 - 2026-11-12: Kế hoạch dựa trên mã tại `1c7df1f` và probe cache module; cần bước 0 để có số đo end-to-end thực tế.
+
+- 2026-11-12: Đã hoàn thành issues 01–03 theo TDD và ghi số đo trước/sau riêng từng bước tại [VALIDATION.md](./VALIDATION.md).

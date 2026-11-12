@@ -1475,10 +1475,15 @@ async fn verify_deepl_api_key(state: tauri::State<'_, http_clients::HttpClients>
 #[tauri::command]
 async fn translate_deepl(
     state: tauri::State<'_, http_clients::HttpClients>,
+    app: tauri::AppHandle,
+    transport_generation: Option<String>,
+    invocation_id: Option<String>,
     text: String,
     target_lang: String,
     api_key: String,
 ) -> Result<serde_json::Value, String> {
+    desktop::validate_transport_generation(&app, transport_generation.as_deref())?;
+    state.claim_invocation("translate_deepl", invocation_id.as_deref())?;
     if api_key.trim().is_empty() {
         return Err("DeepL API Key is missing. Please configure it in settings.".to_string());
     }

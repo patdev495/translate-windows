@@ -1,10 +1,12 @@
+import { sameTranslationSettings } from './services/translation-settings';
+import { requestTranslation } from './services/translation-client';
 import { latencyEvent } from './services/latency';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { currentMonitor, getCurrentWindow, LogicalSize, LogicalPosition } from '@tauri-apps/api/window';
 import { requestOcr } from './services/ocr-client';
 import { SettingsManager, type Settings } from './services/settings';
-import { TranslationCoordinator, type TranslationCoordinatorResult } from './services/translation-coordinator';
+import type { TranslationCoordinatorResult } from './services/translation-coordinator';
 import { TranslationTooltip } from './content/tooltip';
 
 interface Payload { text?: string; dataUrl?: string; error?: string; notice?: string; width?: number; translationData?: TranslationCoordinatorResult }
@@ -18,9 +20,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   status.textContent = 'Đang dịch…';
   try {
     const settings = await SettingsManager.getSettings();
+    let configurationValid = true;
     if (!settings.translationActive) { void close(); return; }
     if ('__TAURI_INTERNALS__' in window) {
-      const stop = await listen<Settings>('settings-changed',event => { if (!event.payload.translationActive) void close(); });
+      const stop = await listen<Settings>('settings-changed',event => { if (!sameTranslationSettings(settings,event.payload)) { configurationValid = false; void close(); } });
       window.addEventListener('beforeunload',stop,{once:true});
     }
     let payload: Payload = {};
@@ -40,8 +43,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       text = result.fullText;
     }
     if (!text.trim()) { status.textContent = 'Không lấy được văn bản'; return; }
-    const data = payload.translationData ?? await TranslationCoordinator.translate(text, settings);
-    if (!(await SettingsManager.getSettings()).translationActive) { void close(); return; }
+    const data = payload.translationData ?? await requestTranslation(text);
+    if (!configurationValid || !sameTranslationSettings(settings, await SettingsManager.getSettings())) { void close(); return; }
     const native = '__TAURI_INTERNALS__' in window;
     const monitor = native ? await currentMonitor() : null;
     const scale = monitor?.scaleFactor || 1;

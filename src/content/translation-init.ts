@@ -1,11 +1,16 @@
+import { sameTranslationSettings } from '../services/translation-settings';
 import { TranslationTooltip } from './tooltip';
 import { SettingsManager, type Settings } from '../services/settings';
-import { TranslationCoordinator } from '../services/translation-coordinator';
+import { requestTranslation } from '../services/translation-client';
 
 export interface TranslationContext { tooltip: TranslationTooltip; settings: Settings | null; active: boolean; generation: number }
 export const createTranslationContext = (): TranslationContext => ({ tooltip:new TranslationTooltip(),settings:null,active:true,generation:0 });
-export async function loadSettings(context: TranslationContext): Promise<void> {
-  const settings = context.settings = await SettingsManager.getSettings();
+export async function loadSettings(context: TranslationContext, nextSettings?: Settings): Promise<void> {
+  const settings = nextSettings ?? await SettingsManager.getSettings();
+  if (context.settings && !sameTranslationSettings(context.settings, settings)) {
+    context.generation++; context.tooltip.hide();
+  }
+  context.settings = settings;
   context.active = settings.translationActive;
   context.tooltip.updateFontSize(settings.tooltipFontSize);
   context.tooltip.updateHanziStrokeSpeed(settings.hanziStrokeSpeed);
@@ -17,8 +22,11 @@ export function performTranslation(context: TranslationContext, text: string, x:
   if (!context.active || !context.settings || !text.trim()) return;
   const generation = ++context.generation;
   const settings = context.settings;
-  void TranslationCoordinator.translate(text,settings).then(data => {
-    if (generation === context.generation && context.active) context.tooltip.show(x,y,text,data,settings.ttsEnabled,settings.phoneticsVisible,width);
+  void requestTranslation(text).then(async data => {
+    const current = await SettingsManager.getSettings();
+    if (generation === context.generation && context.active && sameTranslationSettings(settings, current)) {
+      context.tooltip.show(x,y,text,data,current.ttsEnabled,current.phoneticsVisible,width);
+    }
   }).catch(error => { if (generation === context.generation) { const status = document.getElementById('pdf-translation-status'); if (status) status.textContent=String(error); } });
 }
 export function matchesOcrShortcut(context: TranslationContext,event: KeyboardEvent): boolean {

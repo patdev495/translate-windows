@@ -122,12 +122,14 @@ pub fn set_desktop_values<R: Runtime>(
 #[derive(Default)]
 pub struct DesktopServiceState {
     ready: AtomicBool,
+    generation: AtomicU64,
     sequence: AtomicU64,
     pending: Mutex<HashMap<String, (String, tauri::async_runtime::Sender<Value>)>>,
 }
 impl DesktopServiceState {
     pub fn disconnected(&self) {
         self.ready.store(false, Ordering::Release);
+        self.generation.fetch_add(1, Ordering::AcqRel);
         for (_, (_, reply)) in self.pending.lock().unwrap().drain() {
             let _ = reply.try_send(serde_json::json!({ "success":false,"error":"Desktop host restarted. Please try again." }));
         }
@@ -144,12 +146,12 @@ impl DesktopServiceState {
 pub fn desktop_service_ready<R: Runtime>(
     window: tauri::WebviewWindow<R>,
     state: tauri::State<'_, DesktopServiceState>,
-) -> Result<(), String> {
+) -> Result<String, String> {
     if window.label() != "main" {
         return Err("Only main may own the desktop host".into());
     }
     state.ready.store(true, Ordering::Release);
-    Ok(())
+    Ok(state.generation.load(Ordering::Acquire).to_string())
 }
 
 #[tauri::command]
@@ -213,11 +215,15 @@ pub fn desktop_reply<R: Runtime>(
 #[tauri::command]
 pub async fn desktop_http<R: Runtime>(
     app: tauri::AppHandle<R>,
+    transport_generation: Option<String>,
+    invocation_id: Option<String>,
     url: String,
     method: String,
     headers: HashMap<String, String>,
     body: Option<String>,
 ) -> Result<Value, String> {
+    validate_transport_generation(&app, transport_generation.as_deref())?;
+    app.state::<crate::http_clients::HttpClients>().claim_invocation("desktop_http", invocation_id.as_deref())?;
     let parsed = reqwest::Url::parse(&url).map_err(|e| e.to_string())?;
     let base = reqwest::Url::parse(
         option_env!("LEARNING_API_BASE").unwrap_or("https://learning.peebot.shop"),
@@ -266,4 +272,16 @@ pub async fn desktop_http<R: Runtime>(
         return Err("Desktop service response is too large".into());
     }
     Ok(serde_json::json!({"status":status,"body":body}))
+}
+
+// WebView2 may replay an IPC transport after navigation aborts the first response.
+// Reject work from the retired host before issuing another provider request.
+pub fn validate_transport_generation<R: Runtime>(app: &tauri::AppHandle<R>, generation: Option<&str>) -> Result<(), String> {
+    if let Some(generation) = generation {
+        let state = app.state::<DesktopServiceState>();
+        if generation != state.generation.load(Ordering::Acquire).to_string() || !state.ready.load(Ordering::Acquire) {
+            return Err("Desktop host restarted. Please try again.".into());
+        }
+    }
+    Ok(())
 }

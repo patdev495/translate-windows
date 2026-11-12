@@ -1,0 +1,347 @@
+{
+  "acquisition": "excluded",
+  "memoryAfter": {
+    "privateBytes": 196468736,
+    "processCount": 7,
+    "workingSetBytes": 408739840
+  },
+  "memoryBefore": {
+    "privateBytes": 162422784,
+    "processCount": 7,
+    "workingSetBytes": 357216256
+  },
+  "metric": "text-ready-to-correct-paint",
+  "ocr": "off",
+  "samples": [
+    {
+      "content": "new",
+      "contentVerified": false,
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 806.5761,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 875.4388,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 1054.300000011921,
+          "elapsedMs": 1929.4669,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 1098.9000000059605,
+          "elapsedMs": 1944.121,
+          "stage": "host-rpc",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1945.0861,
+          "stage": "request-error",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 1081.0999999940395,
+          "elapsedMs": null,
+          "stage": "provider",
+          "traceId": "1"
+        }
+      ],
+      "id": "0-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": false,
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 646.5803,
+          "stage": "view-ready",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 706.1214,
+          "stage": "host-start",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 286.90000000596046,
+          "elapsedMs": 994.7549,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 326.2000000178814,
+          "elapsedMs": 1012.1437,
+          "stage": "host-rpc",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1013.4463,
+          "stage": "request-error",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 309,
+          "elapsedMs": 1015.0917,
+          "stage": "provider",
+          "traceId": "2"
+        }
+      ],
+      "id": "0-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": false,
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 571.4358000000001,
+          "stage": "view-ready",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 614.4752,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 287.7999999821186,
+          "elapsedMs": 905.6231,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 312,
+          "elapsedMs": 927.4232,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 323.30000001192093,
+          "elapsedMs": 929.6487,
+          "stage": "host-rpc",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 932.0304,
+          "stage": "request-error",
+          "traceId": "3"
+        }
+      ],
+      "id": "0-2",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": false,
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 825.4683,
+          "stage": "view-ready",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 881.2731,
+          "stage": "host-start",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 290.2000000178814,
+          "elapsedMs": 1174.2531,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 311.30000001192093,
+          "elapsedMs": 1193.9647,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 329.30000001192093,
+          "elapsedMs": 1195.5218,
+          "stage": "host-rpc",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1197.1484,
+          "stage": "request-error",
+          "traceId": "4"
+        }
+      ],
+      "id": "0-3",
+      "temperature": "warm",
+      "traceId": "4",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": false,
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 766.3373,
+          "stage": "view-ready",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 802.6067999999999,
+          "stage": "host-start",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 289.7000000178814,
+          "elapsedMs": 1094.7303,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 320.5,
+          "elapsedMs": 1111.3169,
+          "stage": "host-rpc",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 308.80000001192093,
+          "elapsedMs": 1112.209,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1113.0264000000002,
+          "stage": "request-error",
+          "traceId": "5"
+        }
+      ],
+      "id": "0-4",
+      "temperature": "warm",
+      "traceId": "5",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": false,
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 590.9463000000001,
+          "stage": "view-ready",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 641.0913,
+          "stage": "host-start",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 295.7000000178814,
+          "elapsedMs": 932.256,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 313.59999999403954,
+          "elapsedMs": 948.927,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 331.7999999821186,
+          "elapsedMs": 952.2264,
+          "stage": "host-rpc",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 953.6,
+          "stage": "request-error",
+          "traceId": "6"
+        }
+      ],
+      "id": "0-5",
+      "temperature": "warm",
+      "traceId": "6",
+      "windows": 2
+    }
+  ],
+  "sourceLanguage": "en",
+  "targets": 2,
+  "runs": [
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 196468736,
+        "processCount": 7,
+        "workingSetBytes": 408739840
+      },
+      "memoryBefore": {
+        "privateBytes": 162422784,
+        "processCount": 7,
+        "workingSetBytes": 357216256
+      },
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "sourceLanguage": "en",
+      "targets": 2
+    }
+  ],
+  "errors": 6,
+  "cancellations": 0,
+  "server": {
+    "connections": 12,
+    "requests": 0,
+    "dictionaryRequests": 0,
+    "providerConnections": 0
+  },
+  "source": "615916b010b419bd988d3238e4beaa91c6c08a92",
+  "sourceDiffSha256": "b69c4cf32f95f85e2fb70c83ddb6dee5080393bf80bbe63e40ddffe73e8f90f1",
+  "instrumentedWorkingTree": true,
+  "build": "native-debug/frontend-production",
+  "provider": "DeepL Web real",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-1235U",
+    "logicalCpus": 12,
+    "totalMemoryBytes": 16849293312,
+    "osRelease": "10.0.26200"
+  },
+  "cold": {
+    "count": 0
+  },
+  "warm": {
+    "count": 0
+  }
+}

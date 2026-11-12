@@ -1,0 +1,244 @@
+{
+  "acquisition": "excluded",
+  "memoryAfter": {
+    "privateBytes": 327258112,
+    "processCount": 8,
+    "workingSetBytes": 595210240
+  },
+  "memoryBefore": {
+    "privateBytes": 161165312,
+    "processCount": 7,
+    "workingSetBytes": 358383616
+  },
+  "metric": "text-ready-to-correct-paint",
+  "ocr": "off",
+  "samples": [
+    {
+      "content": "new",
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 293.0485,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 72.40000000596046,
+          "elapsedMs": 381.3086,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 86,
+          "elapsedMs": 394.4229,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 7.0999999940395355,
+          "elapsedMs": 402.5484,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 142.80000001192093,
+          "elapsedMs": 546.8261,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 151.89999997615814,
+          "elapsedMs": 548.6849000000001,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 152.80000001192093,
+          "elapsedMs": 551.067,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 646.7827000000001,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 714.4204,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "0-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 366.5515,
+          "stage": "view-ready",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 56.5,
+          "elapsedMs": 446.0302,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 56.10000002384186,
+          "elapsedMs": 447.1444,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 8.199999988079071,
+          "elapsedMs": 476.9355,
+          "stage": "dictionary-fetch",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 122.59999999403954,
+          "elapsedMs": 599.9194,
+          "stage": "dictionary-parse",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 132.30000001192093,
+          "elapsedMs": 600.5902,
+          "stage": "dictionary-load",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 133,
+          "elapsedMs": 601.1839,
+          "stage": "ipa",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 696.6483,
+          "stage": "result-ready",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 755.1942,
+          "stage": "correct-paint",
+          "traceId": "2"
+        }
+      ],
+      "id": "0-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "PDF selection",
+      "error": false,
+      "events": [
+        {
+          "durationMs": 57.900000005960464,
+          "elapsedMs": 1535.5278,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 58.60000002384186,
+          "elapsedMs": 1536.6187999999995,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 5.4000000059604645,
+          "elapsedMs": 1555.5202000000002,
+          "stage": "dictionary-fetch",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 97.7999999821186,
+          "elapsedMs": 1654.1382,
+          "stage": "dictionary-parse",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 104.60000002384186,
+          "elapsedMs": 1655.1608,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 105.2000000178814,
+          "elapsedMs": 1655.7599,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1719.8104999999998,
+          "stage": "correct-paint",
+          "traceId": "3"
+        }
+      ],
+      "id": "0-pdf",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 2
+    }
+  ],
+  "sourceLanguage": "en",
+  "targets": 2,
+  "runs": [
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 327258112,
+        "processCount": 8,
+        "workingSetBytes": 595210240
+      },
+      "memoryBefore": {
+        "privateBytes": 161165312,
+        "processCount": 7,
+        "workingSetBytes": 358383616
+      },
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "sourceLanguage": "en",
+      "targets": 2
+    }
+  ],
+  "errors": 0,
+  "cancellations": 0,
+  "server": {
+    "connections": 16,
+    "requests": 6,
+    "dictionaryRequests": 3,
+    "providerConnections": 2
+  },
+  "source": "615916b010b419bd988d3238e4beaa91c6c08a92",
+  "instrumentedWorkingTree": true,
+  "build": "native-debug/frontend-production",
+  "provider": "controlled HTTP 40ms",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "cold": {
+    "count": 1,
+    "p50": 714.4204,
+    "p95": 714.4204
+  },
+  "warm": {
+    "count": 2,
+    "p50": 755.1942,
+    "p95": 1719.8104999999998
+  }
+}

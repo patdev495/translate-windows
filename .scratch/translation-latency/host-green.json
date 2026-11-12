@@ -1,0 +1,256 @@
+{
+  "acquisition": "excluded",
+  "memoryAfter": {
+    "privateBytes": 321761280,
+    "processCount": 8,
+    "workingSetBytes": 590643200
+  },
+  "memoryBefore": {
+    "privateBytes": 165249024,
+    "processCount": 7,
+    "workingSetBytes": 361734144
+  },
+  "metric": "text-ready-to-correct-paint",
+  "ocr": "off",
+  "samples": [
+    {
+      "content": "new",
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 609.5631999999999,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 658.7823999999999,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 92.30000001192091,
+          "elapsedMs": 767.5482999999999,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 132.89999997615814,
+          "elapsedMs": 805.7723,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 34.39999997615814,
+          "elapsedMs": 841.6637000000001,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 248.4000000059605,
+          "elapsedMs": 1090.9768,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 285.59999999403954,
+          "elapsedMs": 1092.0322,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 286.60000002384186,
+          "elapsedMs": 1093.71,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 464,
+          "elapsedMs": 1105.6252,
+          "stage": "host-rpc",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1253.5313999999998,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1332.7621,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "0-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 689.2343,
+          "stage": "view-ready",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 733.0609999999999,
+          "stage": "host-start",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 65.09999999403954,
+          "elapsedMs": 806.6297999999999,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 65.59999999403954,
+          "elapsedMs": 808.5634,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 810.1346000000001,
+          "stage": "dictionary-load",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 1.300000011920929,
+          "elapsedMs": 811.4591,
+          "stage": "ipa",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 102,
+          "elapsedMs": 821.6715999999999,
+          "stage": "host-rpc",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 961.774,
+          "stage": "result-ready",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1027.9025,
+          "stage": "correct-paint",
+          "traceId": "2"
+        }
+      ],
+      "id": "0-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "PDF selection",
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 2383.5674,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 56.099999994039536,
+          "elapsedMs": 2455.4868,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 56.60000002384186,
+          "elapsedMs": 2457.4167,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 2458.3518,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 2459.3431,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 103.59999999403954,
+          "elapsedMs": 2474.7117,
+          "stage": "host-rpc",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 2592.4631,
+          "stage": "correct-paint",
+          "traceId": "3"
+        }
+      ],
+      "id": "0-pdf",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 2
+    }
+  ],
+  "sourceLanguage": "en",
+  "targets": 2,
+  "runs": [
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 321761280,
+        "processCount": 8,
+        "workingSetBytes": 590643200
+      },
+      "memoryBefore": {
+        "privateBytes": 165249024,
+        "processCount": 7,
+        "workingSetBytes": 361734144
+      },
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "sourceLanguage": "en",
+      "targets": 2
+    }
+  ],
+  "errors": 0,
+  "cancellations": 0,
+  "server": {
+    "connections": 15,
+    "requests": 6,
+    "dictionaryRequests": 1,
+    "providerConnections": 2
+  },
+  "source": "615916b010b419bd988d3238e4beaa91c6c08a92",
+  "instrumentedWorkingTree": true,
+  "build": "native-debug/frontend-production",
+  "provider": "controlled HTTP 40ms",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "cold": {
+    "count": 1,
+    "p50": 1332.7621,
+    "p95": 1332.7621
+  },
+  "warm": {
+    "count": 2,
+    "p50": 1027.9025,
+    "p95": 2592.4631
+  }
+}

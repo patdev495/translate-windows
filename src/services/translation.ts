@@ -1,5 +1,5 @@
 import { latencySpan } from './latency';
-import { desktopFetch } from '../platform/http';
+import { getDesktopTransportGeneration, desktopFetch } from '../platform/http';
 
 export interface TranslationResult {
   translation: string;
@@ -106,6 +106,8 @@ export class TranslationEngine {
           text,
           targetLang,
           apiKey,
+          transportGeneration: getDesktopTransportGeneration(),
+          invocationId: crypto.randomUUID(),
         });
         return {
           translation: item.text,

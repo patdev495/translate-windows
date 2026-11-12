@@ -53,3 +53,44 @@ Nhóm bổ sung (mỗi nhóm đặt `LATENCY_RUNS=1`, `LATENCY_REPORT` riêng):
 Warm p50 **1310,22 ms**, p95 **1917,75 ms**; **210 requests / 10 provider TCP
 connections**, so với baseline 210 / 210. Dictionary vẫn parse theo tooltip mới.
 Đây là overhead trên loopback; không suy ra phần trăm cải thiện DeepL thật.
+
+## Kiểm tra host và giới hạn báo cáo
+
+`LATENCY_SHARED_TEST=1 LATENCY_EXPECT_SHARED_IPA=1 LATENCY_RUNS=1` chạy hai
+Native Tooltip Window mới và một PDF Reader thật, chọn Hello PDF qua shortcut.
+Server và trace phải thấy đúng một fetch/parse dictionary cho một host.
+Thêm `LATENCY_RESTART_TEST=1` để PDF giữ một RPC đang chạy, reload main qua
+WebView thật, xác nhận RPC cũ báo restarted và RPC tiếp theo có IPA. Mode này
+đặt network delay 1000 ms, có hai host generations; chỉ là functional test,
+không so p50/p95 với benchmark 40 ms. JSON: `host-reload.json`.
+
+Bỏ `LATENCY_SHARED_TEST` và `LATENCY_RESTART_TEST` khi đo hiệu năng. Có thể giữ
+`LATENCY_EXPECT_SHARED_IPA=1` với controlled benchmark để gate một dictionary
+fetch/parse mỗi process. Bỏ gate khi provider thật lỗi trước bước IPA.
+
+`host-dispatch`/`host-start` là mốc IPC; `host-rpc` là duration round-trip đầy đủ,
+bao gồm provider/IPA, không cộng nó vào các provider duration. Trace phân biệt
+`dictionary-miss`, `dictionary-wait`, `dictionary-hit` ở bản host chung. Baseline
+cũ có thể suy ra cache miss từ fetch/parse vì mỗi view đều tải lại dictionary.
+
+Memory sau cùng được lấy sau command destroy tooltip, chưa chờ OS thu hồi mọi
+renderer/allocator; không coi đó là steady idle. Cancellation không được inject
+trong ma trận latency; reload functional test có một RPC bị hủy có chủ đích.
+Google/DeepL thật chỉ là tập đối chiếu nhỏ; không dùng percentile nhỏ đó để hứa
+mức tăng tốc ngoài mạng kiểm soát. `baseline-trace.json` là kiểm tra instrumentation
+với source Trung, không thay baseline chính nguồn English.
+
+Reload gate bổ sung: đúng **10 provider requests** (2 tooltip × 2 targets,
+PDF × 2 targets, RPC bị reload × 2 targets, RPC kế tiếp × 2 targets). Native
+transport generation và ledger invocation ID chặn nhánh IPC gửi lại khi navigation
+hủy custom-protocol response. Ledger giới hạn 1024 ID/60 giây, không lưu response.
+
+Harness hiện tại còn kiểm tra DOM trước khi nhận mẫu thành công: source text
+phải khớp payload request hiện tại và hai target translation phải có nội dung.
+Stage `content-verified` bổ sung bằng chứng nội dung; timestamp `correct-paint`
+vẫn do đường production gửi sau fit/two animation frames, không thay bằng helper.
+
+`cold` là lần dịch đầu trong process/profile mới sau handshake host-ready;
+không phải tổng thời gian khởi động ứng dụng. `warm` là các lần tiếp theo trong
+cùng process, vẫn tạo Native Tooltip Window mới. Cả hai dùng mốc text-ready và
+không bao gồm acquisition Windows hoặc startup trước khi có text.

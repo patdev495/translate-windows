@@ -1,6 +1,6 @@
 # Main host sở hữu dịch và cache IPA
 
-Status: ready-for-agent
+Status: done
 Depends on: 01-measure-baseline; thực hiện sau 02 để đo riêng tác động
 Date: 2026-11-12
 
@@ -23,3 +23,5 @@ Một lần fetch/parse thành công mỗi host generation; đóng/mở view và
 ## Comments
 
 - 2026-11-12: Mới lập kế hoạch.
+
+- 2026-11-12: Hoàn thành main-owned translation/IPA cho tooltip, PDF, OCR blocks, selection gloss, meaning suggestion và Input Replacement. TDD có red/green cho 3 client, tải đồng thời, lỗi/retry, settings/master đổi và host restart. Native reload không gửi trùng provider qua IPC retry. 105 mẫu controlled cuối giữ 210 requests / 10 TCP / 5 dictionary parse; warm p50 951,25 ms, p95 1169,93 ms. Source/2 target được xác nhận qua DOM. Xem [VALIDATION.md](../VALIDATION.md), [TDD.md](../TDD.md), [after-host.json](../after-host.json).

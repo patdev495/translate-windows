@@ -57,3 +57,5 @@ Tái sử dụng các ranh giới S1–S6 đã được duyệt tại `../extens
 ## Comments
 
 - 2026-11-12: Người dùng yêu cầu kế hoạch chi tiết sau khi xác nhận cả ba chi phí đều có thể cải thiện. Chỉ tạo tài liệu kế hoạch trong lượt này.
+
+- 2026-11-12: Issues 01–03 đã triển khai và kiểm chứng tại [VALIDATION.md](./VALIDATION.md). Phạm vi reuse tooltip và các bước 04–06 vẫn theo kế hoạch.

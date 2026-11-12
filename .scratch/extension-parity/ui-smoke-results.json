@@ -9,20 +9,20 @@
     },
     "strokePaths": 42
   },
-  "main": {
-    "host": true
-  },
   "settings": {
     "accountLinked": true,
     "shortcut": "Ctrl",
     "tabs": 5
   },
-  "pdf": {
-    "pages": 1,
-    "text": "Hello PDF"
-  },
   "hanzi-breakdown": {
     "components": 2,
     "noteSaved": true
+  },
+  "main": {
+    "host": true
+  },
+  "pdf": {
+    "pages": 1,
+    "text": "Hello PDF"
   }
 }

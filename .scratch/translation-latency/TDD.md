@@ -58,3 +58,76 @@ Ledger chỉ giữ invocation IDs; không giữ response hay cache theo nội du
 Lượt frontend cuối chạy tuần tự sau build: 31 files / 123 tests passed.
 Fixture OCR readiness dùng wait timeout 10 giây thay cho mặc định 1 giây để
 cho phép dynamic imports hoàn tất trên máy có tải; đây không phải latency gate.
+
+## 04–06 — retained tooltip
+
+Seams remain the approved S3/S6; no additional user approval needed.
+
+- Entrypoint open/dismiss/open: red source stayed `我` instead of `你`; green
+  accepts new payload in the same loaded view.
+- Replayed payload after dismissal: red `display:block`, expected `none`; green
+  retains a high-water request ID even while no presentation is active.
+- Dismiss event before its payload: red created a reading card; green records
+  the retired ID before the payload can arrive.
+- Initially hidden window acquisition failure: red no native layout/show; green
+  reveals a scoped notice and cancels its timer on replacement.
+- Source-monitor DPI: red layout omitted scale; green supplies source scale and
+  native placement uses physical pixels, independent of the retained window DPI.
+- Real WebView2 gate: `reuse-red.json` created 21 tooltip WebViews for 21 samples;
+  reuse gate failed. `reuse-green.json` first passed the one-view gate, but its
+  transitional frontend/native mix issued 84 provider requests instead of 42.
+  It is retained as development evidence, **excluded from performance claims**.
+- Cold parallel work gate on red trace: host-start 742.44 ms > view-ready
+  709.20 ms, assertion failed. Native now dispatches translation before creation.
+- `reuse-50-recovery.json`: 50 normal presentations plus explicit destroy and
+  recovery, 102 provider requests, one dictionary load; two view-ready events
+  including recovery. Includes memory checkpoints. Later source-monitor scale
+  and diagnostic-only resource changes require final-source measurement too.
+
+Additional regression coverage uses real tooltip entrypoint with IPC/window,
+network/audio/clock boundaries only: delayed native A / supplied B, dismissal
+before native reply, old notice timer, hide during OCR (only its job ID canceled,
+late progress/results ignored). Existing host/settings/PDF/offline-save suites
+remain in the regression matrix. No private helper or CSS snapshot assertions.
+
+Additional native red/green during final review:
+
+- Public `Window.isVisible()` proved a real hide defect after
+  `SW_SHOWNOACTIVATE`: Tao's cached hidden flag made `win.hide()` a no-op.
+  `stress-diagnostic.json` reports `Dismiss did not hide the retained window`.
+  Windows now pairs the nonactivating show with unconditional `SW_HIDE`.
+- `stress-diagnostic-green.json` passes show, nonfocus, hide and explicit recovery;
+  its listener gate failed because the first diagnostic probe could not replace
+  Tauri's read-only `invoke`. This is instrumentation failure, excluded from
+  latency claims. Final diagnostics read Tauri 2.11.5's existing registration
+  table without mutating IPC and report native pending RPC/OCR/mailbox counts.
+- Real WebView2 `font-red.json`: `Tooltip font 14px; expected 16px`.
+  Clearing prior native geometry also cleared the configured reading font.
+  Presentation reset now preserves that display setting before measuring width.
+  Final native samples gate computed reading-card font against public settings.
+
+Renderer-crash seam S6: the initial `edge://crash` fixture did not establish an
+actual ProcessFailed event, so its failure is not claimed as a behavior red.
+The replacement uses DevTools `Page.crash` and installs a diagnostic observer
+that must receive CoreWebView2 ProcessFailed; otherwise it reports fixture error.
+With production recovery absent, `crash-cdp-red.json` reports
+`The crashed tooltip was not retired` **after the independent observer fired**.
+Restore the production handler on the exact window instance; the next request
+must recreate the view, retain main IPA and preserve provider request count.
+
+CDP crash green: `crash-cdp-green.json` passed all native recovery gates: two
+presentations / four provider requests, one dictionary fetch/parse, four IPC
+listener entries per view, zero pending RPC/OCR jobs and one result mailbox.
+The diagnostic fixture independently observes ProcessFailed on the red build;
+only that CDP red/green pair is claimed as actual renderer-crash evidence.
+Final application/harness source committed as `0067a1b`.
+
+Late hidden-view settings race (S3): while A is dismissed, native accepts B under
+new settings before its payload reaches the retained view. An older settings
+broadcast made the hidden view issue an unscoped close, canceling B. Public
+entrypoint/IPC test red: B remained invisible (`false`, expected `true`).
+A view without an active presentation now sends no close command. Same test and
+all 14 lifecycle/parity tests pass. Added Escape regression coverage; it already
+passed and is not claimed as an implementation red. Source `336cad1` supersedes
+`0067a1b`; the first NSIS build is retained only as intermediate build metadata.
+Final benchmark/soak/package must use the newer source.

@@ -1,6 +1,6 @@
 # Giảm độ trễ dịch trên desktop
 
-Status: ready-for-agent
+Status: done
 Date: 2026-11-12
 Baseline commit: `1c7df1fdffbb662d7d8c0b909bb54759096534f7`
 
@@ -59,3 +59,7 @@ Tái sử dụng các ranh giới S1–S6 đã được duyệt tại `../extens
 - 2026-11-12: Người dùng yêu cầu kế hoạch chi tiết sau khi xác nhận cả ba chi phí đều có thể cải thiện. Chỉ tạo tài liệu kế hoạch trong lượt này.
 
 - 2026-11-12: Issues 01–03 đã triển khai và kiểm chứng tại [VALIDATION.md](./VALIDATION.md). Phạm vi reuse tooltip và các bước 04–06 vẫn theo kế hoạch.
+
+- 2026-11-12: Reuse tooltip và ma trận lifecycle đã triển khai, đạt gate 751 vòng/1 WebView/1 dictionary/4 listeners; nguồn và kết quả đo nằm trong VALIDATION.md. Bản NSIS tối ưu đang được build/xác minh tại issue 06.
+
+- 2026-11-12: Đã hoàn thành issues 04–06. Source package 748fc0b; NSIS cuối và SHA-256 xác minh tại build-artifacts.json/SHA256SUMS.txt. Bằng chứng trước/sau, 751-cycle plateau, tests và giới hạn: VALIDATION.md. Các ghi chú “đang build/chưa có NSIS” phía trên là lịch sử tiến độ đã được thay thế bởi kết quả này.

@@ -1,0 +1,7904 @@
+{
+  "acquisition": "excluded",
+  "memoryAfter": {
+    "privateBytes": 300195840,
+    "processCount": 8,
+    "workingSetBytes": 551370752
+  },
+  "memoryBefore": {
+    "privateBytes": 165175296,
+    "processCount": 7,
+    "workingSetBytes": 360955904
+  },
+  "memoryCheckpoints": [],
+  "metric": "text-ready-to-correct-paint",
+  "ocr": "off",
+  "recovery": false,
+  "samples": [
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 191.037,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 131.2000000178814,
+          "elapsedMs": 270.9156,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 160,
+          "elapsedMs": 316.2308,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 318.1827,
+          "stage": "dictionary-miss",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 24.799999982118607,
+          "elapsedMs": 333.48100000000005,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 592.9064,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 293.80000001192093,
+          "elapsedMs": 620.8348,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 322.5,
+          "elapsedMs": 622.1599,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 324,
+          "elapsedMs": 623.7642,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 812.6063,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 866.2492000000001,
+          "stage": "content-verified",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 902.6765,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "0-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 37.7552,
+          "stage": "host-start",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 62.599999994039536,
+          "elapsedMs": 102.1289,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 63.599999994039536,
+          "elapsedMs": 103.9611,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 106.2572,
+          "stage": "dictionary-hit",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 108.3706,
+          "stage": "dictionary-load",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 2,
+          "elapsedMs": 110.6533,
+          "stage": "ipa",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 160.7858,
+          "stage": "result-ready",
+          "traceId": "2"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 200.9985,
+          "stage": "content-verified",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 222.7184,
+          "stage": "correct-paint",
+          "traceId": "2"
+        }
+      ],
+      "id": "0-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.8607,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 61.5,
+          "elapsedMs": 90.5308,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 62,
+          "elapsedMs": 92.617,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 94.7506,
+          "stage": "dictionary-hit",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 96.1165,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1.800000011920929,
+          "elapsedMs": 97.203,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 133.936,
+          "stage": "result-ready",
+          "traceId": "3"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 165.9537,
+          "stage": "correct-paint",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 167.3791,
+          "stage": "content-verified",
+          "traceId": "3"
+        }
+      ],
+      "id": "0-2",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 33.452999999999996,
+          "stage": "host-start",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 55,
+          "elapsedMs": 87.31790000000001,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 55.80000001192093,
+          "elapsedMs": 89.4702,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 90.5255,
+          "stage": "dictionary-hit",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 1.2999999821186066,
+          "elapsedMs": 91.2714,
+          "stage": "dictionary-load",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 2,
+          "elapsedMs": 92.4765,
+          "stage": "ipa",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 125.9524,
+          "stage": "result-ready",
+          "traceId": "4"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 154.7086,
+          "stage": "content-verified",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 167.2452,
+          "stage": "correct-paint",
+          "traceId": "4"
+        }
+      ],
+      "id": "0-3",
+      "temperature": "warm",
+      "traceId": "4",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.3725,
+          "stage": "host-start",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 64.5,
+          "elapsedMs": 94.9242,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 64.40000000596046,
+          "elapsedMs": 96.2915,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 97.3463,
+          "stage": "dictionary-hit",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 98.725,
+          "stage": "dictionary-load",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 99.3913,
+          "stage": "ipa",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 135.0113,
+          "stage": "result-ready",
+          "traceId": "5"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 173.46,
+          "stage": "content-verified",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 181.4868,
+          "stage": "correct-paint",
+          "traceId": "5"
+        }
+      ],
+      "id": "0-4",
+      "temperature": "warm",
+      "traceId": "5",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 36.5323,
+          "stage": "host-start",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 66.19999998807907,
+          "elapsedMs": 104.6695,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 67.10000002384186,
+          "elapsedMs": 106.2889,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 108.2176,
+          "stage": "dictionary-hit",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 1.2999999821186066,
+          "elapsedMs": 111.4391,
+          "stage": "dictionary-load",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 2.4000000059604645,
+          "elapsedMs": 112.8909,
+          "stage": "ipa",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 154.3995,
+          "stage": "result-ready",
+          "traceId": "6"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 190.7211,
+          "stage": "correct-paint",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 194.9221,
+          "stage": "content-verified",
+          "traceId": "6"
+        }
+      ],
+      "id": "0-5",
+      "temperature": "warm",
+      "traceId": "6",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 41.8761,
+          "stage": "host-start",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 54.19999998807907,
+          "elapsedMs": 96.8164,
+          "stage": "provider",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 54.30000001192093,
+          "elapsedMs": 98.1815,
+          "stage": "provider",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 99.2556,
+          "stage": "dictionary-hit",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 99.9784,
+          "stage": "dictionary-load",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 1.2000000178813934,
+          "elapsedMs": 100.6642,
+          "stage": "ipa",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 134.9025,
+          "stage": "result-ready",
+          "traceId": "7"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 168.2685,
+          "stage": "content-verified",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 179.2907,
+          "stage": "correct-paint",
+          "traceId": "7"
+        }
+      ],
+      "id": "0-6",
+      "temperature": "warm",
+      "traceId": "7",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 29.931,
+          "stage": "host-start",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 60.30000001192093,
+          "elapsedMs": 90.9686,
+          "stage": "provider",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 61.400000005960464,
+          "elapsedMs": 92.5136,
+          "stage": "provider",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 93.7949,
+          "stage": "dictionary-hit",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0.5999999940395355,
+          "elapsedMs": 94.4219,
+          "stage": "dictionary-load",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 95.2266,
+          "stage": "ipa",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 127.9817,
+          "stage": "result-ready",
+          "traceId": "8"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 154.6034,
+          "stage": "content-verified",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 172.3901,
+          "stage": "correct-paint",
+          "traceId": "8"
+        }
+      ],
+      "id": "0-7",
+      "temperature": "warm",
+      "traceId": "8",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 22.484,
+          "stage": "host-start",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 62.10000002384186,
+          "elapsedMs": 85.6547,
+          "stage": "provider",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 62.60000002384186,
+          "elapsedMs": 87.2309,
+          "stage": "provider",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 88.02749999999999,
+          "stage": "dictionary-hit",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 89.2093,
+          "stage": "dictionary-load",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 1.7000000178813934,
+          "elapsedMs": 89.8848,
+          "stage": "ipa",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 118.3366,
+          "stage": "result-ready",
+          "traceId": "9"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 144.3815,
+          "stage": "content-verified",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 152.5198,
+          "stage": "correct-paint",
+          "traceId": "9"
+        }
+      ],
+      "id": "0-8",
+      "temperature": "warm",
+      "traceId": "9",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 27.4652,
+          "stage": "host-start",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 50.599999994039536,
+          "elapsedMs": 78.857,
+          "stage": "provider",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 50.69999998807907,
+          "elapsedMs": 80.1053,
+          "stage": "provider",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 81.02520000000001,
+          "stage": "dictionary-hit",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 81.58890000000001,
+          "stage": "dictionary-load",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 82.3125,
+          "stage": "ipa",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 107.9825,
+          "stage": "result-ready",
+          "traceId": "10"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 141.6318,
+          "stage": "content-verified",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 147.042,
+          "stage": "correct-paint",
+          "traceId": "10"
+        }
+      ],
+      "id": "0-9",
+      "temperature": "warm",
+      "traceId": "10",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 25.4087,
+          "stage": "host-start",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 49.70000001788139,
+          "elapsedMs": 76.5652,
+          "stage": "provider",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 50.10000002384186,
+          "elapsedMs": 77.7817,
+          "stage": "provider",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 78.59660000000001,
+          "stage": "dictionary-hit",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0.4000000059604645,
+          "elapsedMs": 79.9844,
+          "stage": "dictionary-load",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 80.78190000000001,
+          "stage": "ipa",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 112.7272,
+          "stage": "result-ready",
+          "traceId": "11"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 142.3446,
+          "stage": "content-verified",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 156.0488,
+          "stage": "correct-paint",
+          "traceId": "11"
+        }
+      ],
+      "id": "0-10",
+      "temperature": "warm",
+      "traceId": "11",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 25.5042,
+          "stage": "host-start",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 60.79999998211861,
+          "elapsedMs": 87.69250000000001,
+          "stage": "provider",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 61.900000005960464,
+          "elapsedMs": 89.2112,
+          "stage": "provider",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 90.3647,
+          "stage": "dictionary-hit",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 91.6374,
+          "stage": "dictionary-load",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 2.0999999940395355,
+          "elapsedMs": 93.624,
+          "stage": "ipa",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 131.4898,
+          "stage": "result-ready",
+          "traceId": "12"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 168.1627,
+          "stage": "correct-paint",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 174.29049999999998,
+          "stage": "content-verified",
+          "traceId": "12"
+        }
+      ],
+      "id": "0-11",
+      "temperature": "warm",
+      "traceId": "12",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.8292,
+          "stage": "host-start",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 56.900000005960464,
+          "elapsedMs": 89.01580000000001,
+          "stage": "provider",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 59.099999994039536,
+          "elapsedMs": 91.9786,
+          "stage": "provider",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 93.6028,
+          "stage": "dictionary-hit",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0.7999999821186066,
+          "elapsedMs": 95.2791,
+          "stage": "dictionary-load",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 1.5999999940395355,
+          "elapsedMs": 96.4982,
+          "stage": "ipa",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 137.8161,
+          "stage": "result-ready",
+          "traceId": "13"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 177.6721,
+          "stage": "content-verified",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 185.2125,
+          "stage": "correct-paint",
+          "traceId": "13"
+        }
+      ],
+      "id": "0-12",
+      "temperature": "warm",
+      "traceId": "13",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 33.024,
+          "stage": "host-start",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 57.900000005960464,
+          "elapsedMs": 91.9647,
+          "stage": "provider",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 58.20000001788139,
+          "elapsedMs": 93.6013,
+          "stage": "provider",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 94.8407,
+          "stage": "dictionary-hit",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 96.0857,
+          "stage": "dictionary-load",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 1.4000000059604645,
+          "elapsedMs": 96.7955,
+          "stage": "ipa",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 127.549,
+          "stage": "result-ready",
+          "traceId": "14"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 157.6003,
+          "stage": "content-verified",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 175.45440000000002,
+          "stage": "correct-paint",
+          "traceId": "14"
+        }
+      ],
+      "id": "0-13",
+      "temperature": "warm",
+      "traceId": "14",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.8661,
+          "stage": "host-start",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 58.30000001192093,
+          "elapsedMs": 89.89080000000001,
+          "stage": "provider",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 59.099999994039536,
+          "elapsedMs": 91.3752,
+          "stage": "provider",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 94.0055,
+          "stage": "dictionary-hit",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0.6000000238418579,
+          "elapsedMs": 94.9715,
+          "stage": "dictionary-load",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 1.100000023841858,
+          "elapsedMs": 96.9809,
+          "stage": "ipa",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 124.4286,
+          "stage": "result-ready",
+          "traceId": "15"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 152.5439,
+          "stage": "content-verified",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 159.3776,
+          "stage": "correct-paint",
+          "traceId": "15"
+        }
+      ],
+      "id": "0-14",
+      "temperature": "warm",
+      "traceId": "15",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 25.6101,
+          "stage": "host-start",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 54.5,
+          "elapsedMs": 80.9608,
+          "stage": "provider",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 55.099999994039536,
+          "elapsedMs": 82.32209999999999,
+          "stage": "provider",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 83.756,
+          "stage": "dictionary-hit",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 85.2735,
+          "stage": "dictionary-load",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 1.899999976158142,
+          "elapsedMs": 86.5799,
+          "stage": "ipa",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 116.1459,
+          "stage": "result-ready",
+          "traceId": "16"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 141.4011,
+          "stage": "content-verified",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 161.5965,
+          "stage": "correct-paint",
+          "traceId": "16"
+        }
+      ],
+      "id": "0-15",
+      "temperature": "warm",
+      "traceId": "16",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 29.9308,
+          "stage": "host-start",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 52.30000001192093,
+          "elapsedMs": 82.2584,
+          "stage": "provider",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 52.89999997615814,
+          "elapsedMs": 84.0465,
+          "stage": "provider",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 85.38850000000001,
+          "stage": "dictionary-hit",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 86.1831,
+          "stage": "dictionary-load",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 1.5,
+          "elapsedMs": 87.57669999999999,
+          "stage": "ipa",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 121.3691,
+          "stage": "result-ready",
+          "traceId": "17"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 146.33370000000002,
+          "stage": "content-verified",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 166.40640000000002,
+          "stage": "correct-paint",
+          "traceId": "17"
+        }
+      ],
+      "id": "0-16",
+      "temperature": "warm",
+      "traceId": "17",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 25.1536,
+          "stage": "host-start",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 60.599999994039536,
+          "elapsedMs": 86.4146,
+          "stage": "provider",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 61.400000005960464,
+          "elapsedMs": 87.91690000000001,
+          "stage": "provider",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 89.04910000000001,
+          "stage": "dictionary-hit",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0.6000000238418579,
+          "elapsedMs": 89.6692,
+          "stage": "dictionary-load",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 1.2000000178813934,
+          "elapsedMs": 90.9138,
+          "stage": "ipa",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 124.0302,
+          "stage": "result-ready",
+          "traceId": "18"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 152.6902,
+          "stage": "content-verified",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 166.2075,
+          "stage": "correct-paint",
+          "traceId": "18"
+        }
+      ],
+      "id": "0-17",
+      "temperature": "warm",
+      "traceId": "18",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 26.4693,
+          "stage": "host-start",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 59,
+          "elapsedMs": 85.2357,
+          "stage": "provider",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 59.10000002384186,
+          "elapsedMs": 86.6715,
+          "stage": "provider",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 88.0483,
+          "stage": "dictionary-hit",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0.4000000059604645,
+          "elapsedMs": 88.71950000000001,
+          "stage": "dictionary-load",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 90.0083,
+          "stage": "ipa",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 123.7089,
+          "stage": "result-ready",
+          "traceId": "19"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 155.4742,
+          "stage": "content-verified",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 160.61919999999998,
+          "stage": "correct-paint",
+          "traceId": "19"
+        }
+      ],
+      "id": "0-18",
+      "temperature": "warm",
+      "traceId": "19",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 31.8354,
+          "stage": "host-start",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 65.89999997615814,
+          "elapsedMs": 97.814,
+          "stage": "provider",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 66.39999997615814,
+          "elapsedMs": 99.0539,
+          "stage": "provider",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 100.4169,
+          "stage": "dictionary-hit",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 101.4513,
+          "stage": "dictionary-load",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 103.0544,
+          "stage": "ipa",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 137.9329,
+          "stage": "result-ready",
+          "traceId": "20"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 175.7586,
+          "stage": "content-verified",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 186.0837,
+          "stage": "correct-paint",
+          "traceId": "20"
+        }
+      ],
+      "id": "0-19",
+      "temperature": "warm",
+      "traceId": "20",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 31.503000000000004,
+          "stage": "host-start",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 67.2999999821186,
+          "elapsedMs": 98.7273,
+          "stage": "provider",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 67.59999999403954,
+          "elapsedMs": 100.223,
+          "stage": "provider",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 100.8135,
+          "stage": "dictionary-hit",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 101.9367,
+          "stage": "dictionary-load",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 102.9244,
+          "stage": "ipa",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 133.5088,
+          "stage": "result-ready",
+          "traceId": "21"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 170.7333,
+          "stage": "content-verified",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 179.312,
+          "stage": "correct-paint",
+          "traceId": "21"
+        }
+      ],
+      "id": "0-20",
+      "temperature": "warm",
+      "traceId": "21",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 178.10139999999998,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 127.60000002384186,
+          "elapsedMs": 274.7442,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 173.69999998807907,
+          "elapsedMs": 298.788,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 300.4371,
+          "stage": "dictionary-miss",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 13,
+          "elapsedMs": 322.7583,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 268.59999999403954,
+          "elapsedMs": 584.9175,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 286.09999999403954,
+          "elapsedMs": 587.6645000000001,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 288.10000002384186,
+          "elapsedMs": 590.3632,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 636.4662,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 870.374,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 923.3303,
+          "stage": "content-verified",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 965.1424,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "1-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 33.641,
+          "stage": "host-start",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 67.7000000178814,
+          "elapsedMs": 102.4131,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 67.5,
+          "elapsedMs": 104.1996,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 105.9504,
+          "stage": "dictionary-hit",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0.6000000238418579,
+          "elapsedMs": 106.7182,
+          "stage": "dictionary-load",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 1.100000023841858,
+          "elapsedMs": 107.3527,
+          "stage": "ipa",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 146.3562,
+          "stage": "result-ready",
+          "traceId": "2"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 180.2523,
+          "stage": "correct-paint",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 183.085,
+          "stage": "content-verified",
+          "traceId": "2"
+        }
+      ],
+      "id": "1-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 40.3631,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 53.70000001788139,
+          "elapsedMs": 94.5828,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 54.5,
+          "elapsedMs": 96.0942,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 97.8503,
+          "stage": "dictionary-hit",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 99.2921,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1.9000000059604645,
+          "elapsedMs": 100.8313,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 135.68259999999998,
+          "stage": "result-ready",
+          "traceId": "3"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 166.3899,
+          "stage": "content-verified",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 168.2837,
+          "stage": "correct-paint",
+          "traceId": "3"
+        }
+      ],
+      "id": "1-2",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.5706,
+          "stage": "host-start",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 58.70000001788139,
+          "elapsedMs": 90.0316,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 59,
+          "elapsedMs": 91.0051,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 92.4278,
+          "stage": "dictionary-hit",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 93.7954,
+          "stage": "dictionary-load",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 1.2000000178813934,
+          "elapsedMs": 94.6542,
+          "stage": "ipa",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 122.7996,
+          "stage": "result-ready",
+          "traceId": "4"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 152.40980000000002,
+          "stage": "content-verified",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 162.741,
+          "stage": "correct-paint",
+          "traceId": "4"
+        }
+      ],
+      "id": "1-3",
+      "temperature": "warm",
+      "traceId": "4",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 25.9371,
+          "stage": "host-start",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 51.900000005960464,
+          "elapsedMs": 78.0963,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 52.400000005960464,
+          "elapsedMs": 79.1149,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 80.0302,
+          "stage": "dictionary-hit",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 81.3677,
+          "stage": "dictionary-load",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0.8999999761581421,
+          "elapsedMs": 82.6249,
+          "stage": "ipa",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 112.5816,
+          "stage": "result-ready",
+          "traceId": "5"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 146.6197,
+          "stage": "content-verified",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 152.2731,
+          "stage": "correct-paint",
+          "traceId": "5"
+        }
+      ],
+      "id": "1-4",
+      "temperature": "warm",
+      "traceId": "5",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 27.055,
+          "stage": "host-start",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 68.40000000596046,
+          "elapsedMs": 94.0872,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 68.09999999403954,
+          "elapsedMs": 95.4003,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 96.0425,
+          "stage": "dictionary-hit",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 96.7824,
+          "stage": "dictionary-load",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 97.3714,
+          "stage": "ipa",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 132.5308,
+          "stage": "result-ready",
+          "traceId": "6"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 166.0934,
+          "stage": "content-verified",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 176.7628,
+          "stage": "correct-paint",
+          "traceId": "6"
+        }
+      ],
+      "id": "1-5",
+      "temperature": "warm",
+      "traceId": "6",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 27.3253,
+          "stage": "host-start",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 52.599999994039536,
+          "elapsedMs": 80.67399999999999,
+          "stage": "provider",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 69.09999999403954,
+          "elapsedMs": 98.1123,
+          "stage": "provider",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 99.482,
+          "stage": "dictionary-hit",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 100.9622,
+          "stage": "dictionary-load",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 2.399999976158142,
+          "elapsedMs": 102.8205,
+          "stage": "ipa",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 150.4587,
+          "stage": "result-ready",
+          "traceId": "7"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 190.527,
+          "stage": "content-verified",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 192.1485,
+          "stage": "correct-paint",
+          "traceId": "7"
+        }
+      ],
+      "id": "1-6",
+      "temperature": "warm",
+      "traceId": "7",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 29.8055,
+          "stage": "host-start",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 55.19999998807907,
+          "elapsedMs": 85.84450000000001,
+          "stage": "provider",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 55.5,
+          "elapsedMs": 87.51249999999999,
+          "stage": "provider",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 89.0752,
+          "stage": "dictionary-hit",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0.8999999761581421,
+          "elapsedMs": 90.3207,
+          "stage": "dictionary-load",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 1.7999999821186066,
+          "elapsedMs": 91.9349,
+          "stage": "ipa",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 135.1982,
+          "stage": "result-ready",
+          "traceId": "8"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 176.3749,
+          "stage": "content-verified",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 178.3775,
+          "stage": "correct-paint",
+          "traceId": "8"
+        }
+      ],
+      "id": "1-7",
+      "temperature": "warm",
+      "traceId": "8",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 33.1038,
+          "stage": "host-start",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 62.19999998807907,
+          "elapsedMs": 99.0139,
+          "stage": "provider",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 66,
+          "elapsedMs": 101.0405,
+          "stage": "provider",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 103.1888,
+          "stage": "dictionary-hit",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0.6000000238418579,
+          "elapsedMs": 104.8516,
+          "stage": "dictionary-load",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 1.300000011920929,
+          "elapsedMs": 105.9538,
+          "stage": "ipa",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 143.94979999999998,
+          "stage": "result-ready",
+          "traceId": "9"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 179.5811,
+          "stage": "content-verified",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 185.4995,
+          "stage": "correct-paint",
+          "traceId": "9"
+        }
+      ],
+      "id": "1-8",
+      "temperature": "warm",
+      "traceId": "9",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 36.9271,
+          "stage": "host-start",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 68.39999997615814,
+          "elapsedMs": 105.5799,
+          "stage": "provider",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 70.2999999821186,
+          "elapsedMs": 107.5705,
+          "stage": "provider",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 110.3951,
+          "stage": "dictionary-hit",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 112.0688,
+          "stage": "dictionary-load",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 2.2999999821186066,
+          "elapsedMs": 113.841,
+          "stage": "ipa",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 152.52569999999997,
+          "stage": "result-ready",
+          "traceId": "10"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 191.3506,
+          "stage": "content-verified",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 194.7669,
+          "stage": "correct-paint",
+          "traceId": "10"
+        }
+      ],
+      "id": "1-9",
+      "temperature": "warm",
+      "traceId": "10",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 32.6238,
+          "stage": "host-start",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 67,
+          "elapsedMs": 99.3689,
+          "stage": "provider",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 66.69999998807907,
+          "elapsedMs": 101.2523,
+          "stage": "provider",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 102.5362,
+          "stage": "dictionary-hit",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 104.081,
+          "stage": "dictionary-load",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 2,
+          "elapsedMs": 105.1894,
+          "stage": "ipa",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 145.75209999999998,
+          "stage": "result-ready",
+          "traceId": "11"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 181.8027,
+          "stage": "correct-paint",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 186.8143,
+          "stage": "content-verified",
+          "traceId": "11"
+        }
+      ],
+      "id": "1-10",
+      "temperature": "warm",
+      "traceId": "11",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 31.3356,
+          "stage": "host-start",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 67.2999999821186,
+          "elapsedMs": 100.066,
+          "stage": "provider",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 66.7999999821186,
+          "elapsedMs": 101.3982,
+          "stage": "provider",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 102.0757,
+          "stage": "dictionary-hit",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 103.5517,
+          "stage": "dictionary-load",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 1.4000000059604645,
+          "elapsedMs": 104.8677,
+          "stage": "ipa",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 145.5303,
+          "stage": "result-ready",
+          "traceId": "12"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 185.5202,
+          "stage": "content-verified",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 191.5729,
+          "stage": "correct-paint",
+          "traceId": "12"
+        }
+      ],
+      "id": "1-11",
+      "temperature": "warm",
+      "traceId": "12",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 35.198800000000006,
+          "stage": "host-start",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 67,
+          "elapsedMs": 102.8484,
+          "stage": "provider",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 67.90000000596046,
+          "elapsedMs": 105.4777,
+          "stage": "provider",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 107.3145,
+          "stage": "dictionary-hit",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 1.4000000059604645,
+          "elapsedMs": 108.7309,
+          "stage": "dictionary-load",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 3,
+          "elapsedMs": 111.3245,
+          "stage": "ipa",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 146.2995,
+          "stage": "result-ready",
+          "traceId": "13"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 181.8353,
+          "stage": "content-verified",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 185.2298,
+          "stage": "correct-paint",
+          "traceId": "13"
+        }
+      ],
+      "id": "1-12",
+      "temperature": "warm",
+      "traceId": "13",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 29.1544,
+          "stage": "host-start",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 60.30000001192093,
+          "elapsedMs": 89.849,
+          "stage": "provider",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 60.30000001192093,
+          "elapsedMs": 91.1834,
+          "stage": "provider",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 92.2037,
+          "stage": "dictionary-hit",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 93.8473,
+          "stage": "dictionary-load",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 1.300000011920929,
+          "elapsedMs": 95.0343,
+          "stage": "ipa",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 130.2297,
+          "stage": "result-ready",
+          "traceId": "14"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 156.4531,
+          "stage": "content-verified",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 177.0247,
+          "stage": "correct-paint",
+          "traceId": "14"
+        }
+      ],
+      "id": "1-13",
+      "temperature": "warm",
+      "traceId": "14",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 25.3841,
+          "stage": "host-start",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 59.599999994039536,
+          "elapsedMs": 84.83930000000001,
+          "stage": "provider",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 59.10000002384186,
+          "elapsedMs": 86.283,
+          "stage": "provider",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 87.7801,
+          "stage": "dictionary-hit",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 88.4563,
+          "stage": "dictionary-load",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 88.9938,
+          "stage": "ipa",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 118.9591,
+          "stage": "result-ready",
+          "traceId": "15"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 147.1803,
+          "stage": "content-verified",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 155.9752,
+          "stage": "correct-paint",
+          "traceId": "15"
+        }
+      ],
+      "id": "1-14",
+      "temperature": "warm",
+      "traceId": "15",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 26.859,
+          "stage": "host-start",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 56,
+          "elapsedMs": 83.6001,
+          "stage": "provider",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 56.29999998211861,
+          "elapsedMs": 84.83019999999999,
+          "stage": "provider",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 85.7801,
+          "stage": "dictionary-hit",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0.5999999940395355,
+          "elapsedMs": 86.5321,
+          "stage": "dictionary-load",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 87.0208,
+          "stage": "ipa",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 114.4698,
+          "stage": "result-ready",
+          "traceId": "16"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 142.31060000000002,
+          "stage": "content-verified",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 146.9917,
+          "stage": "correct-paint",
+          "traceId": "16"
+        }
+      ],
+      "id": "1-15",
+      "temperature": "warm",
+      "traceId": "16",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 25.2997,
+          "stage": "host-start",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 54.10000002384186,
+          "elapsedMs": 78.94619999999999,
+          "stage": "provider",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 54.099999994039536,
+          "elapsedMs": 80.0041,
+          "stage": "provider",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 81.3363,
+          "stage": "dictionary-hit",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0.3999999761581421,
+          "elapsedMs": 81.9681,
+          "stage": "dictionary-load",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0.8999999761581421,
+          "elapsedMs": 82.4192,
+          "stage": "ipa",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 107.8645,
+          "stage": "result-ready",
+          "traceId": "17"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 142.0961,
+          "stage": "content-verified",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 146.985,
+          "stage": "correct-paint",
+          "traceId": "17"
+        }
+      ],
+      "id": "1-16",
+      "temperature": "warm",
+      "traceId": "17",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 22.7722,
+          "stage": "host-start",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 51.30000001192093,
+          "elapsedMs": 74.827,
+          "stage": "provider",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 52.400000005960464,
+          "elapsedMs": 76.1594,
+          "stage": "provider",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 76.7113,
+          "stage": "dictionary-hit",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0.30000001192092896,
+          "elapsedMs": 77.12819999999999,
+          "stage": "dictionary-load",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 77.769,
+          "stage": "ipa",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 105.3676,
+          "stage": "result-ready",
+          "traceId": "18"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 141.00750000000002,
+          "stage": "content-verified",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 142.23350000000002,
+          "stage": "correct-paint",
+          "traceId": "18"
+        }
+      ],
+      "id": "1-17",
+      "temperature": "warm",
+      "traceId": "18",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 27.5435,
+          "stage": "host-start",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 51.69999998807907,
+          "elapsedMs": 80.3677,
+          "stage": "provider",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 52.30000001192093,
+          "elapsedMs": 81.5629,
+          "stage": "provider",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 82.79400000000001,
+          "stage": "dictionary-hit",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0.3999999761581421,
+          "elapsedMs": 83.3349,
+          "stage": "dictionary-load",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 84.8239,
+          "stage": "ipa",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 114.4588,
+          "stage": "result-ready",
+          "traceId": "19"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 142.7649,
+          "stage": "content-verified",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 159.9236,
+          "stage": "correct-paint",
+          "traceId": "19"
+        }
+      ],
+      "id": "1-18",
+      "temperature": "warm",
+      "traceId": "19",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 24.4403,
+          "stage": "host-start",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 56.099999994039536,
+          "elapsedMs": 81.009,
+          "stage": "provider",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 56.10000002384186,
+          "elapsedMs": 82.5353,
+          "stage": "provider",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 83.4052,
+          "stage": "dictionary-hit",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0.4000000059604645,
+          "elapsedMs": 84.3545,
+          "stage": "dictionary-load",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 85.5998,
+          "stage": "ipa",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 114.7427,
+          "stage": "result-ready",
+          "traceId": "20"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 142.7697,
+          "stage": "content-verified",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 164.0154,
+          "stage": "correct-paint",
+          "traceId": "20"
+        }
+      ],
+      "id": "1-19",
+      "temperature": "warm",
+      "traceId": "20",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 25.7023,
+          "stage": "host-start",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 64.19999998807907,
+          "elapsedMs": 90.8491,
+          "stage": "provider",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 64.59999999403954,
+          "elapsedMs": 92.5571,
+          "stage": "provider",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 94.0121,
+          "stage": "dictionary-hit",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 96.628,
+          "stage": "dictionary-load",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 1.5,
+          "elapsedMs": 97.7458,
+          "stage": "ipa",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 128.5589,
+          "stage": "result-ready",
+          "traceId": "21"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 153.7894,
+          "stage": "content-verified",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 173.5127,
+          "stage": "correct-paint",
+          "traceId": "21"
+        }
+      ],
+      "id": "1-20",
+      "temperature": "warm",
+      "traceId": "21",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 242.8935,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 150.90000000596046,
+          "elapsedMs": 324.6497,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 151.7999999821186,
+          "elapsedMs": 328.2221,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 381.158,
+          "stage": "dictionary-miss",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 18.5,
+          "elapsedMs": 401.3003,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 232.5,
+          "elapsedMs": 634.7017999999999,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 256.40000000596046,
+          "elapsedMs": 636.34,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 257.5,
+          "elapsedMs": 637.3279,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1227.6799,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1440.2955,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1490.7001,
+          "stage": "content-verified",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1533.5363,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "2-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 37.4095,
+          "stage": "host-start",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 69.59999999403954,
+          "elapsedMs": 105.4941,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 70.5,
+          "elapsedMs": 107.7826,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 110.4036,
+          "stage": "dictionary-hit",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 1.2000000178813934,
+          "elapsedMs": 112.4089,
+          "stage": "dictionary-load",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 2.7000000178813934,
+          "elapsedMs": 114.1365,
+          "stage": "ipa",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 159.4333,
+          "stage": "result-ready",
+          "traceId": "2"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 198.9484,
+          "stage": "content-verified",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 203.0053,
+          "stage": "correct-paint",
+          "traceId": "2"
+        }
+      ],
+      "id": "2-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 34.243,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 81.59999999403954,
+          "elapsedMs": 114.8111,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 81.90000000596046,
+          "elapsedMs": 116.8747,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 119.329,
+          "stage": "dictionary-hit",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 121.2377,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 2,
+          "elapsedMs": 122.5748,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 166.6281,
+          "stage": "result-ready",
+          "traceId": "3"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 208.0889,
+          "stage": "correct-paint",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 210.8283,
+          "stage": "content-verified",
+          "traceId": "3"
+        }
+      ],
+      "id": "2-2",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 37.542399999999994,
+          "stage": "host-start",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 65.39999997615814,
+          "elapsedMs": 103.1744,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 65.30000001192093,
+          "elapsedMs": 105.1597,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 106.8355,
+          "stage": "dictionary-hit",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 109.3669,
+          "stage": "dictionary-load",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 2.5,
+          "elapsedMs": 112.4556,
+          "stage": "ipa",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 149.3488,
+          "stage": "result-ready",
+          "traceId": "4"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 188.5459,
+          "stage": "content-verified",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 190.3985,
+          "stage": "correct-paint",
+          "traceId": "4"
+        }
+      ],
+      "id": "2-3",
+      "temperature": "warm",
+      "traceId": "4",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 31.6971,
+          "stage": "host-start",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 65.19999998807907,
+          "elapsedMs": 98.6365,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 65.5,
+          "elapsedMs": 100.3938,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 102.0982,
+          "stage": "dictionary-hit",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 103.426,
+          "stage": "dictionary-load",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 2.199999988079071,
+          "elapsedMs": 105.327,
+          "stage": "ipa",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 147.8578,
+          "stage": "result-ready",
+          "traceId": "5"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 185.0277,
+          "stage": "content-verified",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 188.3849,
+          "stage": "correct-paint",
+          "traceId": "5"
+        }
+      ],
+      "id": "2-4",
+      "temperature": "warm",
+      "traceId": "5",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 31.8414,
+          "stage": "host-start",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 67.19999998807907,
+          "elapsedMs": 99.1636,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 68,
+          "elapsedMs": 100.9064,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 103.0059,
+          "stage": "dictionary-hit",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 104.8123,
+          "stage": "dictionary-load",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 2,
+          "elapsedMs": 107.6935,
+          "stage": "ipa",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 145.9338,
+          "stage": "result-ready",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 181.5205,
+          "stage": "correct-paint",
+          "traceId": "6"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 193.4483,
+          "stage": "content-verified",
+          "traceId": "6"
+        }
+      ],
+      "id": "2-5",
+      "temperature": "warm",
+      "traceId": "6",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 29.9773,
+          "stage": "host-start",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 65.2999999821186,
+          "elapsedMs": 96.2789,
+          "stage": "provider",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 65.7000000178814,
+          "elapsedMs": 97.8484,
+          "stage": "provider",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 99.5857,
+          "stage": "dictionary-hit",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 102.8298,
+          "stage": "dictionary-load",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 2.399999976158142,
+          "elapsedMs": 104.5115,
+          "stage": "ipa",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 149.79000000000002,
+          "stage": "result-ready",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 185.5383,
+          "stage": "correct-paint",
+          "traceId": "7"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 196.1597,
+          "stage": "content-verified",
+          "traceId": "7"
+        }
+      ],
+      "id": "2-6",
+      "temperature": "warm",
+      "traceId": "7",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 34.4386,
+          "stage": "host-start",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 68.2000000178814,
+          "elapsedMs": 103.9432,
+          "stage": "provider",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 68.59999999403954,
+          "elapsedMs": 106.1308,
+          "stage": "provider",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 107.8794,
+          "stage": "dictionary-hit",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 108.7846,
+          "stage": "dictionary-load",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 1.5,
+          "elapsedMs": 109.9958,
+          "stage": "ipa",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 152.9642,
+          "stage": "result-ready",
+          "traceId": "8"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 191.5453,
+          "stage": "content-verified",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 193.5991,
+          "stage": "correct-paint",
+          "traceId": "8"
+        }
+      ],
+      "id": "2-7",
+      "temperature": "warm",
+      "traceId": "8",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 33.6803,
+          "stage": "host-start",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 70.59999999403954,
+          "elapsedMs": 101.2018,
+          "stage": "provider",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 72.30000001192093,
+          "elapsedMs": 103.4774,
+          "stage": "provider",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 106.0109,
+          "stage": "dictionary-hit",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 107.5636,
+          "stage": "dictionary-load",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 1.9000000059604645,
+          "elapsedMs": 110.3369,
+          "stage": "ipa",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 152.6763,
+          "stage": "result-ready",
+          "traceId": "9"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 195.3039,
+          "stage": "content-verified",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 199.8017,
+          "stage": "correct-paint",
+          "traceId": "9"
+        }
+      ],
+      "id": "2-8",
+      "temperature": "warm",
+      "traceId": "9",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.750300000000003,
+          "stage": "host-start",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 72.80000001192093,
+          "elapsedMs": 101.8004,
+          "stage": "provider",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 73.2999999821186,
+          "elapsedMs": 104.2968,
+          "stage": "provider",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 105.8265,
+          "stage": "dictionary-hit",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 106.9577,
+          "stage": "dictionary-load",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 2,
+          "elapsedMs": 109.2392,
+          "stage": "ipa",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 147.10019999999997,
+          "stage": "result-ready",
+          "traceId": "10"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 183.9522,
+          "stage": "content-verified",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 189.5639,
+          "stage": "correct-paint",
+          "traceId": "10"
+        }
+      ],
+      "id": "2-9",
+      "temperature": "warm",
+      "traceId": "10",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 35.2761,
+          "stage": "host-start",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 64.2000000178814,
+          "elapsedMs": 100.9286,
+          "stage": "provider",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 64.40000000596046,
+          "elapsedMs": 102.1097,
+          "stage": "provider",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 102.8607,
+          "stage": "dictionary-hit",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 1.300000011920929,
+          "elapsedMs": 104.3458,
+          "stage": "dictionary-load",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 2.800000011920929,
+          "elapsedMs": 105.5365,
+          "stage": "ipa",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 145.92440000000002,
+          "stage": "result-ready",
+          "traceId": "11"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 182.997,
+          "stage": "correct-paint",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 185.9643,
+          "stage": "content-verified",
+          "traceId": "11"
+        }
+      ],
+      "id": "2-10",
+      "temperature": "warm",
+      "traceId": "11",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 35.0967,
+          "stage": "host-start",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 62.60000002384186,
+          "elapsedMs": 95.7776,
+          "stage": "provider",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 62,
+          "elapsedMs": 97.3056,
+          "stage": "provider",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 98.5926,
+          "stage": "dictionary-hit",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0.5999999940395355,
+          "elapsedMs": 100.2924,
+          "stage": "dictionary-load",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 1.2000000178813934,
+          "elapsedMs": 101.6597,
+          "stage": "ipa",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 134.77720000000002,
+          "stage": "result-ready",
+          "traceId": "12"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 170.64350000000002,
+          "stage": "correct-paint",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 172.82629999999995,
+          "stage": "content-verified",
+          "traceId": "12"
+        }
+      ],
+      "id": "2-11",
+      "temperature": "warm",
+      "traceId": "12",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.0705,
+          "stage": "host-start",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 66.40000000596046,
+          "elapsedMs": 97.4073,
+          "stage": "provider",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 67.19999998807907,
+          "elapsedMs": 99.0063,
+          "stage": "provider",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 100.4251,
+          "stage": "dictionary-hit",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 101.492,
+          "stage": "dictionary-load",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 1.5,
+          "elapsedMs": 102.1105,
+          "stage": "ipa",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 137.602,
+          "stage": "result-ready",
+          "traceId": "13"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 169.2168,
+          "stage": "correct-paint",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 177.8211,
+          "stage": "content-verified",
+          "traceId": "13"
+        }
+      ],
+      "id": "2-12",
+      "temperature": "warm",
+      "traceId": "13",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 36.7987,
+          "stage": "host-start",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 68.5,
+          "elapsedMs": 105.5582,
+          "stage": "provider",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 68.90000000596046,
+          "elapsedMs": 107.3063,
+          "stage": "provider",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 108.2313,
+          "stage": "dictionary-hit",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0.5999999940395355,
+          "elapsedMs": 109.3385,
+          "stage": "dictionary-load",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 1.199999988079071,
+          "elapsedMs": 110.2123,
+          "stage": "ipa",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 145.1697,
+          "stage": "result-ready",
+          "traceId": "14"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 183.6433,
+          "stage": "correct-paint",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 185.7268,
+          "stage": "content-verified",
+          "traceId": "14"
+        }
+      ],
+      "id": "2-13",
+      "temperature": "warm",
+      "traceId": "14",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 36.8631,
+          "stage": "host-start",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 66,
+          "elapsedMs": 102.1516,
+          "stage": "provider",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 66.59999999403954,
+          "elapsedMs": 106.1018,
+          "stage": "provider",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 108.431,
+          "stage": "dictionary-hit",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 111.3557,
+          "stage": "dictionary-load",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 2.4000000059604645,
+          "elapsedMs": 112.9459,
+          "stage": "ipa",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 153.84429999999998,
+          "stage": "result-ready",
+          "traceId": "15"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 186.4955,
+          "stage": "correct-paint",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 195.2202,
+          "stage": "content-verified",
+          "traceId": "15"
+        }
+      ],
+      "id": "2-14",
+      "temperature": "warm",
+      "traceId": "15",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 43.7002,
+          "stage": "host-start",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 66.90000000596046,
+          "elapsedMs": 113.3016,
+          "stage": "provider",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 68.7999999821186,
+          "elapsedMs": 115.1651,
+          "stage": "provider",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 116.9051,
+          "stage": "dictionary-hit",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 121.4324,
+          "stage": "dictionary-load",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 2,
+          "elapsedMs": 123.5293,
+          "stage": "ipa",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 165.2644,
+          "stage": "result-ready",
+          "traceId": "16"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 203.8818,
+          "stage": "correct-paint",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 205.7741,
+          "stage": "content-verified",
+          "traceId": "16"
+        }
+      ],
+      "id": "2-15",
+      "temperature": "warm",
+      "traceId": "16",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 32.6803,
+          "stage": "host-start",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 63.099999994039536,
+          "elapsedMs": 96.4911,
+          "stage": "provider",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 62.69999998807907,
+          "elapsedMs": 97.9756,
+          "stage": "provider",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 99.0352,
+          "stage": "dictionary-hit",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0.5999999940395355,
+          "elapsedMs": 99.6862,
+          "stage": "dictionary-load",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 100.5565,
+          "stage": "ipa",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 137.5132,
+          "stage": "result-ready",
+          "traceId": "17"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 171.5617,
+          "stage": "correct-paint",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 173.6141,
+          "stage": "content-verified",
+          "traceId": "17"
+        }
+      ],
+      "id": "2-16",
+      "temperature": "warm",
+      "traceId": "17",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 31.7306,
+          "stage": "host-start",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 51.5,
+          "elapsedMs": 84.56089999999999,
+          "stage": "provider",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 52.5,
+          "elapsedMs": 87.1616,
+          "stage": "provider",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 88.6587,
+          "stage": "dictionary-hit",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 89.9417,
+          "stage": "dictionary-load",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 1.7999999821186066,
+          "elapsedMs": 92.9291,
+          "stage": "ipa",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 130.3045,
+          "stage": "result-ready",
+          "traceId": "18"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 162.5665,
+          "stage": "content-verified",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 176.3429,
+          "stage": "correct-paint",
+          "traceId": "18"
+        }
+      ],
+      "id": "2-17",
+      "temperature": "warm",
+      "traceId": "18",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.4129,
+          "stage": "host-start",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 64.7000000178814,
+          "elapsedMs": 95.1887,
+          "stage": "provider",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 65.19999998807907,
+          "elapsedMs": 96.8667,
+          "stage": "provider",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 99.0413,
+          "stage": "dictionary-hit",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 101.1942,
+          "stage": "dictionary-load",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 1.600000023841858,
+          "elapsedMs": 102.6661,
+          "stage": "ipa",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 134.1297,
+          "stage": "result-ready",
+          "traceId": "19"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 166.4652,
+          "stage": "content-verified",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 168.8767,
+          "stage": "correct-paint",
+          "traceId": "19"
+        }
+      ],
+      "id": "2-18",
+      "temperature": "warm",
+      "traceId": "19",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 33.5528,
+          "stage": "host-start",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 67.90000000596046,
+          "elapsedMs": 101.6032,
+          "stage": "provider",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 67.7999999821186,
+          "elapsedMs": 104.6493,
+          "stage": "provider",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 105.7249,
+          "stage": "dictionary-hit",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 106.915,
+          "stage": "dictionary-load",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 1.800000011920929,
+          "elapsedMs": 107.8029,
+          "stage": "ipa",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 143.6524,
+          "stage": "result-ready",
+          "traceId": "20"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 178.7072,
+          "stage": "content-verified",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 185.6263,
+          "stage": "correct-paint",
+          "traceId": "20"
+        }
+      ],
+      "id": "2-19",
+      "temperature": "warm",
+      "traceId": "20",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 31.4563,
+          "stage": "host-start",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 63.099999994039536,
+          "elapsedMs": 94.2166,
+          "stage": "provider",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 64.40000000596046,
+          "elapsedMs": 97.1705,
+          "stage": "provider",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 99.0195,
+          "stage": "dictionary-hit",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 100.4324,
+          "stage": "dictionary-load",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 1.600000023841858,
+          "elapsedMs": 101.8434,
+          "stage": "ipa",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 141.3446,
+          "stage": "result-ready",
+          "traceId": "21"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 174.5858,
+          "stage": "correct-paint",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 181.9726,
+          "stage": "content-verified",
+          "traceId": "21"
+        }
+      ],
+      "id": "2-20",
+      "temperature": "warm",
+      "traceId": "21",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 206.4338,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 134.19999998807907,
+          "elapsedMs": 297.94140000000004,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 133.7999999821186,
+          "elapsedMs": 299.3286,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 311.43199999999996,
+          "stage": "dictionary-miss",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 11,
+          "elapsedMs": 326.258,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 229.69999998807907,
+          "elapsedMs": 554.322,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 244.30000001192093,
+          "elapsedMs": 555.7052,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 245.69999998807907,
+          "elapsedMs": 556.984,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 623.0333999999999,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 815.8629,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 860.6141,
+          "stage": "content-verified",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 888.8430000000001,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "3-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 27.0651,
+          "stage": "host-start",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 66.09999999403954,
+          "elapsedMs": 94.4002,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 66.5,
+          "elapsedMs": 96.0244,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 97.8184,
+          "stage": "dictionary-hit",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 98.7044,
+          "stage": "dictionary-load",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 2.0999999940395355,
+          "elapsedMs": 100.0269,
+          "stage": "ipa",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 136.0584,
+          "stage": "result-ready",
+          "traceId": "2"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 174.1858,
+          "stage": "content-verified",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 182.3431,
+          "stage": "correct-paint",
+          "traceId": "2"
+        }
+      ],
+      "id": "3-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 29.7113,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 67.09999999403954,
+          "elapsedMs": 96.7558,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 67.90000000596046,
+          "elapsedMs": 98.1926,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 104.8411,
+          "stage": "dictionary-hit",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 106.023,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1.7000000178813934,
+          "elapsedMs": 106.7547,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 135.4567,
+          "stage": "result-ready",
+          "traceId": "3"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 166.0065,
+          "stage": "content-verified",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 172.39489999999998,
+          "stage": "correct-paint",
+          "traceId": "3"
+        }
+      ],
+      "id": "3-2",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.3978,
+          "stage": "host-start",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 68,
+          "elapsedMs": 98.958,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 67.80000001192093,
+          "elapsedMs": 100.2985,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 101.2285,
+          "stage": "dictionary-hit",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 101.7671,
+          "stage": "dictionary-load",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 1.199999988079071,
+          "elapsedMs": 102.2847,
+          "stage": "ipa",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 133.9339,
+          "stage": "result-ready",
+          "traceId": "4"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 159.585,
+          "stage": "content-verified",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 173.36,
+          "stage": "correct-paint",
+          "traceId": "4"
+        }
+      ],
+      "id": "3-3",
+      "temperature": "warm",
+      "traceId": "4",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 24.3664,
+          "stage": "host-start",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 52.900000005960464,
+          "elapsedMs": 77.6215,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 52.89999997615814,
+          "elapsedMs": 79.0437,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 80.3226,
+          "stage": "dictionary-hit",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 81.1272,
+          "stage": "dictionary-load",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 1.300000011920929,
+          "elapsedMs": 81.6482,
+          "stage": "ipa",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 107.3996,
+          "stage": "result-ready",
+          "traceId": "5"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 137.8569,
+          "stage": "content-verified",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 143.00879999999998,
+          "stage": "correct-paint",
+          "traceId": "5"
+        }
+      ],
+      "id": "3-4",
+      "temperature": "warm",
+      "traceId": "5",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 24.2889,
+          "stage": "host-start",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 50.89999997615814,
+          "elapsedMs": 75.72149999999999,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 51.30000001192093,
+          "elapsedMs": 76.8946,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 77.82300000000001,
+          "stage": "dictionary-hit",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 78.4559,
+          "stage": "dictionary-load",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 78.8715,
+          "stage": "ipa",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 102.4643,
+          "stage": "result-ready",
+          "traceId": "6"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 135.0248,
+          "stage": "content-verified",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 140.1117,
+          "stage": "correct-paint",
+          "traceId": "6"
+        }
+      ],
+      "id": "3-5",
+      "temperature": "warm",
+      "traceId": "6",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 24.386000000000003,
+          "stage": "host-start",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 51.20000001788139,
+          "elapsedMs": 74.8475,
+          "stage": "provider",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 51.5,
+          "elapsedMs": 75.8821,
+          "stage": "provider",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 77.0287,
+          "stage": "dictionary-hit",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 77.9264,
+          "stage": "dictionary-load",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 1.4000000059604645,
+          "elapsedMs": 78.5223,
+          "stage": "ipa",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 102.6627,
+          "stage": "result-ready",
+          "traceId": "7"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 137.0428,
+          "stage": "content-verified",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 141.4177,
+          "stage": "correct-paint",
+          "traceId": "7"
+        }
+      ],
+      "id": "3-6",
+      "temperature": "warm",
+      "traceId": "7",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 24.734699999999997,
+          "stage": "host-start",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 50.900000005960464,
+          "elapsedMs": 76.24340000000001,
+          "stage": "provider",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 51.19999998807907,
+          "elapsedMs": 77.6355,
+          "stage": "provider",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 78.4734,
+          "stage": "dictionary-hit",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 80.1831,
+          "stage": "dictionary-load",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 1.699999988079071,
+          "elapsedMs": 80.7414,
+          "stage": "ipa",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 109.488,
+          "stage": "result-ready",
+          "traceId": "8"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 138.6516,
+          "stage": "content-verified",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 160.8246,
+          "stage": "correct-paint",
+          "traceId": "8"
+        }
+      ],
+      "id": "3-7",
+      "temperature": "warm",
+      "traceId": "8",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 27.2866,
+          "stage": "host-start",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 52.099999994039536,
+          "elapsedMs": 80.1966,
+          "stage": "provider",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 52,
+          "elapsedMs": 81.86359999999999,
+          "stage": "provider",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 83.3968,
+          "stage": "dictionary-hit",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 85.3017,
+          "stage": "dictionary-load",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 2.0999999940395355,
+          "elapsedMs": 86.84840000000001,
+          "stage": "ipa",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 125.6135,
+          "stage": "result-ready",
+          "traceId": "9"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 153.1451,
+          "stage": "content-verified",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 166.063,
+          "stage": "correct-paint",
+          "traceId": "9"
+        }
+      ],
+      "id": "3-8",
+      "temperature": "warm",
+      "traceId": "9",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 27.5272,
+          "stage": "host-start",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 66,
+          "elapsedMs": 93.8277,
+          "stage": "provider",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 65.90000000596046,
+          "elapsedMs": 95.0657,
+          "stage": "provider",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 95.8191,
+          "stage": "dictionary-hit",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0.3999999761581421,
+          "elapsedMs": 97.2674,
+          "stage": "dictionary-load",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0.7999999821186066,
+          "elapsedMs": 98.221,
+          "stage": "ipa",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 130.8347,
+          "stage": "result-ready",
+          "traceId": "10"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 157.3419,
+          "stage": "content-verified",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 173.2802,
+          "stage": "correct-paint",
+          "traceId": "10"
+        }
+      ],
+      "id": "3-9",
+      "temperature": "warm",
+      "traceId": "10",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 23.5516,
+          "stage": "host-start",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 65.5,
+          "elapsedMs": 89.2455,
+          "stage": "provider",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 65.59999999403954,
+          "elapsedMs": 90.3041,
+          "stage": "provider",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 91.0949,
+          "stage": "dictionary-hit",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0.4000000059604645,
+          "elapsedMs": 92.1068,
+          "stage": "dictionary-load",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 92.9937,
+          "stage": "ipa",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 119.417,
+          "stage": "result-ready",
+          "traceId": "11"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 139.8133,
+          "stage": "content-verified",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 159.5811,
+          "stage": "correct-paint",
+          "traceId": "11"
+        }
+      ],
+      "id": "3-10",
+      "temperature": "warm",
+      "traceId": "11",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 26.2997,
+          "stage": "host-start",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 52.39999997615814,
+          "elapsedMs": 78.8263,
+          "stage": "provider",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 53.29999998211861,
+          "elapsedMs": 80.2552,
+          "stage": "provider",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 80.98700000000001,
+          "stage": "dictionary-hit",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0.3999999761581421,
+          "elapsedMs": 81.4513,
+          "stage": "dictionary-load",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0.7999999821186066,
+          "elapsedMs": 81.8972,
+          "stage": "ipa",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 108.2307,
+          "stage": "result-ready",
+          "traceId": "12"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 145.74790000000002,
+          "stage": "content-verified",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 152.11679999999998,
+          "stage": "correct-paint",
+          "traceId": "12"
+        }
+      ],
+      "id": "3-11",
+      "temperature": "warm",
+      "traceId": "12",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 26.703,
+          "stage": "host-start",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 51.599999994039536,
+          "elapsedMs": 78.0106,
+          "stage": "provider",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 52.20000001788139,
+          "elapsedMs": 79.00580000000001,
+          "stage": "provider",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 80.2219,
+          "stage": "dictionary-hit",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 81.2387,
+          "stage": "dictionary-load",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 82.37859999999999,
+          "stage": "ipa",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 106.5159,
+          "stage": "result-ready",
+          "traceId": "13"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 133.9754,
+          "stage": "content-verified",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 142.8102,
+          "stage": "correct-paint",
+          "traceId": "13"
+        }
+      ],
+      "id": "3-12",
+      "temperature": "warm",
+      "traceId": "13",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 22.903799999999997,
+          "stage": "host-start",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 48.400000005960464,
+          "elapsedMs": 72.5174,
+          "stage": "provider",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 48.400000005960464,
+          "elapsedMs": 73.4495,
+          "stage": "provider",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 73.97330000000001,
+          "stage": "dictionary-hit",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0.30000001192092896,
+          "elapsedMs": 74.9799,
+          "stage": "dictionary-load",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0.6000000238418579,
+          "elapsedMs": 75.5242,
+          "stage": "ipa",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 102.7123,
+          "stage": "result-ready",
+          "traceId": "14"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 135.46730000000002,
+          "stage": "content-verified",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 145.921,
+          "stage": "correct-paint",
+          "traceId": "14"
+        }
+      ],
+      "id": "3-13",
+      "temperature": "warm",
+      "traceId": "14",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 27.2213,
+          "stage": "host-start",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 62.400000005960464,
+          "elapsedMs": 90.02159999999999,
+          "stage": "provider",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 62.5,
+          "elapsedMs": 91.0392,
+          "stage": "provider",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 91.7843,
+          "stage": "dictionary-hit",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0.4000000059604645,
+          "elapsedMs": 92.7883,
+          "stage": "dictionary-load",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 93.5692,
+          "stage": "ipa",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 119.1813,
+          "stage": "result-ready",
+          "traceId": "15"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 139.5371,
+          "stage": "content-verified",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 159.8714,
+          "stage": "correct-paint",
+          "traceId": "15"
+        }
+      ],
+      "id": "3-14",
+      "temperature": "warm",
+      "traceId": "15",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 21.9801,
+          "stage": "host-start",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 50.099999994039536,
+          "elapsedMs": 72.5453,
+          "stage": "provider",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 50.29999998211861,
+          "elapsedMs": 73.3624,
+          "stage": "provider",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 74.0689,
+          "stage": "dictionary-hit",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0.3999999761581421,
+          "elapsedMs": 74.7547,
+          "stage": "dictionary-load",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0.5999999940395355,
+          "elapsedMs": 75.16109999999999,
+          "stage": "ipa",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 98.7351,
+          "stage": "result-ready",
+          "traceId": "16"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 114.9863,
+          "stage": "content-verified",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 132.3805,
+          "stage": "correct-paint",
+          "traceId": "16"
+        }
+      ],
+      "id": "3-15",
+      "temperature": "warm",
+      "traceId": "16",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 27.1753,
+          "stage": "host-start",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 65.7999999821186,
+          "elapsedMs": 92.0211,
+          "stage": "provider",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 65.59999999403954,
+          "elapsedMs": 93.1616,
+          "stage": "provider",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 94.3167,
+          "stage": "dictionary-hit",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 95.2314,
+          "stage": "dictionary-load",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 1.199999988079071,
+          "elapsedMs": 96.0506,
+          "stage": "ipa",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 127.86990000000002,
+          "stage": "result-ready",
+          "traceId": "17"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 154.1729,
+          "stage": "content-verified",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 172.41570000000002,
+          "stage": "correct-paint",
+          "traceId": "17"
+        }
+      ],
+      "id": "3-16",
+      "temperature": "warm",
+      "traceId": "17",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 24.0571,
+          "stage": "host-start",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 65.09999999403954,
+          "elapsedMs": 88.59450000000001,
+          "stage": "provider",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 65.5,
+          "elapsedMs": 89.9803,
+          "stage": "provider",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 91.2537,
+          "stage": "dictionary-hit",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0.6000000238418579,
+          "elapsedMs": 92.0814,
+          "stage": "dictionary-load",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 93.4752,
+          "stage": "ipa",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 121.6457,
+          "stage": "result-ready",
+          "traceId": "18"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 146.8209,
+          "stage": "content-verified",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 154.7386,
+          "stage": "correct-paint",
+          "traceId": "18"
+        }
+      ],
+      "id": "3-17",
+      "temperature": "warm",
+      "traceId": "18",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 25.5877,
+          "stage": "host-start",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 56.19999998807907,
+          "elapsedMs": 81.9181,
+          "stage": "provider",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 56.5,
+          "elapsedMs": 83.3876,
+          "stage": "provider",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 84.3238,
+          "stage": "dictionary-hit",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 85.003,
+          "stage": "dictionary-load",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 85.4361,
+          "stage": "ipa",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 116.9534,
+          "stage": "result-ready",
+          "traceId": "19"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 141.2635,
+          "stage": "content-verified",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 148.38660000000002,
+          "stage": "correct-paint",
+          "traceId": "19"
+        }
+      ],
+      "id": "3-18",
+      "temperature": "warm",
+      "traceId": "19",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 25.327,
+          "stage": "host-start",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 56.5,
+          "elapsedMs": 81.74249999999999,
+          "stage": "provider",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 56.599999994039536,
+          "elapsedMs": 82.58749999999999,
+          "stage": "provider",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 83.3224,
+          "stage": "dictionary-hit",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0.3999999761581421,
+          "elapsedMs": 84.0341,
+          "stage": "dictionary-load",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 84.4681,
+          "stage": "ipa",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 107.5802,
+          "stage": "result-ready",
+          "traceId": "20"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 138.5713,
+          "stage": "content-verified",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 142.32,
+          "stage": "correct-paint",
+          "traceId": "20"
+        }
+      ],
+      "id": "3-19",
+      "temperature": "warm",
+      "traceId": "20",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 22.1892,
+          "stage": "host-start",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 65.69999998807907,
+          "elapsedMs": 87.46719999999999,
+          "stage": "provider",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 65.69999998807907,
+          "elapsedMs": 89.4013,
+          "stage": "provider",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 90.31,
+          "stage": "dictionary-hit",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 90.7947,
+          "stage": "dictionary-load",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 91.7961,
+          "stage": "ipa",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 116.0146,
+          "stage": "result-ready",
+          "traceId": "21"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 138.0723,
+          "stage": "content-verified",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 161.1413,
+          "stage": "correct-paint",
+          "traceId": "21"
+        }
+      ],
+      "id": "3-20",
+      "temperature": "warm",
+      "traceId": "21",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 200.207,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 151.30000001192093,
+          "elapsedMs": 302.8694,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 153.19999998807907,
+          "elapsedMs": 304.7754,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 331.9826,
+          "stage": "dictionary-miss",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 21.200000017881393,
+          "elapsedMs": 362.8160999999999,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 226.0999999940395,
+          "elapsedMs": 582.6577,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 251.5999999940395,
+          "elapsedMs": 584.0239,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 253.39999997615817,
+          "elapsedMs": 591.2212,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 625.8183,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 812.8679,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 869.8000999999999,
+          "stage": "content-verified",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 891.6632,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "4-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 26.5556,
+          "stage": "host-start",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 69.5,
+          "elapsedMs": 96.5682,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 69.80000001192093,
+          "elapsedMs": 97.9682,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 99.3807,
+          "stage": "dictionary-hit",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 100.6768,
+          "stage": "dictionary-load",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 1.5999999940395355,
+          "elapsedMs": 101.9856,
+          "stage": "ipa",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 130.3519,
+          "stage": "result-ready",
+          "traceId": "2"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 154.28439999999998,
+          "stage": "content-verified",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 174.5582,
+          "stage": "correct-paint",
+          "traceId": "2"
+        }
+      ],
+      "id": "4-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 26.5721,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 62.599999994039536,
+          "elapsedMs": 89.438,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 62.599999994039536,
+          "elapsedMs": 90.6258,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 91.4405,
+          "stage": "dictionary-hit",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 91.9153,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 92.7573,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 123.0124,
+          "stage": "result-ready",
+          "traceId": "3"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 152.35840000000002,
+          "stage": "content-verified",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 156.0444,
+          "stage": "correct-paint",
+          "traceId": "3"
+        }
+      ],
+      "id": "4-2",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 23.9825,
+          "stage": "host-start",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 50.599999994039536,
+          "elapsedMs": 75.1921,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 50.69999998807907,
+          "elapsedMs": 76.3047,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 76.8561,
+          "stage": "dictionary-hit",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0.3999999761581421,
+          "elapsedMs": 77.602,
+          "stage": "dictionary-load",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 78.08229999999999,
+          "stage": "ipa",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 108.3067,
+          "stage": "result-ready",
+          "traceId": "4"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 139.5784,
+          "stage": "content-verified",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 147.7246,
+          "stage": "correct-paint",
+          "traceId": "4"
+        }
+      ],
+      "id": "4-3",
+      "temperature": "warm",
+      "traceId": "4",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 26.407400000000003,
+          "stage": "host-start",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 65.39999997615814,
+          "elapsedMs": 92.1619,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 65.5,
+          "elapsedMs": 93.1838,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 94.3111,
+          "stage": "dictionary-hit",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0.5999999940395355,
+          "elapsedMs": 95.2515,
+          "stage": "dictionary-load",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 95.7452,
+          "stage": "ipa",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 124.9775,
+          "stage": "result-ready",
+          "traceId": "5"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 146.7599,
+          "stage": "content-verified",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 171.18439999999998,
+          "stage": "correct-paint",
+          "traceId": "5"
+        }
+      ],
+      "id": "4-4",
+      "temperature": "warm",
+      "traceId": "5",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 24.8025,
+          "stage": "host-start",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 59.70000001788139,
+          "elapsedMs": 84.2654,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 59.400000005960464,
+          "elapsedMs": 85.5263,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 86.695,
+          "stage": "dictionary-hit",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 87.2574,
+          "stage": "dictionary-load",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 1.300000011920929,
+          "elapsedMs": 88.2093,
+          "stage": "ipa",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 119.8739,
+          "stage": "result-ready",
+          "traceId": "6"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 150.4294,
+          "stage": "content-verified",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 155.2173,
+          "stage": "correct-paint",
+          "traceId": "6"
+        }
+      ],
+      "id": "4-5",
+      "temperature": "warm",
+      "traceId": "6",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 28.8673,
+          "stage": "host-start",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 49.099999994039536,
+          "elapsedMs": 77.53219999999999,
+          "stage": "provider",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 66.09999999403954,
+          "elapsedMs": 94.1159,
+          "stage": "provider",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 95.1944,
+          "stage": "dictionary-hit",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0.4000000059604645,
+          "elapsedMs": 95.7482,
+          "stage": "dictionary-load",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 96.1875,
+          "stage": "ipa",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 130.6052,
+          "stage": "result-ready",
+          "traceId": "7"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 162.5986,
+          "stage": "content-verified",
+          "traceId": "7"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 164.741,
+          "stage": "correct-paint",
+          "traceId": "7"
+        }
+      ],
+      "id": "4-6",
+      "temperature": "warm",
+      "traceId": "7",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 26.8146,
+          "stage": "host-start",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 56.79999998211861,
+          "elapsedMs": 84.6415,
+          "stage": "provider",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 57,
+          "elapsedMs": 86.06089999999999,
+          "stage": "provider",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 86.71900000000001,
+          "stage": "dictionary-hit",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 87.8122,
+          "stage": "dictionary-load",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 1.0999999940395355,
+          "elapsedMs": 88.82339999999999,
+          "stage": "ipa",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 119.9274,
+          "stage": "result-ready",
+          "traceId": "8"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 149.7017,
+          "stage": "content-verified",
+          "traceId": "8"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 154.8591,
+          "stage": "correct-paint",
+          "traceId": "8"
+        }
+      ],
+      "id": "4-7",
+      "temperature": "warm",
+      "traceId": "8",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 24.0732,
+          "stage": "host-start",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 51.29999998211861,
+          "elapsedMs": 76.1848,
+          "stage": "provider",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 51.29999998211861,
+          "elapsedMs": 77.5686,
+          "stage": "provider",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 79.2775,
+          "stage": "dictionary-hit",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0.7999999821186066,
+          "elapsedMs": 81.2838,
+          "stage": "dictionary-load",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 1.4000000059604645,
+          "elapsedMs": 82.3646,
+          "stage": "ipa",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 119.306,
+          "stage": "result-ready",
+          "traceId": "9"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 151.6347,
+          "stage": "content-verified",
+          "traceId": "9"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 162.6773,
+          "stage": "correct-paint",
+          "traceId": "9"
+        }
+      ],
+      "id": "4-8",
+      "temperature": "warm",
+      "traceId": "9",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 31.6171,
+          "stage": "host-start",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 66.69999998807907,
+          "elapsedMs": 99.2702,
+          "stage": "provider",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 67.90000000596046,
+          "elapsedMs": 100.9987,
+          "stage": "provider",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 103.9298,
+          "stage": "dictionary-hit",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 105.384,
+          "stage": "dictionary-load",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 1.699999988079071,
+          "elapsedMs": 106.2501,
+          "stage": "ipa",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 141.44789999999998,
+          "stage": "result-ready",
+          "traceId": "10"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 177.4838,
+          "stage": "content-verified",
+          "traceId": "10"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 186.209,
+          "stage": "correct-paint",
+          "traceId": "10"
+        }
+      ],
+      "id": "4-9",
+      "temperature": "warm",
+      "traceId": "10",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 24.5285,
+          "stage": "host-start",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 50.69999998807907,
+          "elapsedMs": 75.6955,
+          "stage": "provider",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 51.5,
+          "elapsedMs": 77.4659,
+          "stage": "provider",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 79.7428,
+          "stage": "dictionary-hit",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 81.6311,
+          "stage": "dictionary-load",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 1.5,
+          "elapsedMs": 82.95750000000001,
+          "stage": "ipa",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 117.1553,
+          "stage": "result-ready",
+          "traceId": "11"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 148.3835,
+          "stage": "content-verified",
+          "traceId": "11"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 164.63649999999998,
+          "stage": "correct-paint",
+          "traceId": "11"
+        }
+      ],
+      "id": "4-10",
+      "temperature": "warm",
+      "traceId": "11",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.1258,
+          "stage": "host-start",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 65,
+          "elapsedMs": 95.0314,
+          "stage": "provider",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 65.90000000596046,
+          "elapsedMs": 96.8099,
+          "stage": "provider",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 98.3014,
+          "stage": "dictionary-hit",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 100.5391,
+          "stage": "dictionary-load",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 1.800000011920929,
+          "elapsedMs": 102.5933,
+          "stage": "ipa",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 139.9279,
+          "stage": "result-ready",
+          "traceId": "12"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 173.7687,
+          "stage": "correct-paint",
+          "traceId": "12"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 175.4382,
+          "stage": "content-verified",
+          "traceId": "12"
+        }
+      ],
+      "id": "4-11",
+      "temperature": "warm",
+      "traceId": "12",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 28.2228,
+          "stage": "host-start",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 63.60000002384186,
+          "elapsedMs": 92.7488,
+          "stage": "provider",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 64.30000001192093,
+          "elapsedMs": 94.2316,
+          "stage": "provider",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 95.6981,
+          "stage": "dictionary-hit",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0.8999999761581421,
+          "elapsedMs": 96.4784,
+          "stage": "dictionary-load",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 1.7999999821186066,
+          "elapsedMs": 97.847,
+          "stage": "ipa",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 124.9019,
+          "stage": "result-ready",
+          "traceId": "13"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 146.70530000000002,
+          "stage": "content-verified",
+          "traceId": "13"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 166.64399999999998,
+          "stage": "correct-paint",
+          "traceId": "13"
+        }
+      ],
+      "id": "4-12",
+      "temperature": "warm",
+      "traceId": "13",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 20.9221,
+          "stage": "host-start",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 51.099999994039536,
+          "elapsedMs": 72.9264,
+          "stage": "provider",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 51,
+          "elapsedMs": 74.22489999999999,
+          "stage": "provider",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 74.86959999999999,
+          "stage": "dictionary-hit",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 75.4859,
+          "stage": "dictionary-load",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 75.9726,
+          "stage": "ipa",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 101.7936,
+          "stage": "result-ready",
+          "traceId": "14"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 133.6261,
+          "stage": "content-verified",
+          "traceId": "14"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 140.29659999999998,
+          "stage": "correct-paint",
+          "traceId": "14"
+        }
+      ],
+      "id": "4-13",
+      "temperature": "warm",
+      "traceId": "14",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 23.1667,
+          "stage": "host-start",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 66.09999999403954,
+          "elapsedMs": 89.4634,
+          "stage": "provider",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 65.89999997615814,
+          "elapsedMs": 90.1214,
+          "stage": "provider",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 90.9677,
+          "stage": "dictionary-hit",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0.5999999940395355,
+          "elapsedMs": 91.9971,
+          "stage": "dictionary-load",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 92.6957,
+          "stage": "ipa",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 115.9742,
+          "stage": "result-ready",
+          "traceId": "15"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 137.49620000000002,
+          "stage": "content-verified",
+          "traceId": "15"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 157.221,
+          "stage": "correct-paint",
+          "traceId": "15"
+        }
+      ],
+      "id": "4-14",
+      "temperature": "warm",
+      "traceId": "15",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 26.481399999999997,
+          "stage": "host-start",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 49,
+          "elapsedMs": 75.8987,
+          "stage": "provider",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 49.30000001192093,
+          "elapsedMs": 76.95150000000001,
+          "stage": "provider",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 77.97949999999999,
+          "stage": "dictionary-hit",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0.4000000059604645,
+          "elapsedMs": 78.6332,
+          "stage": "dictionary-load",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 79.1412,
+          "stage": "ipa",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 103.0893,
+          "stage": "result-ready",
+          "traceId": "16"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 124.9961,
+          "stage": "content-verified",
+          "traceId": "16"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 147.7018,
+          "stage": "correct-paint",
+          "traceId": "16"
+        }
+      ],
+      "id": "4-15",
+      "temperature": "warm",
+      "traceId": "16",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 24.6633,
+          "stage": "host-start",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 56.900000005960464,
+          "elapsedMs": 83.23519999999999,
+          "stage": "provider",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 58,
+          "elapsedMs": 84.8757,
+          "stage": "provider",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 86.2316,
+          "stage": "dictionary-hit",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 87.17519999999999,
+          "stage": "dictionary-load",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 1.7000000178813934,
+          "elapsedMs": 88.6916,
+          "stage": "ipa",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 119.446,
+          "stage": "result-ready",
+          "traceId": "17"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 143.5987,
+          "stage": "content-verified",
+          "traceId": "17"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 164.2079,
+          "stage": "correct-paint",
+          "traceId": "17"
+        }
+      ],
+      "id": "4-16",
+      "temperature": "warm",
+      "traceId": "17",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 27.5626,
+          "stage": "host-start",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 65.2999999821186,
+          "elapsedMs": 93.5991,
+          "stage": "provider",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 65.09999999403954,
+          "elapsedMs": 95.0123,
+          "stage": "provider",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 96.3043,
+          "stage": "dictionary-hit",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 97.3268,
+          "stage": "dictionary-load",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 1.199999988079071,
+          "elapsedMs": 98.7478,
+          "stage": "ipa",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 132.9912,
+          "stage": "result-ready",
+          "traceId": "18"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 164.1068,
+          "stage": "content-verified",
+          "traceId": "18"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 171.8254,
+          "stage": "correct-paint",
+          "traceId": "18"
+        }
+      ],
+      "id": "4-17",
+      "temperature": "warm",
+      "traceId": "18",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 32.5868,
+          "stage": "host-start",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 55.099999994039536,
+          "elapsedMs": 87.7309,
+          "stage": "provider",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 55.30000001192093,
+          "elapsedMs": 89.2377,
+          "stage": "provider",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 90.754,
+          "stage": "dictionary-hit",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 91.5702,
+          "stage": "dictionary-load",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 1.5,
+          "elapsedMs": 93.6859,
+          "stage": "ipa",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 130.6617,
+          "stage": "result-ready",
+          "traceId": "19"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 159.3535,
+          "stage": "content-verified",
+          "traceId": "19"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 176.8135,
+          "stage": "correct-paint",
+          "traceId": "19"
+        }
+      ],
+      "id": "4-18",
+      "temperature": "warm",
+      "traceId": "19",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 31.7935,
+          "stage": "host-start",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 52.80000001192093,
+          "elapsedMs": 84.302,
+          "stage": "provider",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 53,
+          "elapsedMs": 85.83200000000001,
+          "stage": "provider",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 86.91409999999999,
+          "stage": "dictionary-hit",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0.5,
+          "elapsedMs": 88.13329999999999,
+          "stage": "dictionary-load",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 1.100000023841858,
+          "elapsedMs": 88.8669,
+          "stage": "ipa",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 121.6803,
+          "stage": "result-ready",
+          "traceId": "20"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 156.11749999999998,
+          "stage": "content-verified",
+          "traceId": "20"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 159.08720000000002,
+          "stage": "correct-paint",
+          "traceId": "20"
+        }
+      ],
+      "id": "4-19",
+      "temperature": "warm",
+      "traceId": "20",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 28.8369,
+          "stage": "host-start",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 51.099999994039536,
+          "elapsedMs": 81.05130000000001,
+          "stage": "provider",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 50.5,
+          "elapsedMs": 82.5173,
+          "stage": "provider",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 83.16239999999999,
+          "stage": "dictionary-hit",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0.4000000059604645,
+          "elapsedMs": 83.71860000000001,
+          "stage": "dictionary-load",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 84.18979999999999,
+          "stage": "ipa",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 115.4571,
+          "stage": "result-ready",
+          "traceId": "21"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 142.2987,
+          "stage": "content-verified",
+          "traceId": "21"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 164.6916,
+          "stage": "correct-paint",
+          "traceId": "21"
+        }
+      ],
+      "id": "4-20",
+      "temperature": "warm",
+      "traceId": "21",
+      "windows": 2
+    }
+  ],
+  "sourceLanguage": "en",
+  "targets": 2,
+  "runs": [
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 300195840,
+        "processCount": 8,
+        "workingSetBytes": 551370752
+      },
+      "memoryBefore": {
+        "privateBytes": 165175296,
+        "processCount": 7,
+        "workingSetBytes": 360955904
+      },
+      "memoryCheckpoints": [],
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "recovery": false,
+      "sourceLanguage": "en",
+      "targets": 2
+    },
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 302391296,
+        "processCount": 8,
+        "workingSetBytes": 551329792
+      },
+      "memoryBefore": {
+        "privateBytes": 161804288,
+        "processCount": 7,
+        "workingSetBytes": 358805504
+      },
+      "memoryCheckpoints": [],
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "recovery": false,
+      "sourceLanguage": "en",
+      "targets": 2
+    },
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 288722944,
+        "processCount": 8,
+        "workingSetBytes": 540467200
+      },
+      "memoryBefore": {
+        "privateBytes": 162254848,
+        "processCount": 7,
+        "workingSetBytes": 360022016
+      },
+      "memoryCheckpoints": [],
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "recovery": false,
+      "sourceLanguage": "en",
+      "targets": 2
+    },
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 303124480,
+        "processCount": 8,
+        "workingSetBytes": 553066496
+      },
+      "memoryBefore": {
+        "privateBytes": 161636352,
+        "processCount": 7,
+        "workingSetBytes": 358424576
+      },
+      "memoryCheckpoints": [],
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "recovery": false,
+      "sourceLanguage": "en",
+      "targets": 2
+    },
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 301748224,
+        "processCount": 8,
+        "workingSetBytes": 553664512
+      },
+      "memoryBefore": {
+        "privateBytes": 169652224,
+        "processCount": 7,
+        "workingSetBytes": 375365632
+      },
+      "memoryCheckpoints": [],
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "recovery": false,
+      "sourceLanguage": "en",
+      "targets": 2
+    }
+  ],
+  "errors": 0,
+  "cancellations": 0,
+  "server": {
+    "connections": 71,
+    "requests": 210,
+    "dictionaryRequests": 5,
+    "providerConnections": 10
+  },
+  "source": "336cad1865645f476c2d74f41cde668845a49bd3",
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "instrumentedWorkingTree": true,
+  "build": "native-debug/frontend-production",
+  "provider": "controlled HTTP 40ms",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-1235U",
+    "logicalCpus": 12,
+    "totalMemoryBytes": 16849293312,
+    "osRelease": "10.0.26200"
+  },
+  "cold": {
+    "count": 5,
+    "p50": 902.6765,
+    "p95": 1533.5363
+  },
+  "warm": {
+    "count": 100,
+    "p50": 168.8767,
+    "p95": 194.7669
+  }
+}

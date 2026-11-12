@@ -18,11 +18,11 @@
     "components": 2,
     "noteSaved": true
   },
-  "main": {
-    "host": true
-  },
   "pdf": {
     "pages": 1,
     "text": "Hello PDF"
+  },
+  "main": {
+    "host": true
   }
 }

@@ -1,0 +1,9 @@
+{
+  "path": "D:\\Workspace\\translation-desktop\\src-tauri\\target\\release\\bundle\\nsis\\PolyTranslate_1.0.0_x64-setup.exe",
+  "rollbackPath": "D:\\Workspace\\translation-desktop\\.scratch\\tmp\\latency-rollback-2026-11-12\\PolyTranslate_1.0.0_x64-setup.exe",
+  "bytes": 256478096,
+  "modified": "2026-11-11T16:49:04.8464857+07:00",
+  "sha256": "FDDBCDC3672E49EA7EA98A08C4ADC27E992C46505C1BCB40AAA70167DBD2F0BD",
+  "source": "previous extension-parity release; historical metadata retained in .scratch/extension-parity/build-artifacts.json",
+  "dataPolicy": "Same application identifier and data directories; rollback without uninstalling user data"
+}

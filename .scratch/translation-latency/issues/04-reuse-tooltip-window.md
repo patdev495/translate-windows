@@ -1,6 +1,6 @@
 # Tái sử dụng WebView tooltip với request generation
 
-Status: ready-for-agent
+Status: done
 Depends on: 03-centralize-translation-and-ipa
 Date: 2026-11-12
 
@@ -26,3 +26,5 @@ Mở, dismiss rồi mở nội dung khác qua public command/UI: cùng một Web
 ## Comments
 
 - 2026-11-12: Mới lập kế hoạch; đây là phần có rủi ro lifecycle cao nhất.
+
+- 2026-11-12: Đã triển khai lazy retained WebView, snapshot/ready handshake, native request ID + mailbox, dịch song song với window creation; reset/abort theo lượt. Native 50-cycle + 751-cycle, destroy và renderer ProcessFailed recovery đều đạt. Bằng chứng: ../VALIDATION.md, ../TDD.md; ADR-0006. Source production 336cad1; harness cuối 748fc0b.

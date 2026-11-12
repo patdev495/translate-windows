@@ -1,6 +1,6 @@
 # Đo lại, ghi bằng chứng và đóng gói bản tối ưu
 
-Status: ready-for-agent
+Status: done
 Depends on: 05-lifecycle-and-regressions
 Date: 2026-11-12
 
@@ -20,3 +20,5 @@ Có báo cáo trước/sau có thể kiểm tra được, tất cả gate hành 
 ## Comments
 
 - 2026-11-12: Mới lập kế hoạch.
+
+- 2026-11-12: Hoàn tất báo cáo trước/sau, gate 751 vòng và memory plateau, frontend/Rust/Windows/WebView2. NSIS jobs=1 từ source 748fc0bee349a93611e6d00e61aa726ae394b419, timestamp mới và SHA-256 đã xác minh. Metadata/config: ../build-artifacts.json, ../build-start.json; checksum: ../SHA256SUMS.txt. Bản trước được giữ để rollback, không xóa settings/library. Các giới hạn OCR/hardware ghi rõ ở ../VALIDATION.md. Không push hoặc install vì không có yêu cầu riêng.

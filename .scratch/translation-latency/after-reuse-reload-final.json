@@ -1,0 +1,348 @@
+{
+  "acquisition": "excluded",
+  "memoryBefore": {
+    "privateBytes": 162140160,
+    "processCount": 7,
+    "workingSetBytes": 359084032
+  },
+  "metric": "host-reload-functional",
+  "ocr": "off",
+  "restart": {
+    "nextSucceeded": true,
+    "oldFailed": true
+  },
+  "samples": [
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 176.9737,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 573.1405000000001,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 1083,
+          "elapsedMs": 1206.8035,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 1122.9000000059605,
+          "elapsedMs": 1245.4122,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1246.938,
+          "stage": "dictionary-miss",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 7.900000005960464,
+          "elapsedMs": 1256.4305,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 192.2999999821186,
+          "elapsedMs": 1450.4247,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 203.7000000178814,
+          "elapsedMs": 1451.8491,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 205.0999999940395,
+          "elapsedMs": 1453.4533,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1606.2243,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1659.3888,
+          "stage": "content-verified",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1694.0715,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "0-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 35.349199999999996,
+          "stage": "host-start",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 1022.6999999880792,
+          "elapsedMs": 1057.5769,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 1022.6999999880792,
+          "elapsedMs": 1058.8253,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1060.4979,
+          "stage": "dictionary-hit",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0.6000000238418579,
+          "elapsedMs": 1061.4416,
+          "stage": "dictionary-load",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 1.100000023841858,
+          "elapsedMs": 1062.3648,
+          "stage": "ipa",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1086.5324,
+          "stage": "result-ready",
+          "traceId": "2"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1114.0482,
+          "stage": "content-verified",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1128.6081,
+          "stage": "correct-paint",
+          "traceId": "2"
+        }
+      ],
+      "id": "0-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "PDF host reload",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 1908.1172,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1025.399999976158,
+          "elapsedMs": 2937.5431,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1023.8000000119208,
+          "elapsedMs": 2938.0919,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 2938.7499,
+          "stage": "dictionary-hit",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0.30000001192092896,
+          "elapsedMs": 2939.1709,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0.7000000178813934,
+          "elapsedMs": 2939.5429000000004,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1058.2999999821186,
+          "elapsedMs": 2952.7173,
+          "stage": "host-rpc",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 3040.6951000000004,
+          "stage": "content-verified",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 3062.3649,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 3313.5355,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1019.3000000119208,
+          "elapsedMs": 4333.0269,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 1019.9000000059604,
+          "elapsedMs": 4334.2566,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 4335.1964,
+          "stage": "dictionary-miss",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 8.200000017881393,
+          "elapsedMs": 4344.5818,
+          "stage": "dictionary-fetch",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 129.7999999821186,
+          "elapsedMs": 4475.3973,
+          "stage": "dictionary-parse",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 140.60000002384186,
+          "elapsedMs": 4476.4767,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 142.10000002384186,
+          "elapsedMs": 4477.406199999999,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 4504.9771,
+          "stage": "correct-paint",
+          "traceId": "3"
+        }
+      ],
+      "id": "0-pdf-reload",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 3
+    }
+  ],
+  "targets": 2,
+  "runs": [
+    {
+      "acquisition": "excluded",
+      "memoryBefore": {
+        "privateBytes": 162140160,
+        "processCount": 7,
+        "workingSetBytes": 359084032
+      },
+      "metric": "host-reload-functional",
+      "ocr": "off",
+      "restart": {
+        "nextSucceeded": true,
+        "oldFailed": true
+      },
+      "targets": 2
+    }
+  ],
+  "errors": 0,
+  "cancellations": 1,
+  "server": {
+    "connections": 17,
+    "requests": 10,
+    "dictionaryRequests": 2,
+    "providerConnections": 4
+  },
+  "source": "336cad1865645f476c2d74f41cde668845a49bd3",
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "instrumentedWorkingTree": true,
+  "build": "native-debug/frontend-production",
+  "provider": "controlled HTTP 1000ms (reload functional test)",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-1235U",
+    "logicalCpus": 12,
+    "totalMemoryBytes": 16849293312,
+    "osRelease": "10.0.26200"
+  },
+  "cold": {
+    "count": 1,
+    "p50": 1694.0715,
+    "p95": 1694.0715
+  },
+  "warm": {
+    "count": 2,
+    "p50": 1128.6081,
+    "p95": 4504.9771
+  }
+}

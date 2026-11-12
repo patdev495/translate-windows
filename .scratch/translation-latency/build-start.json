@@ -1,0 +1,25 @@
+{
+  "sourceCommit": "748fc0bee349a93611e6d00e61aa726ae394b419",
+  "started": "2026-11-12T13:08:03.5142533+07:00",
+  "command": "npm run tauri build -- --bundles nsis --ci",
+  "cargoBuildJobs": 1,
+  "features": [],
+  "configHashes": [
+    {
+      "Path": "D:\\Workspace\\translation-desktop\\src-tauri\\tauri.conf.json",
+      "Hash": "724724D7079E8894CC6E2BFE0F1BCB4144A0E236936D796216A2DE7396CE27E5"
+    },
+    {
+      "Path": "D:\\Workspace\\translation-desktop\\src-tauri\\Cargo.toml",
+      "Hash": "D87812481455DC2A434220EFE8C67DE5AA4060852CC1433EB6B67924F760BAE8"
+    },
+    {
+      "Path": "D:\\Workspace\\translation-desktop\\src-tauri\\Cargo.lock",
+      "Hash": "3EEF0EAA5E4DEE1C16E39028B041DC4F73A5D5707260C753E5AF8BEC830CAAB4"
+    },
+    {
+      "Path": "D:\\Workspace\\translation-desktop\\package-lock.json",
+      "Hash": "A35647B691632B1C97D6B41A730DD22D8D76C069615B8F5BBCD99ED028358C97"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "error": "Error: Dismiss did not hide the retained window",
+  "samples": [
+    {
+      "error": true,
+      "events": [],
+      "id": "0-failure",
+      "traceId": "2",
+      "windows": 2
+    }
+  ],
+  "runs": [
+    {
+      "error": "Error: Dismiss did not hide the retained window"
+    }
+  ],
+  "errors": 1,
+  "cancellations": 0,
+  "server": {
+    "connections": 18,
+    "requests": 2,
+    "dictionaryRequests": 1,
+    "providerConnections": 2
+  },
+  "source": "66da69e6a1b0b15b69246bffe2149f589fa3dde0",
+  "sourceDiffSha256": "dea59333cdc889ec8831d4835defdee99af3f66705f5a1810a26e1d06ec020d3",
+  "instrumentedWorkingTree": true,
+  "build": "native-debug/frontend-production",
+  "provider": "controlled HTTP 40ms",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-1235U",
+    "logicalCpus": 12,
+    "totalMemoryBytes": 16849293312,
+    "osRelease": "10.0.26200"
+  },
+  "cold": {
+    "count": 0
+  },
+  "warm": {
+    "count": 0
+  }
+}

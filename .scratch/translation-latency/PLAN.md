@@ -1,6 +1,6 @@
 # Kế hoạch triển khai giảm độ trễ dịch
 
-Status: ready-for-agent
+Status: done
 Date: 2026-11-12
 Baseline: `1c7df1f`
 Scope: [PRD.md](./PRD.md)
@@ -204,3 +204,7 @@ Test qua API/DOM/native event hoặc server mạng thật của harness; không 
 - 2026-11-12: Kế hoạch dựa trên mã tại `1c7df1f` và probe cache module; cần bước 0 để có số đo end-to-end thực tế.
 
 - 2026-11-12: Đã hoàn thành issues 01–03 theo TDD và ghi số đo trước/sau riêng từng bước tại [VALIDATION.md](./VALIDATION.md).
+
+- 2026-11-12: Issues 04–05 hoàn tất: retained tooltip có request generation, native show/hide/crash recovery, 134 frontend + 42 Rust tests, 3 Windows interactive tests riêng, WebView2 UI smoke và soak 751 vòng. Xem VALIDATION.md/TDD.md. Issue 06 đang xác minh NSIS từ source chốt; chỉ đóng sau artifact/hash cuối.
+
+- 2026-11-12: Đã hoàn thành issues 04–06. Source package 748fc0b; NSIS cuối và SHA-256 xác minh tại build-artifacts.json/SHA256SUMS.txt. Bằng chứng trước/sau, 751-cycle plateau, tests và giới hạn: VALIDATION.md. Các ghi chú “đang build/chưa có NSIS” phía trên là lịch sử tiến độ đã được thay thế bởi kết quả này.

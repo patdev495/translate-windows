@@ -1,0 +1,24 @@
+{
+  "sourceCommit": "0067a1b67c24ef22e34ffd8518f48a33c6c953e8",
+  "started": "2026-11-12T11:52:47.2743961+07:00",
+  "completed": "2026-11-12T12:20:00.8288183+07:00",
+  "command": "npm run tauri build -- --bundles nsis --ci",
+  "cargoBuildJobs": 1,
+  "features": [],
+  "artifacts": [
+    {
+      "path": "D:\\Workspace\\translation-desktop\\src-tauri\\target\\release\\translation-desktop.exe",
+      "bytes": 267754496,
+      "modified": "2026-11-12T12:19:58.2063670+07:00",
+      "sha256": "86ED0CAB85D5392961F2EB0AFEFC9FA3DFBE3F3B061BF0B15477C82870BF57B9"
+    },
+    {
+      "path": "D:\\Workspace\\translation-desktop\\src-tauri\\target\\release\\bundle\\nsis\\PolyTranslate_1.0.0_x64-setup.exe",
+      "bytes": 256501630,
+      "modified": "2026-11-12T12:19:57.7261449+07:00",
+      "sha256": "DF2F98853C6BF397267E8E1B70BE1B74148266029991A624BD8BB19BF6A0E1E4"
+    }
+  ],
+  "previousRelease": ".scratch/translation-latency/previous-release.json",
+  "rollbackDataPolicy": "Keep the existing application data; do not uninstall/delete settings or Learning Library data"
+}

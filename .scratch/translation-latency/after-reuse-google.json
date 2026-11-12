@@ -1,0 +1,529 @@
+{
+  "acquisition": "excluded",
+  "memoryAfter": {
+    "privateBytes": 286986240,
+    "processCount": 8,
+    "workingSetBytes": 532967424
+  },
+  "memoryBefore": {
+    "privateBytes": 167555072,
+    "processCount": 7,
+    "workingSetBytes": 368615424
+  },
+  "memoryCheckpoints": [],
+  "metric": "text-ready-to-correct-paint",
+  "ocr": "off",
+  "recovery": false,
+  "samples": [
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 179.2558,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 388.2999999821186,
+          "elapsedMs": 510.9057,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 403.09999999403954,
+          "elapsedMs": 532.1841000000001,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 546.8068000000001,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 566.0661,
+          "stage": "dictionary-miss",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 12.5,
+          "elapsedMs": 579.2497,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 212.5,
+          "elapsedMs": 792.4223999999999,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 229.5,
+          "elapsedMs": 793.8743999999999,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 231.4000000059605,
+          "elapsedMs": 795.3007,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 990.9479,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1045.1201999999998,
+          "stage": "content-verified",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1071.2307999999998,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "0-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 36.1997,
+          "stage": "host-start",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 123.19999998807909,
+          "elapsedMs": 160.3142,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 182.7000000178814,
+          "elapsedMs": 220.0985,
+          "stage": "provider",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 221.8359,
+          "stage": "dictionary-hit",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0.699999988079071,
+          "elapsedMs": 223.1826,
+          "stage": "dictionary-load",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 1.5,
+          "elapsedMs": 224.1479,
+          "stage": "ipa",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 262.8167,
+          "stage": "result-ready",
+          "traceId": "2"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 296.5277,
+          "stage": "content-verified",
+          "traceId": "2"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 306.3312,
+          "stage": "correct-paint",
+          "traceId": "2"
+        }
+      ],
+      "id": "0-1",
+      "temperature": "warm",
+      "traceId": "2",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 38.247499999999995,
+          "stage": "host-start",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 102.40000000596046,
+          "elapsedMs": 140.98569999999998,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 135.19999998807907,
+          "elapsedMs": 173.7223,
+          "stage": "provider",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 175.4364,
+          "stage": "dictionary-hit",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0.5999999940395355,
+          "elapsedMs": 176.83960000000002,
+          "stage": "dictionary-load",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 177.93519999999998,
+          "stage": "ipa",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 213.6,
+          "stage": "result-ready",
+          "traceId": "3"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 247.0181,
+          "stage": "content-verified",
+          "traceId": "3"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 253.8238,
+          "stage": "correct-paint",
+          "traceId": "3"
+        }
+      ],
+      "id": "0-2",
+      "temperature": "warm",
+      "traceId": "3",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 41.7679,
+          "stage": "host-start",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 105.59999999403954,
+          "elapsedMs": 148.6142,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 130.19999998807907,
+          "elapsedMs": 173.8006,
+          "stage": "provider",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 175.77599999999998,
+          "stage": "dictionary-hit",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 1,
+          "elapsedMs": 177.1182,
+          "stage": "dictionary-load",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 2.0999999940395355,
+          "elapsedMs": 180.0193,
+          "stage": "ipa",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 221.3684,
+          "stage": "result-ready",
+          "traceId": "4"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 256.249,
+          "stage": "content-verified",
+          "traceId": "4"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 258.272,
+          "stage": "correct-paint",
+          "traceId": "4"
+        }
+      ],
+      "id": "0-3",
+      "temperature": "warm",
+      "traceId": "4",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 33.7568,
+          "stage": "host-start",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 120.69999998807909,
+          "elapsedMs": 154.429,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 137,
+          "elapsedMs": 171.4736,
+          "stage": "provider",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 173.2484,
+          "stage": "dictionary-hit",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0.9000000059604645,
+          "elapsedMs": 174.3989,
+          "stage": "dictionary-load",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 1.699999988079071,
+          "elapsedMs": 175.283,
+          "stage": "ipa",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 209.4099,
+          "stage": "result-ready",
+          "traceId": "5"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 245.384,
+          "stage": "content-verified",
+          "traceId": "5"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 254.6947,
+          "stage": "correct-paint",
+          "traceId": "5"
+        }
+      ],
+      "id": "0-4",
+      "temperature": "warm",
+      "traceId": "5",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 30.3104,
+          "stage": "host-start",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 128.19999998807907,
+          "elapsedMs": 159.5836,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 174.80000001192093,
+          "elapsedMs": 207.132,
+          "stage": "provider",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 208.4302,
+          "stage": "dictionary-hit",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0.800000011920929,
+          "elapsedMs": 209.2292,
+          "stage": "dictionary-load",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 1.2000000178813934,
+          "elapsedMs": 210.0917,
+          "stage": "ipa",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 244.0228,
+          "stage": "result-ready",
+          "traceId": "6"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 280.0033,
+          "stage": "content-verified",
+          "traceId": "6"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 288.045,
+          "stage": "correct-paint",
+          "traceId": "6"
+        }
+      ],
+      "id": "0-5",
+      "temperature": "warm",
+      "traceId": "6",
+      "windows": 2
+    }
+  ],
+  "sourceLanguage": "en",
+  "targets": 2,
+  "runs": [
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 286986240,
+        "processCount": 8,
+        "workingSetBytes": 532967424
+      },
+      "memoryBefore": {
+        "privateBytes": 167555072,
+        "processCount": 7,
+        "workingSetBytes": 368615424
+      },
+      "memoryCheckpoints": [],
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "recovery": false,
+      "sourceLanguage": "en",
+      "targets": 2
+    }
+  ],
+  "errors": 0,
+  "cancellations": 0,
+  "server": {
+    "connections": 12,
+    "requests": 0,
+    "dictionaryRequests": 1,
+    "providerConnections": 0
+  },
+  "source": "0067a1b67c24ef22e34ffd8518f48a33c6c953e8",
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "instrumentedWorkingTree": true,
+  "build": "native-debug/frontend-production",
+  "provider": "google",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-1235U",
+    "logicalCpus": 12,
+    "totalMemoryBytes": 16849293312,
+    "osRelease": "10.0.26200"
+  },
+  "cold": {
+    "count": 1,
+    "p50": 1071.2307999999998,
+    "p95": 1071.2307999999998
+  },
+  "warm": {
+    "count": 5,
+    "p50": 258.272,
+    "p95": 306.3312
+  }
+}

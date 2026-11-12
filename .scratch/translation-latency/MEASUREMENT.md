@@ -94,3 +94,45 @@ vẫn do đường production gửi sau fit/two animation frames, không thay b�
 không phải tổng thời gian khởi động ứng dụng. `warm` là các lần tiếp theo trong
 cùng process, vẫn tạo Native Tooltip Window mới. Cả hai dùng mốc text-ready và
 không bao gồm acquisition Windows hoặc startup trước khi có text.
+
+## Retained tooltip reproduction
+
+```powershell
+$env:LATENCY_SKIP_BUILD='1' # only after npm run build on the source under test
+$env:LATENCY_EXPECT_REUSE='1'
+$env:LATENCY_EXPECT_SHARED_IPA='1'
+$env:LATENCY_RUNS='5'
+$env:LATENCY_REPORT='.scratch/translation-latency/after-reuse.json'
+npm run bench:translation
+```
+
+For resource/recovery validation use `LATENCY_RUNS=1`, `LATENCY_SAMPLES=51`,
+`LATENCY_RECOVERY=1`, and a separate report path. First 50 presentations must use
+one WebView; the last destroys it explicitly and checks recreation. Memory is
+sampled after 10/25/50 presentations outside the next timed interval. Remove
+`LATENCY_SAMPLES`/`LATENCY_RECOVERY` before the comparable 5 cold + 100 warm run.
+
+`LATENCY_EXPECT_REUSE` gates actual view-ready count, cold host dispatch before
+view-ready, stable IPC listener registrations, no pending host RPC/OCR jobs
+(OCR-off group), at most one native result mailbox, and unchanged provider
+request count. The diagnostic driver reads the locked Tauri 2.11.5 event
+registration table, counts live entries and retains no payloads or callbacks.
+Native resource commands exist only in the diagnostic feature, absent from release.
+Normal `latency_next` now hides through the production close command; previous
+phases destroyed their tooltip. Windows warm show uses SW_SHOWNOACTIVATE.
+Final native samples also verify the computed reading font against public
+settings. Recovery mode checks visible/nonfocused state, stale native layout and
+close commands, and actual hidden state after dismiss; it is a functional group,
+separate from the comparable 5-process latency group.
+
+For an actual isolated WebView2 renderer crash, add `LATENCY_CRASH=1` alongside
+`LATENCY_RECOVERY=1` and `LATENCY_SAMPLES=2`. The diagnostic native command
+calls DevTools `Page.crash` on the synthetic tooltip, requires the failed window to
+be retired, and the next production request must create a new controller, preserve
+main IPA and keep provider counts. This intentionally crashes only a diagnostic
+profile; do not use recovery/crash samples in the comparable latency percentiles.
+
+For extended plateau observation use `LATENCY_SAMPLES=751`, `LATENCY_RUNS=1`,
+without recovery/crash flags. The driver samples memory at 10/25/50/100/200/500/750
+cycles, outside the next timed sample. `after-reuse-soak751.json` records one view,
+1502 provider requests, one dictionary, stable listeners/jobs and late plateau.

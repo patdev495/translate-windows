@@ -1,0 +1,137 @@
+{
+  "error": "The crashed tooltip was not retired",
+  "samples": [
+    {
+      "content": "new",
+      "contentVerified": true,
+      "error": false,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 304.347,
+          "stage": "host-start",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 191.5,
+          "elapsedMs": 416.5726,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 192.10000002384183,
+          "elapsedMs": 418.9981,
+          "stage": "provider",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 472.5717,
+          "stage": "dictionary-miss",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 18.899999976158146,
+          "elapsedMs": 494.5805,
+          "stage": "dictionary-fetch",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 457.800000011921,
+          "elapsedMs": 955.1922,
+          "stage": "dictionary-parse",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 485.199999988079,
+          "elapsedMs": 957.456,
+          "stage": "dictionary-load",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 487.800000011921,
+          "elapsedMs": 960.2859,
+          "stage": "ipa",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 2069.4071,
+          "stage": "view-ready",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 2391.9606999999996,
+          "stage": "result-ready",
+          "traceId": "1"
+        },
+        {
+          "listeners": 4,
+          "ocrJobs": 0,
+          "pendingRpc": 0,
+          "stage": "resources",
+          "tooltipMailbox": 1,
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 2528.0092999999997,
+          "stage": "content-verified",
+          "traceId": "1"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 2566.3464,
+          "stage": "correct-paint",
+          "traceId": "1"
+        }
+      ],
+      "id": "0-0",
+      "temperature": "cold",
+      "traceId": "1",
+      "windows": 2
+    },
+    {
+      "error": true,
+      "events": [],
+      "id": "0-failure",
+      "traceId": "2",
+      "windows": 2
+    }
+  ],
+  "runs": [
+    {
+      "error": "The crashed tooltip was not retired"
+    }
+  ],
+  "errors": 1,
+  "cancellations": 0,
+  "server": {
+    "connections": 14,
+    "requests": 2,
+    "dictionaryRequests": 1,
+    "providerConnections": 2
+  },
+  "source": "bf3cb320c39d9e3b4f0a834d815fd29355c6af51",
+  "sourceDiffSha256": "379b7441f94d765c486a1ab347b3892b5b0dedc73831f8022a1f28ba87347bc4",
+  "instrumentedWorkingTree": true,
+  "build": "native-debug/frontend-production",
+  "provider": "controlled HTTP 40ms",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "cpu": "12th Gen Intel(R) Core(TM) i5-1235U",
+    "logicalCpus": 12,
+    "totalMemoryBytes": 16849293312,
+    "osRelease": "10.0.26200"
+  },
+  "cold": {
+    "count": 1,
+    "p50": 2566.3464,
+    "p95": 2566.3464
+  },
+  "warm": {
+    "count": 0
+  }
+}

@@ -1,6 +1,6 @@
 # Kiểm tra các trường hợp chồng request và hồi quy
 
-Status: ready-for-agent
+Status: done
 Depends on: 02, 03, 04; test từng phần viết ngay trong từng bước
 Date: 2026-11-12
 
@@ -21,3 +21,5 @@ Không stale result/layout/show; không làm rơi durable save; không phá view
 ## Comments
 
 - 2026-11-12: Mới lập kế hoạch. Bước này tổng hợp test ghép, không phải dồn toàn bộ test tới cuối.
+
+- 2026-11-12: Ma trận S1–S6 đã chạy: frontend 134 tests, Rust 42 tests, Windows interactive 3/3 riêng, WebView2 UI smoke. Native race/layout/show/dismiss, crash/reload, 751 vòng với 4 listeners và 0 pending RPC/OCR; RAM plateau vòng 200–751. Giới hạn hardware đa DPI và OCR tail ghi rõ trong ../VALIDATION.md; không suy nghiệm thu phần chưa chạy.

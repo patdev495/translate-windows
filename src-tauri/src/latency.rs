@@ -17,21 +17,6 @@ pub struct LatencyState {
     pub started: Mutex<Instant>,
 }
 
-// Diagnostic-only IPC instrumentation. Observe real registrations, not constants
-// maintained by the tooltip implementation. No callback or payload is retained.
-pub const LISTENER_PROBE: &str = r#"
-(() => {
- const registered = new Set(); globalThis.__LATENCY_LISTENERS__ = registered;
- const original = window.__TAURI_INTERNALS__.invoke;
- window.__TAURI_INTERNALS__.invoke = async (command, args, options) => {
-   const result = await original(command, args, options);
-   if (command === 'plugin:event|listen') registered.add(result);
-   if (command === 'plugin:event|unlisten') registered.delete(args.eventId);
-   return result;
- };
-})();
-"#;
-
 #[tauri::command]
 pub fn latency_resources(app: tauri::AppHandle, listeners: usize, trace_id: String) {
     let state = app.state::<LatencyState>();

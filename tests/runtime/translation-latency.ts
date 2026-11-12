@@ -6,7 +6,7 @@ declare const __LATENCY_RESTART_TEST__: boolean;
 declare const __LATENCY_RECOVERY__: boolean;
 import { requestOcr } from '../../src/services/ocr-client';
 import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { emitTo, listen } from '@tauri-apps/api/event';
 import { Window as NativeWindow } from '@tauri-apps/api/window';
 
 export async function run(label: string): Promise<void> {
@@ -22,14 +22,22 @@ export async function run(label: string): Promise<void> {
         const root=document.getElementById('translation-extension-root')?.shadowRoot;
         const translations=[...root?.querySelectorAll('.tt-translation-text') || []];
         if(root?.querySelector('.tt-source-text')?.textContent===payload.text && translations.length===2 && translations.every(node=>node.textContent?.trim())) {
-          await invoke('latency_resources',{listeners:(globalThis as any).__LATENCY_LISTENERS__?.size || 0,traceId:(globalThis as any).__TRANSLATION_TRACE_ID__});
+          const settings = await invoke<{tooltipFontSize:string}>('get_app_settings');
+          const font = getComputedStyle(root.querySelector('#tooltip')!).fontSize;
+          if(font !== `${settings.tooltipFontSize}px`) throw new Error(`Tooltip font ${font}; expected ${settings.tooltipFontSize}px`);
+          // Read only the locked Tauri runtime's actual event registration table.
+          // No application callback, event payload or listener is retained here.
+          const registry = (globalThis as any).__internal_unstable_listeners_object_id__;
+          if(!registry) throw new Error('Tauri listener diagnostics unavailable');
+          const listeners = Object.values(registry).reduce<number>((count,entries)=>count+Object.keys(entries as object).length,0);
+          await invoke('latency_resources',{listeners,traceId:(globalThis as any).__TRANSLATION_TRACE_ID__});
           await invoke('latency_event',{stage:'content-verified',durationMs:0,traceId:(globalThis as any).__TRANSLATION_TRACE_ID__});
           return;
         }
         await new Promise(done=>setTimeout(done,25));
       }
       throw new Error('Tooltip content did not match the current request');
-    } catch {await invoke('latency_event',{stage:'request-error',durationMs:0,traceId:(globalThis as any).__TRANSLATION_TRACE_ID__});}
+    } catch (error) {await emitTo('main','latency-validation-error',String(error));await invoke('latency_event',{stage:'request-error',durationMs:0,traceId:(globalThis as any).__TRANSLATION_TRACE_ID__});}
     return;
   }
   if (label==='pdf' && __LATENCY_SHARED_TEST__) {
@@ -87,6 +95,8 @@ export async function run(label: string): Promise<void> {
     const ready = await invoke<any>('desktop_request', { message: { type: 'GET_ACCOUNT_LINK_STATUS' } });
     if (!ready.success) throw new Error('Host unavailable');
     let painted = false; let failed=false; let contentVerified=false;
+    let validationError: string | undefined;
+    const stopError=await listen<string>('latency-validation-error',event=>{validationError=event.payload;});
     const stopContent=await listen('latency-content-verified',()=> {contentVerified=true;});
     const stop = await listen<string>('latency-painted', event => { painted = true; failed=event.payload==='request-error'; });
     const memoryBefore = await invoke('latency_memory');
@@ -101,6 +111,7 @@ export async function run(label: string): Promise<void> {
     for (let index = 0; index < __LATENCY_SAMPLE_COUNT__; index++) {
       if (__LATENCY_RECOVERY__ && index === __LATENCY_SAMPLE_COUNT__ - 1) await invoke('latency_destroy_tooltip');
       painted = false; failed=false; contentVerified=false;
+      validationError=undefined;
       await invoke('open_tooltip_window', { text: __LATENCY_SOURCE__==='zh' ? (index%2 ? '你好世界。' : `你好世界 ${index}。`) : index % 2 ? 'Hello world.' : `Hello world ${index}.`, x: 100, y: 100, width: 0, height: 0 });
       const deadline = Date.now() + 30_000;
       while ((!painted || !contentVerified) && !failed && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 25));
@@ -117,7 +128,7 @@ export async function run(label: string): Promise<void> {
         previousRequestId = (await invoke<{requestId:string}>('get_tooltip_data')).requestId;
       }
       const sample = await invoke<any>('latency_next');
-      samples.push({ id: index, temperature: index ? 'warm' : 'cold', content: index % 2 ? 'repeated' : 'new', ...sample, contentVerified, error: !painted || !contentVerified || failed });
+      samples.push({ id: index, temperature: index ? 'warm' : 'cold', content: index % 2 ? 'repeated' : 'new', ...sample, contentVerified, validationError, error: !painted || !contentVerified || failed });
       if (__LATENCY_RECOVERY__ && await (await NativeWindow.getByLabel('tooltip'))!.isVisible()) throw new Error('Dismiss did not hide the retained window');
       if (__LATENCY_SAMPLE_COUNT__ > 30 && [9,24,49].includes(index)) {
         memoryCheckpoints.push({ cycle: index+1, ...await invoke<any>('latency_memory') });
@@ -128,12 +139,12 @@ export async function run(label: string): Promise<void> {
       painted=false;failed=false;contentVerified=false;
       if(__LATENCY_RESTART_TEST__) localStorage.setItem('latency-prefix',JSON.stringify({samples,memoryBefore,acquisition:'excluded',ocr:'off',targets:2}));
       await invoke('open_pdf_window');
-      if(__LATENCY_RESTART_TEST__) {stop();stopContent();return;}
+      if(__LATENCY_RESTART_TEST__) {stop();stopContent();stopError();return;}
       const deadline=Date.now()+30_000;
       while((!painted || !contentVerified) && !failed && Date.now()<deadline) await new Promise(done=>setTimeout(done,25));
       samples.push({id:'pdf',temperature:'warm',content:'PDF selection',...await invoke<any>('latency_next'),contentVerified,error:!painted||!contentVerified||failed});
     }
-    stop();stopContent();
+    stop();stopContent();stopError();
     await invoke('latency_done', { result: { metric: 'text-ready-to-correct-paint', acquisition: 'excluded', ocr: __LATENCY_OCR__ ? 'concurrent-explicit-recognition' : 'off', ocrResult: await ocrResult, sourceLanguage: __LATENCY_SOURCE__, targets: 2, memoryBefore, memoryCheckpoints, recovery: __LATENCY_RECOVERY__, memoryAfter: await invoke('latency_memory'), samples } });
   } catch (error) {
     samples.push({id:'failure',error:true,...await invoke<any>('latency_next')});

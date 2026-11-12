@@ -1351,7 +1351,7 @@ fn open_tooltip_window_inner(
 
     #[cfg(feature = "latency-harness")]
     if let Some(diagnostics) = app_handle.try_state::<latency::LatencyState>() {
-        builder = builder.data_directory(diagnostics.profile.clone()).initialization_script(latency::LISTENER_PROBE)
+        builder = builder.data_directory(diagnostics.profile.clone())
             .initialization_script(format!("globalThis.__TRANSLATION_DIAGNOSTICS__=true;globalThis.__TRANSLATION_TRACE_ID__={:?};", diagnostics.trace_id.load(std::sync::atomic::Ordering::Acquire).to_string()));
     }
     let _tooltip_win = builder.build()?;

@@ -708,7 +708,9 @@ export class TranslationTooltip {
   show(_x: number, _y: number, sourceText: string, data: any, ttsEnabled: boolean = true, phoneticsVisible: boolean = true, ocrWidth?: number, viewport?: { width: number; height: number }) {
     if (!this.tooltipEl || !this.shadow) return;
     const presentation = ++this.presentation;
+    const fontSize = this.tooltipEl.style.getPropertyValue('--tooltip-font-size');
     this.tooltipEl.style.cssText = '';
+    if (fontSize) this.tooltipEl.style.setProperty('--tooltip-font-size', fontSize);
     this.clearSelectionGloss();
     this.stopHanziAnimations();
     this.saveSection = null;

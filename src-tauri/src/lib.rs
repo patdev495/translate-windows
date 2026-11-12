@@ -23,6 +23,7 @@ use serde::{Deserialize, Serialize};
 pub mod ocr;
 pub mod selected_text;
 pub mod desktop;
+pub mod http_clients;
 #[cfg(feature = "latency-harness")]
 pub mod latency;
 pub mod desktop_views;
@@ -1441,7 +1442,7 @@ fn update_app_settings(
 }
 
 #[tauri::command]
-async fn verify_deepl_api_key(api_key: String) -> Result<bool, String> {
+async fn verify_deepl_api_key(state: tauri::State<'_, http_clients::HttpClients>, api_key: String) -> Result<bool, String> {
     if api_key.trim().is_empty() {
         return Ok(false);
     }
@@ -1452,10 +1453,7 @@ async fn verify_deepl_api_key(api_key: String) -> Result<bool, String> {
         "https://api.deepl.com/v2/usage"
     };
 
-    let client = reqwest::Client::builder()
-        .user_agent("PolyTranslate-Desktop/1.0")
-        .build()
-        .map_err(|e| format!("Failed to build HTTP client: {e}"))?;
+    let client = state.deepl().map_err(|e| format!("Failed to build HTTP client: {e}"))?;
 
     let res = client
         .get(url)
@@ -1466,7 +1464,9 @@ async fn verify_deepl_api_key(api_key: String) -> Result<bool, String> {
 
     match res {
         Ok(response) => {
-            Ok(response.status() == 200)
+            let valid = response.status() == 200;
+            let _ = response.bytes().await; // Consume the body so the connection can return to the pool.
+            Ok(valid)
         }
         Err(_) => Ok(false),
     }
@@ -1474,6 +1474,7 @@ async fn verify_deepl_api_key(api_key: String) -> Result<bool, String> {
 
 #[tauri::command]
 async fn translate_deepl(
+    state: tauri::State<'_, http_clients::HttpClients>,
     text: String,
     target_lang: String,
     api_key: String,
@@ -1501,10 +1502,7 @@ async fn translate_deepl(
         }
     };
 
-    let client = reqwest::Client::builder()
-        .user_agent("PolyTranslate-Desktop/1.0")
-        .build()
-        .map_err(|e| format!("Failed to build HTTP client: {e}"))?;
+    let client = state.deepl().map_err(|e| format!("Failed to build HTTP client: {e}"))?;
 
     let body = serde_json::json!({
         "text": [text],
@@ -1763,6 +1761,7 @@ pub fn run() {
         ))
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
+        .manage(http_clients::HttpClients::default())
         .manage(CaptureState::default())
         .manage(TooltipState::default())
         .manage(SnippetCounter::default())

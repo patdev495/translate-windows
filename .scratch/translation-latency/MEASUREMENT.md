@@ -46,3 +46,10 @@ Nhóm bổ sung (mỗi nhóm đặt `LATENCY_RUNS=1`, `LATENCY_REPORT` riêng):
 `LATENCY_SOURCE=zh` để buộc IPA ở target; `LATENCY_OCR=1` để chạy OCR Latin thật
 đồng thời; `LATENCY_REAL=1` dùng 6 mẫu provider thật (12 request); thêm
 `LATENCY_PROVIDER=google` cho đối chiếu Google. Gỡ từng biến sau khi đo.
+
+## Sau HTTP pooling
+
+`after-http.json`: 5 cold + 100 warm, cùng frontend và cấu hình controlled.
+Warm p50 **1310,22 ms**, p95 **1917,75 ms**; **210 requests / 10 provider TCP
+connections**, so với baseline 210 / 210. Dictionary vẫn parse theo tooltip mới.
+Đây là overhead trên loopback; không suy ra phần trăm cải thiện DeepL thật.

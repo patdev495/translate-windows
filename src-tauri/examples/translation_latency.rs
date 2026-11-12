@@ -49,6 +49,7 @@ pub fn run() {
     let profile = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(format!("../.scratch/tmp/latency-{}",std::process::id()));
     let data = desktop::DesktopData::open(profile.join("desktop-values.json")).unwrap();
     tauri::Builder::default()
+        .manage(translation_desktop_lib::http_clients::HttpClients::default())
         .manage(AppSettingsState::default()).manage(TooltipState::default())
         .manage(desktop::DesktopDataState(Mutex::new(Some(data))))
         .manage(desktop::DesktopServiceState::default()).manage(ocr::OcrState::default())

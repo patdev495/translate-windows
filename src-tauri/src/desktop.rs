@@ -231,12 +231,7 @@ pub async fn desktop_http<R: Runtime>(
     if !matches!(method.as_str(), "GET" | "POST" | "PATCH" | "PUT" | "DELETE") {
         return Err("Unsupported HTTP method".into());
     }
-    let client = reqwest::Client::builder()
-        .redirect(reqwest::redirect::Policy::none())
-        .timeout(Duration::from_secs(15))
-        .user_agent("PolyTranslate-Desktop/1.0")
-        .build()
-        .map_err(|e| e.to_string())?;
+    let client = app.state::<crate::http_clients::HttpClients>().desktop().map_err(|e|e.to_string())?;
     #[allow(unused_mut)]
     let mut parsed = parsed;
     #[cfg(feature = "latency-harness")]

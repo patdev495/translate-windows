@@ -1,6 +1,6 @@
 # Tái sử dụng HTTP client theo transport policy
 
-Status: ready-for-agent
+Status: done
 Depends on: 01-measure-baseline
 Date: 2026-11-12
 
@@ -22,3 +22,5 @@ Server quan sát reuse thật, payload/auth/error contract giữ nguyên. Có b�
 ## Comments
 
 - 2026-11-12: Mới lập kế hoạch.
+
+- 2026-11-12: Hoàn thành app-managed lazy clients theo hai policy; 4 test public HTTP command qua, có red 2 TCP → green 1 TCP. Đo riêng 105 mẫu: 210 provider requests / 10 TCP connections (baseline 210 / 210), warm p50 1310,22 ms, p95 1917,75 ms. Xem [TDD.md](../TDD.md), [after-http.json](../after-http.json). Không thêm translation cache.

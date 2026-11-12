@@ -77,7 +77,7 @@ fn open(app: &tauri::AppHandle, label: &str, path: &str) -> Result<(), String> {
         label,
         tauri::WebviewUrl::External(format!("http://127.0.0.1:1438/{path}").parse().unwrap()),
     );
-    if label == "tooltip" {
+    if label == "tooltip" || label == "hanzi-breakdown" {
         builder = builder.decorations(false).shadow(false).transparent(true).resizable(false);
     }
     builder.inner_size(1080.0, 780.0)

@@ -9,18 +9,25 @@
     },
     "strokePaths": 42
   },
-  "settings": {
-    "accountLinked": true,
-    "shortcut": "Ctrl",
-    "tabs": 5
-  },
   "hanzi-breakdown": {
+    "componentNavigation": true,
     "components": 2,
+    "internalScroll": true,
+    "layout": {
+      "inset": 0,
+      "outerFrame": 0,
+      "width": 480
+    },
     "noteSaved": true
   },
   "pdf": {
     "pages": 1,
     "text": "Hello PDF"
+  },
+  "settings": {
+    "accountLinked": true,
+    "shortcut": "Ctrl",
+    "tabs": 5
   },
   "main": {
     "host": true

@@ -78,15 +78,45 @@ export async function verify(label: string): Promise<void> {
     } else if(label==='hanzi-breakdown') {
       const root=await until(()=>document.getElementById('translation-extension-hanzi-breakdown-root')?.shadowRoot,'Breakdown mount');
       await until(()=>root.querySelectorAll('.hanzi-breakdown-component').length>0,'Offline Hanzi components');
-      const input=await until(()=>root.querySelector<HTMLTextAreaElement>('textarea'),'Memory note input');
+      const card=root.querySelector<HTMLElement>('.hanzi-breakdown-card')!;
+      await until(()=> {
+        const bounds=card.getBoundingClientRect();
+        return Math.abs(bounds.left)<1 && Math.abs(bounds.top)<1 && Math.abs(bounds.width-window.innerWidth)<1 && Math.abs(bounds.height-window.innerHeight)<1;
+      },'Breakdown card fits native window without an outer layer');
+      const inner=await getCurrentWindow().innerSize(), outer=await getCurrentWindow().outerSize();
+      check(inner.width===outer.width && inner.height===outer.height,'Breakdown has no native outer frame');
+      result.layout={inset:0,outerFrame:0,width:Math.round(card.getBoundingClientRect().width)};
+      const input=await until(()=>root.querySelector<HTMLTextAreaElement>('.hanzi-breakdown-note textarea'),'Memory note input');
       input.value='Synthetic WebView2 memory note'; input.dispatchEvent(new Event('input',{bubbles:true}));
       await until(()=>[...root.querySelectorAll('[role="status"]')].some(node=>node.textContent==='Saved'),'Memory note saved');
       result.components=root.querySelectorAll('.hanzi-breakdown-component').length; result.noteSaved=true;
+      // User-resizable note field must grow inside the card's scroll area,
+      // without creating a second page scrollbar or an uncovered native frame.
+      input.style.height='2000px';
+      check(input.isConnected,'Resized breakdown note field remains connected');
+      await until(()=>card.scrollHeight>card.clientHeight && Math.abs(card.getBoundingClientRect().height-window.innerHeight)<1,'Breakdown scroll stays inside the fitted card');
+      card.scrollTop=card.scrollHeight;
+      check(card.scrollTop>0 && document.documentElement.scrollHeight<=window.innerHeight+1,'Only the breakdown card scrolls');
+      result.internalScroll=true;
+      const component=root.querySelector<HTMLButtonElement>('.hanzi-breakdown-component button[data-component]');
+      if(component) {
+        const previous=card;
+        component.click();
+        const next=await until(()=> {
+          const nextCard=root.querySelector<HTMLElement>('.hanzi-breakdown-card');
+          return nextCard && nextCard!==previous && nextCard.querySelector('.hanzi-breakdown-back') ? nextCard : null;
+        },'Breakdown component navigation');
+        await until(()=> {
+          const bounds=next.getBoundingClientRect();
+          return Math.abs(bounds.left)<1 && Math.abs(bounds.top)<1 && Math.abs(bounds.width-window.innerWidth)<1 && Math.abs(bounds.height-window.innerHeight)<1;
+        },'Nested breakdown keeps the card flush to the native window');
+        result.componentNavigation=true;
+      }
     }
     await invoke('smoke_page_done',{label,result});
   } catch(error) {
-    const card=document.getElementById('translation-extension-root')?.shadowRoot?.querySelector('#tooltip');
-    const geometry=label==='tooltip' ? {card:card?.getBoundingClientRect().toJSON(),viewport:{width:window.innerWidth,height:window.innerHeight},inner:await getCurrentWindow().innerSize().catch(()=>null),outer:await getCurrentWindow().outerSize().catch(()=>null)} : undefined;
+    const card=label==='hanzi-breakdown' ? document.getElementById('translation-extension-hanzi-breakdown-root')?.shadowRoot?.querySelector('.hanzi-breakdown-card') : document.getElementById('translation-extension-root')?.shadowRoot?.querySelector('#tooltip');
+    const geometry=['tooltip','hanzi-breakdown'].includes(label) ? {card:card?.getBoundingClientRect().toJSON(),scrollHeight:card?.scrollHeight,clientHeight:card?.clientHeight,viewport:{width:window.innerWidth,height:window.innerHeight},inner:await getCurrentWindow().innerSize().catch(()=>null),outer:await getCurrentWindow().outerSize().catch(()=>null)} : undefined;
     await invoke('smoke_page_done',{label,result:{error:error instanceof Error ? error.message : String(error),geometry}});
   }
 }

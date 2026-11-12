@@ -1,3 +1,4 @@
+import { latencySpan } from './latency';
 import { desktopFetch } from '../platform/http';
 
 export interface TranslationResult {
@@ -8,6 +9,7 @@ export interface TranslationResult {
 export interface TranslationSettings {
   provider: 'google' | 'deepl' | 'deepl-free';
   deeplApiKey: string;
+  latencyTraceId?: string;
 }
 
 export class TranslationEngine {
@@ -45,7 +47,11 @@ export class TranslationEngine {
   }
 
   // Unified translation method using settings provider
-  static async translateWithSettings(
+  static async translateWithSettings(text: string, targetLang: string, settings: TranslationSettings): Promise<TranslationResult> {
+    return latencySpan('provider', () => this.translateProvider(text, targetLang, settings), settings.latencyTraceId);
+  }
+
+  private static async translateProvider(
     text: string,
     targetLang: string,
     settings: TranslationSettings

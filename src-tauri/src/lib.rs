@@ -23,6 +23,8 @@ use serde::{Deserialize, Serialize};
 pub mod ocr;
 pub mod selected_text;
 pub mod desktop;
+#[cfg(feature = "latency-harness")]
+pub mod latency;
 pub mod desktop_views;
 #[cfg(windows)]
 pub mod input_translation;
@@ -1270,15 +1272,23 @@ fn open_tooltip_window_inner(
         builder = builder.position(tooltip_x, tooltip_y);
     }
 
+    #[cfg(feature = "latency-harness")]
+    if let Some(diagnostics) = app_handle.try_state::<latency::LatencyState>() {
+        builder = builder.data_directory(diagnostics.profile.clone())
+            .initialization_script(format!("globalThis.__TRANSLATION_DIAGNOSTICS__=true;globalThis.__TRANSLATION_TRACE_ID__={:?};", diagnostics.trace_id.load(std::sync::atomic::Ordering::Acquire).to_string()));
+    }
     let _tooltip_win = builder.build()?;
 
     Ok(())
 }
 
+pub use tooltip_commands::{open_tooltip_window, close_tooltip_window, dismiss_tooltip_if_external, get_tooltip_data};
+pub mod tooltip_commands {
+use super::*;
 /// Command: spawn the tooltip window explicitly (called by the overlay frontend
 /// after it has run OCR and wants to open a tooltip with specific text).
 #[tauri::command]
-async fn open_tooltip_window(
+pub async fn open_tooltip_window(
     app_handle: tauri::AppHandle,
     text: String,
     x: i32,
@@ -1296,22 +1306,24 @@ async fn open_tooltip_window(
 }
 
 #[tauri::command]
-fn close_tooltip_window(app_handle: tauri::AppHandle) {
+pub fn close_tooltip_window(app_handle: tauri::AppHandle) {
     if let Some(win) = app_handle.get_webview_window("tooltip") {
         let _ = win.destroy();
     }
 }
 
 #[tauri::command]
-fn dismiss_tooltip_if_external(app_handle: tauri::AppHandle) {
+pub fn dismiss_tooltip_if_external(app_handle: tauri::AppHandle) {
     if app_handle.webview_windows().values().any(|window| window.is_focused().unwrap_or(false)) { return; }
     close_tooltip_window(app_handle);
 }
 
 #[tauri::command]
-fn get_tooltip_data(state: tauri::State<'_, TooltipState>) -> Option<TooltipData> {
+pub fn get_tooltip_data(state: tauri::State<'_, TooltipState>) -> Option<TooltipData> {
     let lock = state.0.lock().unwrap();
     lock.clone()
+}
+
 }
 
 /// Spawn a new always-on-top draggable snippet window showing the cropped image.

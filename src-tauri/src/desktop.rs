@@ -211,7 +211,8 @@ pub fn desktop_reply<R: Runtime>(
 }
 
 #[tauri::command]
-pub async fn desktop_http(
+pub async fn desktop_http<R: Runtime>(
+    app: tauri::AppHandle<R>,
     url: String,
     method: String,
     headers: HashMap<String, String>,
@@ -236,6 +237,15 @@ pub async fn desktop_http(
         .user_agent("PolyTranslate-Desktop/1.0")
         .build()
         .map_err(|e| e.to_string())?;
+    #[allow(unused_mut)]
+    let mut parsed = parsed;
+    #[cfg(feature = "latency-harness")]
+    if deepl {
+        if let Some(endpoint) = app.try_state::<crate::latency::LatencyState>().and_then(|state|state.transport_endpoint.clone()) {
+            parsed = reqwest::Url::parse(&endpoint).map_err(|e|e.to_string())?;
+        }
+    }
+    let _ = &app;
     let mut request = client.request(method.parse().map_err(|_| "Invalid HTTP method")?, parsed);
     for (key, value) in headers {
         if matches!(

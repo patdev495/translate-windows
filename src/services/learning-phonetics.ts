@@ -1,3 +1,4 @@
+import { latencySpan } from './latency';
 import { desktopRuntime as chrome } from '../platform/runtime';
 import { OutputFormat, pinyin, segment } from 'pinyin-pro';
 
@@ -6,13 +7,13 @@ let cmuDictCache: Record<string, string> | null = null;
 const zhRunPattern = /[\u3400-\u9fff\uf900-\ufaff]+/g;
 const zhCharPattern = /[\u3400-\u9fff\uf900-\ufaff]/;
 
-async function getCmuDict(): Promise<Record<string, string>> {
+async function getCmuDict(traceId?: string): Promise<Record<string, string>> {
   if (cmuDictCache) return cmuDictCache;
 
   try {
     const url = chrome.runtime.getURL('cmu-dict.json');
-    const response = await fetch(url);
-    cmuDictCache = await response.json();
+    const response = await latencySpan('dictionary-fetch', () => fetch(url), traceId);
+    cmuDictCache = await latencySpan('dictionary-parse', () => response.json(), traceId);
   } catch (err) {
     console.error('Failed to load CMU dictionary:', err);
   }
@@ -36,8 +37,12 @@ export class PhoneticEngine {
     return pinyin(character, { multiple: true, type: 'array' }) as string[];
   }
 
-  static async getEnglishIPA(text: string): Promise<string> {
-    const cmuDict = await getCmuDict();
+  static async getEnglishIPA(text: string, traceId?: string): Promise<string> {
+    return latencySpan('ipa', () => this.englishIPA(text, traceId), traceId);
+  }
+
+  private static async englishIPA(text: string, traceId?: string): Promise<string> {
+    const cmuDict = await latencySpan('dictionary-load', () => getCmuDict(traceId), traceId);
     const tokens = text.split(/([a-zA-Z'-]+)/);
     const grouped: string[] = [];
 

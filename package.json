@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "test": "vitest run",
-    "test:ui": "node scripts/ui-smoke.mjs"
+    "test:ui": "node scripts/ui-smoke.mjs",
+    "bench:translation": "node scripts/translation-latency.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "~2.11.0",

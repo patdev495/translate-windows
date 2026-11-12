@@ -1,0 +1,206 @@
+{
+  "acquisition": "excluded",
+  "memoryAfter": {
+    "privateBytes": 199950336,
+    "processCount": 7,
+    "workingSetBytes": 412880896
+  },
+  "memoryBefore": {
+    "privateBytes": 161239040,
+    "processCount": 7,
+    "workingSetBytes": 360128512
+  },
+  "metric": "text-ready-to-correct-paint",
+  "ocr": "off",
+  "samples": [
+    {
+      "content": "new",
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 749.5642,
+          "stage": "view-ready"
+        },
+        {
+          "durationMs": 1009.5999999940396,
+          "elapsedMs": 1784.2455,
+          "stage": "provider"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1785.2182,
+          "stage": "request-error"
+        }
+      ],
+      "id": "0-0",
+      "temperature": "cold",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 734.6306000000001,
+          "stage": "view-ready"
+        },
+        {
+          "durationMs": 869.0999999940395,
+          "elapsedMs": 1648.2326,
+          "stage": "provider"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1649.6806,
+          "stage": "request-error"
+        }
+      ],
+      "id": "0-1",
+      "temperature": "warm",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 746.4146000000001,
+          "stage": "view-ready"
+        },
+        {
+          "durationMs": 889.8999999761581,
+          "elapsedMs": 1664.475,
+          "stage": "provider"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1665.755,
+          "stage": "request-error"
+        }
+      ],
+      "id": "0-2",
+      "temperature": "warm",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 775.5014,
+          "stage": "view-ready"
+        },
+        {
+          "durationMs": 889.5,
+          "elapsedMs": 1691.3504,
+          "stage": "provider"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1692.7776,
+          "stage": "request-error"
+        }
+      ],
+      "id": "0-3",
+      "temperature": "warm",
+      "windows": 2
+    },
+    {
+      "content": "new",
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 717.8419,
+          "stage": "view-ready"
+        },
+        {
+          "durationMs": 885.8000000119209,
+          "elapsedMs": 1647.749,
+          "stage": "provider"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1648.8725,
+          "stage": "request-error"
+        }
+      ],
+      "id": "0-4",
+      "temperature": "warm",
+      "windows": 2
+    },
+    {
+      "content": "repeated",
+      "error": true,
+      "events": [
+        {
+          "durationMs": 0,
+          "elapsedMs": 768.4312,
+          "stage": "view-ready"
+        },
+        {
+          "durationMs": 886.8999999761581,
+          "elapsedMs": 1693.4174,
+          "stage": "provider"
+        },
+        {
+          "durationMs": 0,
+          "elapsedMs": 1694.4962,
+          "stage": "request-error"
+        },
+        {
+          "durationMs": 908.2999999821186,
+          "elapsedMs": 1713.5323,
+          "stage": "provider"
+        }
+      ],
+      "id": "0-5",
+      "temperature": "warm",
+      "windows": 2
+    }
+  ],
+  "sourceLanguage": "en",
+  "targets": 2,
+  "runs": [
+    {
+      "acquisition": "excluded",
+      "memoryAfter": {
+        "privateBytes": 199950336,
+        "processCount": 7,
+        "workingSetBytes": 412880896
+      },
+      "memoryBefore": {
+        "privateBytes": 161239040,
+        "processCount": 7,
+        "workingSetBytes": 360128512
+      },
+      "metric": "text-ready-to-correct-paint",
+      "ocr": "off",
+      "sourceLanguage": "en",
+      "targets": 2
+    }
+  ],
+  "server": {
+    "connections": 12,
+    "requests": 0,
+    "providerConnections": 0
+  },
+  "source": "1c7df1fdffbb662d7d8c0b909bb54759096534f7",
+  "instrumentedWorkingTree": true,
+  "build": "native-debug/frontend-production",
+  "provider": "DeepL Web real",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "cold": {
+    "count": 0
+  },
+  "warm": {
+    "count": 0
+  }
+}

@@ -1,3 +1,4 @@
+import { latencyEvent } from './services/latency';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { currentMonitor, getCurrentWindow, LogicalSize, LogicalPosition } from '@tauri-apps/api/window';
@@ -10,6 +11,7 @@ interface Payload { text?: string; dataUrl?: string; error?: string; notice?: st
 const close = () => invoke('close_tooltip_window');
 
 window.addEventListener('DOMContentLoaded', async () => {
+  latencyEvent('view-ready');
   let status = document.getElementById('tooltip-status');
   if (!status) { status = document.createElement('div'); status.id = 'tooltip-status'; document.body.append(status); }
   status.setAttribute('role', 'status');
@@ -58,6 +60,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const cropWidth = payload.width ? payload.width / scale : undefined;
     tooltip.show(0, 0, text, data, settings.ttsEnabled, settings.phoneticsVisible, cropWidth, viewport);
     status.remove();
+    latencyEvent('result-ready');
     const root = document.getElementById('translation-extension-root')!.shadowRoot!;
     const card = root.querySelector<HTMLElement>('#tooltip')!;
     if (payload.notice) {
@@ -72,11 +75,11 @@ window.addEventListener('DOMContentLoaded', async () => {
       card.style.cssText += `;position:relative;left:0;top:0;transform:none;margin:0;width:${width}px;max-width:none;max-height:${maxHeight}px;overflow:auto;outline:none;box-shadow:none;`;
       const fit = () => {
         const height = Math.min(maxHeight, Math.max(1, pixelAligned(card.getBoundingClientRect().height) || 120));
-        void getCurrentWindow().setSize(new LogicalSize(width,height)).then(() => {
+        return getCurrentWindow().setSize(new LogicalSize(width,height)).then(() => {
           if (!moved) return getCurrentWindow().setPosition(new LogicalPosition((origin?.x || 0)+(viewport.width-width)/2,(origin?.y || 0)+(viewport.height-height)/2));
         }).catch(error => console.error('Tooltip layout failed:', error));
       };
-      fit();
+      await fit();
       if (typeof ResizeObserver !== 'undefined') { const observer = new ResizeObserver(fit); observer.observe(card); window.addEventListener('beforeunload', () => observer.disconnect(), { once: true }); }
       // Intercept before the shared PDF tooltip captures the pointer and moves its DOM card.
       card.addEventListener('pointerdown', event => {
@@ -88,10 +91,12 @@ window.addEventListener('DOMContentLoaded', async () => {
       window.addEventListener('blur', () => { setTimeout(() => { void invoke('dismiss_tooltip_if_external'); }, 150); });
       void listen<Settings>('settings-changed', event => { configure(event.payload); fit(); });
     }
+    requestAnimationFrame(() => requestAnimationFrame(() => latencyEvent('correct-paint')));
     window.addEventListener('translation-tooltip-hidden', () => { void close(); });
     window.addEventListener('keydown', event => { if (event.key === 'Escape') void close(); });
     window.addEventListener('beforeunload', () => { window.speechSynthesis?.cancel(); }, { once: true });
   } catch (error) {
+    latencyEvent('request-error');
     status.textContent = error instanceof Error ? error.message : String(error);
     console.error('Tooltip failed:', error);
   }

@@ -1354,7 +1354,26 @@ fn open_tooltip_window_inner(
         builder = builder.data_directory(diagnostics.profile.clone())
             .initialization_script(format!("globalThis.__TRANSLATION_DIAGNOSTICS__=true;globalThis.__TRANSLATION_TRACE_ID__={:?};", diagnostics.trace_id.load(std::sync::atomic::Ordering::Acquire).to_string()));
     }
-    let _tooltip_win = builder.build()?;
+    let tooltip_win = builder.build()?;
+    #[cfg(windows)]
+    {
+        let failed_window = tooltip_win.clone();
+        tooltip_win.with_webview(move |webview| unsafe {
+            if let Ok(core) = webview.controller().CoreWebView2() {
+                let failed = failed_window.clone();
+                let handler = webview2_com::ProcessFailedEventHandler::create(Box::new(move |_, _| {
+                    // Retire the failed controller, not whichever presentation
+                    // happens to own the reused label when the callback runs.
+                    let _ = failed.destroy();
+                    Ok(())
+                }));
+                let mut token = 0;
+                if core.add_ProcessFailed(&handler, &mut token).is_err() {
+                    let _ = failed_window.destroy();
+                }
+            }
+        })?;
+    }
 
     Ok(())
 }

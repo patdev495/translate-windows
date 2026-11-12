@@ -37,6 +37,28 @@ mod harness {
     }
 
     #[tauri::command]
+    async fn latency_crash_tooltip(app: tauri::AppHandle) -> Result<(), String> {
+        let observed = std::sync::Arc::new(AtomicU64::new(0));
+        let proof = observed.clone();
+        app.get_webview_window("tooltip").ok_or("Tooltip missing")?.with_webview(move |view| unsafe {
+            if let Ok(core) = view.controller().CoreWebView2() {
+                let observer = webview2_com::ProcessFailedEventHandler::create(Box::new(move |_, _| {
+                    proof.fetch_add(1, Ordering::AcqRel);
+                    Ok(())
+                }));
+                let mut token = 0;
+                let _ = core.add_ProcessFailed(&observer, &mut token);
+                let completed = webview2_com::CallDevToolsProtocolMethodCompletedHandler::create(Box::new(|_, _|Ok(())));
+                let _ = core.CallDevToolsProtocolMethod(windows::core::w!("Page.crash"), windows::core::w!("{}"), &completed);
+            }
+        }).map_err(|e|e.to_string())?;
+        for _ in 0..200 {
+            if app.get_webview_window("tooltip").is_none() { return Ok(()); }
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        }
+        Err(if observed.load(Ordering::Acquire)>0 { "The crashed tooltip was not retired" } else { "Crash fixture did not receive ProcessFailed" }.into())
+    }
+    #[tauri::command]
     async fn latency_destroy_tooltip(app: tauri::AppHandle) -> Result<(), String> {
         if let Some(window) = app.get_webview_window("tooltip") { window.destroy().map_err(|e|e.to_string())?; }
         for _ in 0..100 {
@@ -174,6 +196,7 @@ mod harness {
                 get_app_settings,
                 latency_reload_host,
                 latency_destroy_tooltip,
+                latency_crash_tooltip,
                 latency_next,
                 latency_done,
                 latency_memory,

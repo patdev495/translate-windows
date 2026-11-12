@@ -4,6 +4,7 @@ declare const __LATENCY_OCR__: boolean;
 declare const __LATENCY_SHARED_TEST__: boolean;
 declare const __LATENCY_RESTART_TEST__: boolean;
 declare const __LATENCY_RECOVERY__: boolean;
+declare const __LATENCY_CRASH__: boolean;
 import { requestOcr } from '../../src/services/ocr-client';
 import { invoke } from '@tauri-apps/api/core';
 import { emitTo, listen } from '@tauri-apps/api/event';
@@ -29,7 +30,7 @@ export async function run(label: string): Promise<void> {
           // No application callback, event payload or listener is retained here.
           const registry = (globalThis as any).__internal_unstable_listeners_object_id__;
           if(!registry) throw new Error('Tauri listener diagnostics unavailable');
-          const listeners = Object.values(registry).reduce<number>((count,entries)=>count+Object.keys(entries as object).length,0);
+          const listeners = Object.getOwnPropertyNames(registry).reduce((count,event)=>count+Object.getOwnPropertyNames(registry[event]).length,0);
           await invoke('latency_resources',{listeners,traceId:(globalThis as any).__TRANSLATION_TRACE_ID__});
           await invoke('latency_event',{stage:'content-verified',durationMs:0,traceId:(globalThis as any).__TRANSLATION_TRACE_ID__});
           return;
@@ -109,7 +110,7 @@ export async function run(label: string): Promise<void> {
     await invoke('latency_next');
     let previousRequestId: string | undefined;
     for (let index = 0; index < __LATENCY_SAMPLE_COUNT__; index++) {
-      if (__LATENCY_RECOVERY__ && index === __LATENCY_SAMPLE_COUNT__ - 1) await invoke('latency_destroy_tooltip');
+      if (__LATENCY_RECOVERY__ && index === __LATENCY_SAMPLE_COUNT__ - 1) await invoke(__LATENCY_CRASH__ ? 'latency_crash_tooltip' : 'latency_destroy_tooltip');
       painted = false; failed=false; contentVerified=false;
       validationError=undefined;
       await invoke('open_tooltip_window', { text: __LATENCY_SOURCE__==='zh' ? (index%2 ? '你好世界。' : `你好世界 ${index}。`) : index % 2 ? 'Hello world.' : `Hello world ${index}.`, x: 100, y: 100, width: 0, height: 0 });

@@ -9,6 +9,9 @@ Create `tooltip` lazily on the asynchronous caller, preserving the WebView2
 creation workaround. Retain it on dismiss; destroy only for app shutdown or
 recovery. Native publication/hide runs on the UI thread, serialized with layout.
 No state mutex spans window creation, layout, show, emit or network waits.
+On Windows, CoreWebView2 `ProcessFailed` retires the failed controller/window;
+the next request recreates it. The callback captures that window handle rather
+than resolving the reusable label, so it cannot destroy a later replacement.
 
 Every presentation receives a monotonic request ID. Install listeners once before
 reading the native latest-payload snapshot. This handshake replaces readiness
@@ -32,6 +35,8 @@ including results produced before tooltip readiness. Display changes keep curren
 translation. New requests select the monitor from their source coordinates and
 center once; resizing after a manual drag preserves position. Windows warm show
 uses `SW_SHOWNOACTIVATE` so the source keeps focus.
+Pair it with unconditional `SW_HIDE`: Tao's cached visibility flag still reflects
+the initial hidden window and cannot safely drive the matching hide operation.
 
 ## Validation
 

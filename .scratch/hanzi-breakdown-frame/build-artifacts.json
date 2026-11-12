@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "2483b5b6fe939e2791cc0885716987f5bf6aead4",
+  "started": "2026-11-12T14:10:06.0511127+07:00",
+  "completed": "2026-11-12T14:36:05.5924263+07:00",
+  "cargoBuildJobs": 1,
+  "features": [],
+  "artifacts": [
+    {
+      "path": "D:\\Workspace\\translation-desktop\\src-tauri\\target\\release\\translation-desktop.exe",
+      "bytes": 267753984,
+      "modified": "2026-11-12T14:36:00.5867674+07:00",
+      "sha256": "71535507A61354136C90CAF7DF2B481CD0799503C7D64302B9F0E0BA93FCB41D"
+    },
+    {
+      "path": "D:\\Workspace\\translation-desktop\\src-tauri\\target\\release\\bundle\\nsis\\PolyTranslate_1.0.0_x64-setup.exe",
+      "bytes": 256505697,
+      "modified": "2026-11-12T14:35:59.5464564+07:00",
+      "sha256": "EBED7F0CC31A6334F5BF4AFD86B63A18428EC57AAAE6B486D4CC7044EB8ABE26"
+    }
+  ],
+  "previousRelease": ".scratch/hanzi-breakdown-frame/previous-release.json"
+}

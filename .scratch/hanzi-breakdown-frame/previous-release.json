@@ -1,0 +1,6 @@
+{
+  "path": "D:\\Workspace\\translation-desktop\\src-tauri\\target\\release\\bundle\\nsis\\PolyTranslate_1.0.0_x64-setup.exe",
+  "rollbackPath": "D:\\Workspace\\translation-desktop\\.scratch\\tmp\\hanzi-frame-rollback-2026-11-12\\PolyTranslate_1.0.0_x64-setup.exe",
+  "sha256": "7149A5A4302A6252B3D63B21624CD8CF9C6CCE66534CD454A5FD4215F3538287",
+  "previousMetadata": ".scratch/translation-latency/build-artifacts.json"
+}

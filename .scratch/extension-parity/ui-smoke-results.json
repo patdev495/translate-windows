@@ -1,14 +1,4 @@
 {
-  "tooltip": {
-    "copy": "你好",
-    "layout": {
-      "centered": true,
-      "inset": 0,
-      "outerFrame": 0,
-      "width": 382
-    },
-    "strokePaths": 42
-  },
   "hanzi-breakdown": {
     "componentNavigation": true,
     "components": 2,
@@ -19,6 +9,16 @@
       "width": 480
     },
     "noteSaved": true
+  },
+  "tooltip": {
+    "copy": "你好",
+    "layout": {
+      "centered": true,
+      "inset": 0,
+      "outerFrame": 0,
+      "width": 382
+    },
+    "strokePaths": 42
   },
   "pdf": {
     "pages": 1,

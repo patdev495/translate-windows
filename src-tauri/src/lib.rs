@@ -1223,6 +1223,17 @@ async fn process_crop_area(
     Ok(data_url)
 }
 
+fn hide_tooltip_window(window: &tauri::WebviewWindow) {
+    // ShowWindow(SW_SHOWNOACTIVATE) bypasses Tao's cached VISIBLE flag.
+    // Pair it with an unconditional native hide; Tao may still consider it hidden.
+    #[cfg(windows)]
+    if let Ok(hwnd) = window.hwnd() {
+        unsafe { windows_sys::Win32::UI::WindowsAndMessaging::ShowWindow(hwnd.0 as _, windows_sys::Win32::UI::WindowsAndMessaging::SW_HIDE); }
+    }
+    #[cfg(not(windows))]
+    let _ = window.hide();
+}
+
 fn prepare_tooltip_request(
     app_handle: &tauri::AppHandle,
     mut payload: TooltipData,
@@ -1264,7 +1275,7 @@ fn prepare_tooltip_request(
     }
     desktop_views::close_for_owner(app_handle, "tooltip");
     if let Some(existing) = app_handle.get_webview_window("tooltip") {
-        let _ = existing.hide();
+        hide_tooltip_window(&existing);
         existing.emit("tooltip-request", payload)?;
         return Ok(None);
     }
@@ -1382,7 +1393,7 @@ fn dismiss_tooltip_request(app_handle: tauri::AppHandle, request_id: Option<Stri
     *app_handle.state::<TooltipState>().1.lock().unwrap() = None;
     app_handle.state::<TooltipState>().2.notify_waiters();
     if let Some(win) = app_handle.get_webview_window("tooltip") {
-        let _ = win.hide();
+        hide_tooltip_window(&win);
         if let Some(data) = dismissed {
             let _ = win.emit("tooltip-dismissed", serde_json::json!({"requestId":data.request_id}));
         }

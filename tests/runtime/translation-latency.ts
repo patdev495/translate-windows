@@ -117,8 +117,8 @@ export async function run(label: string): Promise<void> {
         previousRequestId = (await invoke<{requestId:string}>('get_tooltip_data')).requestId;
       }
       const sample = await invoke<any>('latency_next');
-      if (__LATENCY_RECOVERY__ && await (await NativeWindow.getByLabel('tooltip'))!.isVisible()) throw new Error('Dismiss did not hide the retained window');
       samples.push({ id: index, temperature: index ? 'warm' : 'cold', content: index % 2 ? 'repeated' : 'new', ...sample, contentVerified, error: !painted || !contentVerified || failed });
+      if (__LATENCY_RECOVERY__ && await (await NativeWindow.getByLabel('tooltip'))!.isVisible()) throw new Error('Dismiss did not hide the retained window');
       if (__LATENCY_SAMPLE_COUNT__ > 30 && [9,24,49].includes(index)) {
         memoryCheckpoints.push({ cycle: index+1, ...await invoke<any>('latency_memory') });
         await invoke('latency_next'); // Memory collection is outside the next timed sample.
@@ -135,5 +135,8 @@ export async function run(label: string): Promise<void> {
     }
     stop();stopContent();
     await invoke('latency_done', { result: { metric: 'text-ready-to-correct-paint', acquisition: 'excluded', ocr: __LATENCY_OCR__ ? 'concurrent-explicit-recognition' : 'off', ocrResult: await ocrResult, sourceLanguage: __LATENCY_SOURCE__, targets: 2, memoryBefore, memoryCheckpoints, recovery: __LATENCY_RECOVERY__, memoryAfter: await invoke('latency_memory'), samples } });
-  } catch { await invoke('latency_done', { result: { error: 'Harness failed', samples } }); }
+  } catch (error) {
+    samples.push({id:'failure',error:true,...await invoke<any>('latency_next')});
+    await invoke('latency_done', { result: { error: String(error), samples } });
+  }
 }

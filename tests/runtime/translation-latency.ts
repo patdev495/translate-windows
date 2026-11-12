@@ -7,6 +7,7 @@ declare const __LATENCY_RECOVERY__: boolean;
 import { requestOcr } from '../../src/services/ocr-client';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import { Window as NativeWindow } from '@tauri-apps/api/window';
 
 export async function run(label: string): Promise<void> {
   if(label==='tooltip') {
@@ -96,13 +97,27 @@ export async function run(label: string): Promise<void> {
       ocrResult=requestOcr(canvas.toDataURL(),'medium','latin').then(value=>value.fullText ? 'recognized' : 'empty',()=> 'failed');
     }
     await invoke('latency_next');
+    let previousRequestId: string | undefined;
     for (let index = 0; index < __LATENCY_SAMPLE_COUNT__; index++) {
       if (__LATENCY_RECOVERY__ && index === __LATENCY_SAMPLE_COUNT__ - 1) await invoke('latency_destroy_tooltip');
       painted = false; failed=false; contentVerified=false;
       await invoke('open_tooltip_window', { text: __LATENCY_SOURCE__==='zh' ? (index%2 ? '你好世界。' : `你好世界 ${index}。`) : index % 2 ? 'Hello world.' : `Hello world ${index}.`, x: 100, y: 100, width: 0, height: 0 });
       const deadline = Date.now() + 30_000;
       while ((!painted || !contentVerified) && !failed && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 25));
+      if (__LATENCY_RECOVERY__ && painted && contentVerified) {
+        const window = (await NativeWindow.getByLabel('tooltip'))!;
+        const before = await window.innerSize();
+        if (!await window.isVisible() || await window.isFocused()) throw new Error('Tooltip show/focus contract failed');
+        if (previousRequestId) {
+          await invoke('layout_tooltip_window',{requestId:previousRequestId,width:999,height:777,x:0,y:0,center:true,scale:1});
+          await invoke('close_tooltip_window',{requestId:previousRequestId});
+          const after = await window.innerSize();
+          if (!await window.isVisible() || after.width!==before.width || after.height!==before.height) throw new Error('An obsolete request changed the current native window');
+        }
+        previousRequestId = (await invoke<{requestId:string}>('get_tooltip_data')).requestId;
+      }
       const sample = await invoke<any>('latency_next');
+      if (__LATENCY_RECOVERY__ && await (await NativeWindow.getByLabel('tooltip'))!.isVisible()) throw new Error('Dismiss did not hide the retained window');
       samples.push({ id: index, temperature: index ? 'warm' : 'cold', content: index % 2 ? 'repeated' : 'new', ...sample, contentVerified, error: !painted || !contentVerified || failed });
       if (__LATENCY_SAMPLE_COUNT__ > 30 && [9,24,49].includes(index)) {
         memoryCheckpoints.push({ cycle: index+1, ...await invoke<any>('latency_memory') });

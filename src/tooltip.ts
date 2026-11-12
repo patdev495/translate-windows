@@ -36,6 +36,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('tooltip-status')?.remove();
   };
   const close = () => {
+    if (!active) return;
     const requestId = active?.requestId;
     reset();
     void invoke('close_tooltip_window', { requestId });

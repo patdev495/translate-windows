@@ -7,12 +7,14 @@ import { SettingsManager } from '../src/services/settings';
 const reply = (text: string) => ({ detectedLang: 'zh', sourcePhonetics: '', translations: [{ lang: 'vi', text, phonetics: '' }] });
 const source = () => document.getElementById('translation-extension-root')?.shadowRoot?.querySelector('.tt-source-text')?.textContent;
 const commands: Array<{command: string; args: any}> = [];
+let currentSettings = {...SettingsManager.DEFAULT_SETTINGS,ttsEnabled:false};
 afterEach(() => { window.dispatchEvent(new Event('beforeunload')); clearMocks(); vi.unstubAllGlobals(); document.body.innerHTML = ''; });
 async function boot(payload: unknown, boundary: (command: string, args: any) => unknown = () => undefined) {
   commands.length = 0; document.body.innerHTML = ''; localStorage.clear(); mockWindows('tooltip');
+  currentSettings={...SettingsManager.DEFAULT_SETTINGS,ttsEnabled:false};
   mockIPC((command, args: any) => {
     commands.push({command,args});
-    if (command === 'get_app_settings') return {...SettingsManager.DEFAULT_SETTINGS, ttsEnabled:false};
+    if (command === 'get_app_settings') return currentSettings;
     if (command === 'get_tooltip_data') return payload;
     if (command === 'plugin:window|current_monitor') return null;
     return boundary(command,args);
@@ -67,4 +69,32 @@ test('hiding during OCR cancels only that job and ignores its late progress and 
   expect(source()).toBe('B');
   expect(commands.filter(item=>item.command==='cancel_ocr').map(item=>item.args.requestId)).toEqual([job]);
   expect(commands.some(item=>item.command==='release_ocr')).toBe(false);
+});
+
+test('Escape never sends an unscoped dismissal after the current presentation has reset', async () => {
+  await boot({requestId:'1',text:'A',translationData:reply('bản A')});
+  await vi.waitFor(()=>expect(document.getElementById('translation-extension-root')?.shadowRoot?.querySelector('#tooltip')?.classList.contains('visible')).toBe(true));
+  window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+  const closes=commands.filter(item=>item.command==='close_tooltip_window');
+  expect(closes.length).toBeGreaterThan(0);
+  expect(closes.every(item=>item.args.requestId==='1')).toBe(true);
+});
+
+test('a settings event in a hidden view cannot dismiss the newer native request awaiting delivery', async () => {
+  let nativeId='1',visible=false;
+  await boot({requestId:'1',text:'A',translationData:reply('bản A')},(command,args)=> {
+    if(command==='layout_tooltip_window' && args.requestId===nativeId) visible=true;
+    if(command==='close_tooltip_window' && (!args.requestId || args.requestId===nativeId)) {nativeId='';visible=false;}
+  });
+  await vi.waitFor(()=>expect(visible).toBe(true));
+  visible=false;
+  await emit('tooltip-dismissed',{requestId:'1'});
+  currentSettings={...currentSettings,provider:'deepl-free'};
+  // Native already invalidated A for this revision and accepted B. Its view event
+  // is still in transit when the earlier settings broadcast reaches the view.
+  nativeId='2';
+  await emit('settings-changed',currentSettings);
+  await emit('tooltip-request',{requestId:'2',text:'B',translationData:reply('bản B')});
+  await vi.waitFor(()=>expect(visible).toBe(true));
+  expect(source()).toBe('B');
 });
